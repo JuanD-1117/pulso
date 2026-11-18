@@ -1,0 +1,104 @@
+% ===================================================================
+\section{Cómo usar este guion}
+
+Este guion acompaña la presentación \texttt{pulso\_presentacion\_v3.pdf}, diseñada para
+una exposición de 30 minutos. Tiene 23 diapositivas numeradas, una portada, una
+diapositiva de cierre y seis diapositivas de respaldo que solo se muestran si hay
+preguntas.
+
+Para cada diapositiva el guion trae:
+
+\begin{description}
+\item[Encabezado.] Número, título, duración y minuto en que debe terminar. Debajo, el
+\textbf{mensaje}: la única idea que el público debe recordar. Es la misma frase de la
+barra azul al pie de la diapositiva.
+\item[Qué decir.] El texto para decir en voz alta. Al final, en azul y con una flecha,
+la \textbf{transición}: la frase que conecta con la diapositiva siguiente.
+\item[Variables y términos.] Qué significa cada símbolo de la diapositiva y cada modelo,
+método o sigla. No se lee en voz alta: sirve para responder con precisión.
+\item[Si preguntan.] Preguntas probables y una respuesta corta.
+\end{description}
+
+\subsection{Cómo se calcularon los tiempos}
+Cada duración se calculó a partir del número de palabras del texto, a un ritmo de 120
+palabras por minuto (pausado y claro), más 5 segundos por diapositiva para el cambio y
+para señalar la figura. Se redondeó a cuartos de minuto. El total es de unos 27 minutos,
+lo que deja casi 3 minutos de margen dentro de los 30.
+
+\subsection{Plan de tiempos}
+\begin{center}
+\small
+\begin{longtable}{lp{0.62\textwidth}cc}
+\toprule
+\textbf{N.º} & \textbf{Diapositiva} & \textbf{Dura} & \textbf{Termina} \\
+\midrule
+\endhead
+Portada & PULSO & 0:30 & 0:30 \\
+1 & Los pagos forman una red y los problemas viajan por ella & 1:00 & 1:30 \\
+2 & No solo importa cuánto se recibe, también cuándo & 1:30 & 3:00 \\
+3 & Pregunta de investigación & 1:15 & 4:15 \\
+4 & Seis tareas, un solo modelo & 1:15 & 5:30 \\
+5 & La ecuación del déficit & 1:45 & 7:15 \\
+6 & La ecuación del ritmo de pagos & 1:45 & 9:00 \\
+7 & La red amortigua los choques solo si $R<1$ & 1:15 & 10:15 \\
+8 & Los ciclos de pago se sincronizan como predice la teoría & 1:00 & 11:15 \\
+9 & Las cascadas son máximas con conectividad intermedia & 1:00 & 12:15 \\
+10 & El aprendizaje automático predice el colapso en milisegundos & 1:15 & 13:30 \\
+11 & Una cartera bancaria en tres capas & 1:15 & 14:45 \\
+12 & El banco solo ve transacciones; el ritmo se estima desde ellas & 1:15 & 16:00 \\
+13 & Tres niveles de información & 1:00 & 17:00 \\
+14 & El experimento compara dos mundos idénticos & 1:00 & 18:00 \\
+15 & Cada nivel de información mejora la predicción & 1:15 & 19:15 \\
+16 & La mejora es real: aparece con red y desaparece en el control & 1:15 & 20:30 \\
+17 & La mejora crece con la intensidad del desfase & 1:00 & 21:30 \\
+18 & El score clásico sigue siendo la base & 0:45 & 22:15 \\
+19 & Uso práctico: la quiebra de un empleador & 1:15 & 23:30 \\
+20 & Qué demuestra y qué no & 1:00 & 24:30 \\
+21 & Software reproducible y aplicación web & 0:45 & 25:15 \\
+22 & Conclusiones & 1:15 & 26:30 \\
+23 & Trabajo futuro & 0:30 & 27:00 \\
+Cierre & Gracias & 0:15 & 27:15 \\
+\bottomrule
+\end{longtable}
+\end{center}
+
+\subsection{Puntos de control}
+Mire el reloj en estos cuatro momentos. Si va más de un minuto atrasado, aplique los
+recortes de la sección siguiente.
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+Al terminar & Debería ir en & Sección \\
+\midrule
+Diapositiva 6 & 9:00 & El modelo \\
+Diapositiva 10 & 13:30 & Lo que muestra el modelo \\
+Diapositiva 14 & 18:00 & Aplicación al crédito \\
+Diapositiva 20 & 24:30 & Resultados \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Si se atrasa}
+Recorte en este orden. Ninguno afecta el argumento central.
+\begin{enumerate}
+\item Diapositivas 8 y 9: diga solo el mensaje de la barra azul y pase (ahorra 1.5 min).
+\item Diapositiva 10: diga solo ``XGBoost predice el colapso con AUC 0.98 en
+milisegundos'' (ahorra 45 s).
+\item Diapositiva 21: diga solo el mensaje (ahorra 30 s).
+\item Diapositiva 23: omítala y pase a la de cierre (ahorra 30 s).
+\end{enumerate}
+\textbf{No recorte nunca} las diapositivas 2, 12, 14, 16 y 17: son las que sostienen la
+conclusión.
+
+\subsection{Recomendaciones para la exposición}
+\begin{itemize}
+\item Diga primero el mensaje de cada diapositiva y después los detalles. Si el público
+solo recuerda las barras azules, ya entendió el proyecto.
+\item Señale la parte de la figura de la que habla: ``a la izquierda'', ``la línea
+negra'', ``en rojo''.
+\item En las ecuaciones (diapositivas 5 y 6), lea cada término por su color y su nombre;
+no lea la fórmula símbolo por símbolo.
+\item Haga una pausa breve después de las diapositivas 2, 16 y 22. Son las tres ideas
+más importantes.
+\end{itemize}

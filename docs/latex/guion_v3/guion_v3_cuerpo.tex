@@ -1,0 +1,690 @@
+% ===================================================================
+\section{Apertura y problema}
+
+\diapo{Portada}{PULSO}{0:30}{0:30}{Quién presenta y de qué trata.}
+\begin{decir}
+Buenos días. Mi nombre es Juan Diego Martínez y presento PULSO: Pagos, Umbrales,
+Liquidez y Sincronización Operativa. Es el proyecto del Semillero de Modelamiento de
+Sistemas Complejos y Física Computacional, dirigido por el profesor Jhon Hernán Díaz.
+
+En una frase: estudiamos si el momento en que llegan los pagos, y no solo su monto,
+ayuda a anticipar quién va a dejar de pagar un crédito.
+\end{decir}
+
+\diapo{1}{Los pagos forman una red y los problemas viajan por ella}{1:00}{1:30}{Un
+problema de liquidez no se queda donde empieza.}
+\begin{decir}
+Empiezo con una idea simple. Cada persona y cada empresa paga con el dinero que recibe
+de otras. Por eso los pagos forman una red: cada punto es un agente y cada flecha es un
+pago.
+
+En el dibujo, A deja de pagar. B y C reciben menos dinero. Si no tienen reservas,
+tampoco pueden pagarle a D. Así el problema de A llega a D, aunque D nunca tuvo relación
+con A.
+
+En Colombia, Bre-B permite pagos inmediatos entre todos los bancos. Eso es bueno para los
+usuarios, pero también hace que un problema de liquidez viaje más rápido.
+\transicion{Pero en una red de pagos no solo importa cuánto dinero llega.}
+\end{decir}
+\begin{terminos}
+\begin{description}
+\item[Liquidez.] Tener dinero disponible en el momento de pagar. Es distinto de la
+solvencia, que compara todo lo que se tiene con todo lo que se debe.
+\item[Red de pagos.] Conjunto de agentes (nodos) unidos por flechas de pago con
+dirección y monto.
+\item[Bre-B.] Sistema de pagos inmediatos del Banco de la República de Colombia. Aquí es
+solo motivación: no usamos sus datos.
+\end{description}
+\end{terminos}
+
+\diapo{2}{No solo importa cuánto se recibe, también cuándo}{1:30}{3:00}{El ingreso
+desfasado genera estrés aunque el monto no cambie.}
+\begin{decir}
+Esta es la idea central del proyecto.
+
+Las dos líneas son el mismo mes de la misma persona. Gana el mismo salario y tiene la
+misma cuota, que vence el día 35. En la línea de arriba, el salario llega el
+día 28: cuando vence la cuota, ya tiene el dinero. En la línea de abajo, el salario llega
+el día 38: durante tres días debe la cuota y no tiene con qué pagarla.
+
+El monto es idéntico. Lo único que cambió es la fecha. A esa diferencia entre cuándo
+llega el ingreso y cuándo vencen las obligaciones la llamamos desfase o
+desincronización.
+
+Si la persona no tiene un ahorro que cubra esos días, entra en mora. Y si el desfase se
+repite cada mes, el problema se acumula. Lo que planteamos es que este efecto, que no
+depende del monto, se puede medir y sirve para predecir.
+\transicion{Esto lleva directamente a la pregunta del proyecto.}
+\end{decir}
+\begin{terminos}
+\begin{description}
+\item[Ciclo de pagos.] Periodo que se repite entre dos pagos del mismo tipo, por
+ejemplo un mes de nómina.
+\item[Desfase o desincronización.] Diferencia de tiempo entre la llegada del ingreso y
+el vencimiento de las obligaciones.
+\item[Mora.] Retraso en el pago de una obligación.
+\end{description}
+\end{terminos}
+
+\diapo{3}{Pregunta de investigación}{1:15}{4:15}{Comparamos contra la red estática
+porque eso ya existe en la literatura.}
+\begin{decir}
+Los bancos deciden a quién prestar con un score: un modelo que estima la probabilidad
+de impago con datos del propio cliente, como su ingreso, su deuda y su historial de
+mora.
+
+Nuestra pregunta es si la sincronización de los ciclos de pago, medida solo con las
+transacciones que el banco ya tiene, mejora esa predicción. Y la comparamos contra dos
+referencias: el score clásico, y lo que llamamos red estática, que es saber quién le paga
+a quién y cuánto. Ya hay trabajos que usan la red estática; lo nuevo es medir el ritmo.
+
+La hipótesis se puede refutar. Si el desfase genera déficit, la sincronización debe
+mejorar la predicción. Si no lo genera, no debe mejorarla. Por eso incluimos un control:
+un mundo idéntico donde el desfase no hace daño.
+\transicion{Para responder, construimos el modelo en seis pasos.}
+\end{decir}
+\begin{terminos}
+\begin{description}
+\item[Score crediticio.] Modelo estadístico, normalmente una regresión logística, que
+asigna a cada cliente una probabilidad de impago.
+\item[Impago.] Dejar de pagar una obligación. La probabilidad de impago a un año se
+llama PD.
+\item[Red estática.] Variables sobre quién le paga al cliente y cuánto, sin mirar el
+momento de los pagos.
+\item[Hipótesis falsable.] Afirmación que predice un resultado que podría no ocurrir.
+\item[Control nulo.] Experimento idéntico con el mecanismo apagado. Mide cuánto
+``efecto'' produce el método por sí solo.
+\end{description}
+\end{terminos}
+\begin{preguntas}
+\pr{¿No es lo mismo que el historial crediticio?}{No. El historial describe al cliente
+solo. La red estática describe sus relaciones, y ya aparece en la literatura (Letizia y
+Lillo, 2019; Óskarsdóttir y Bravo, 2021). La sincronización no aparece en esos
+trabajos.}
+\end{preguntas}
+
+\diapo{4}{Seis tareas, un solo modelo}{1:15}{5:30}{Cada pieza se valida antes de
+agregar la siguiente.}
+\begin{decir}
+El proyecto sigue la propuesta del semillero. Las tareas uno a cinco construyen el
+modelo: primero la red y el déficit, luego la redistribución de liquidez, luego la
+sincronización, luego los impagos en cascada y luego la predicción con aprendizaje
+automático. La tarea seis, en rojo, aplica todo a la cartera de un banco.
+
+La regla de construcción es estricta: cada tarea agrega un término a la ecuación, y si
+ese término se apaga, el modelo vuelve exactamente al de la tarea anterior. Así cada
+pieza se puede probar por separado, y si algo falla sabemos exactamente en qué paso
+ocurrió. No presentaré las seis tareas con el mismo detalle: mostraré lo esencial de las
+cinco primeras y me concentraré en la sexta, que responde la pregunta.
+\transicion{Veamos la ecuación completa.}
+\end{decir}
+\begin{terminos}
+\begin{description}
+\item[Aprendizaje automático (ML).] Modelos que aprenden patrones a partir de datos para
+hacer predicciones.
+\item[Cascada.] Impagos en cadena: el impago de uno lleva a otros a no poder pagar.
+\end{description}
+\end{terminos}
+
+% ===================================================================
+\section{El modelo}
+
+\diapo{5}{La ecuación del déficit}{1:45}{7:15}{Cinco efectos en una ecuación.}
+\begin{decir}
+Esta ecuación dice cómo cambia en el tiempo el déficit de cada entidad. La letra $x_i$
+es el déficit de la entidad $i$: cuánta liquidez le falta. La derivada $dx_i/dt$ es qué
+tan rápido sube o baja.
+
+Cada término, de izquierda a derecha, es un efecto.
+
+En verde, menos alfa por $x_i$: la corrección. Cada entidad reduce su déficit por sí
+misma, por ejemplo con ahorro. Alfa es qué tan rápido lo hace.
+
+En rojo, beta por la suma de $W_{ij}$ por $x_j$: el contagio. $W_{ij}$ es cuánto le paga
+$j$ a $i$. Si quienes le pagan a $i$ tienen déficit, le pagan menos y su déficit sube.
+Beta es la intensidad del contagio.
+
+En azul, la redistribución: la liquidez se traslada entre entidades sin crearse ni
+destruirse. $D_0$ es su velocidad y $L$ es una matriz llamada Laplaciano.
+
+En morado, el desfase: gamma por $k_i$ por uno menos $r_i$. $k_i$ es el ingreso total de
+$i$ y $r_i$ dice si ese ingreso llega a tiempo. Lo explico en la siguiente diapositiva.
+
+Y al final, eta: los choques externos.
+
+Cuando el déficit supera el colchón de la entidad, la entidad deja de pagar. Eso es un
+impago.
+\transicion{Falta definir $r_i$, que viene del ritmo de pagos.}
+\end{decir}
+\begin{terminos}
+\begin{description}
+\item[$x_i$.] Déficit de la entidad $i$. Tareas 1–5: en pagos medios por ciclo. Tarea 6:
+fracción del ingreso mensual.
+\item[$t$.] Tiempo: ciclos de pago (un día hábil) en las tareas 1–5; meses en la tarea 6.
+\item[$\alpha$.] Tasa de corrección [1/tiempo]. $1/\alpha$ es el tiempo típico en que se
+corrige un déficit.
+\item[$\beta$.] Intensidad del contagio de déficit de pagador a receptor.
+\item[$W_{ij}$.] Pago medio de $j$ hacia $i$ en cada ciclo. Las filas son ingresos; las
+columnas, pagos.
+\item[$\sum_jW_{ij}x_j$.] Déficit de todos los pagadores de $i$, pesado por cuánto le
+paga cada uno.
+\item[$D_0$, $L$.] Velocidad de redistribución y Laplaciano de flujo, $L=D_\text{out}-W$,
+con $D_\text{out}$ la matriz diagonal de pagos totales. Sus columnas suman cero, así que
+conserva el déficit total.
+\item[$\gamma$.] Cuánto déficit genera el desfase [1/tiempo].
+\item[$k_i$.] Ingreso de $i$ por la red, $\sum_jW_{ij}$.
+\item[$r_i$.] Coherencia local, entre $-1$ y $1$ (diapositiva 6).
+\item[$\eta_i(t)$.] Choques externos: retiros de liquidez o ruido aleatorio.
+\item[$x_i^{(c)}$.] Colchón o umbral de impago de la entidad $i$.
+\end{description}
+\end{terminos}
+\begin{preguntas}
+\pr{¿Por qué lineal?}{Es lo más simple que conserva el contagio y permite resultados
+exactos, como el umbral $R=1$. La no linealidad entra por el umbral y por el ritmo. Es
+una limitación declarada.}
+\end{preguntas}
+
+\diapo{6}{La ecuación del ritmo de pagos}{1:45}{9:00}{El término $\gamma k_i(1-r_i)$ une
+el ritmo con la liquidez.}
+\begin{decir}
+Cada entidad paga en ciclos, como un reloj que da vueltas. Theta sub $i$ es la posición
+de esa manecilla: en qué punto de su ciclo de pagos está.
+
+La ecuación de la izquierda es el modelo de Kuramoto, el modelo clásico de
+sincronización en física. Omega sub $i$ es el ritmo propio de la entidad, el que tendría
+sola. El segundo término la acelera si quienes le pagan van adelante y la frena si van
+atrás. $K$ es qué tan fuerte se ajusta. Es lo mismo que pasa con un público que aplaude
+y termina aplaudiendo al unísono.
+
+La fórmula de la derecha es la coherencia, $r_i$. Promedia el coseno de la diferencia de
+fase con cada pagador, pesado por lo que paga. Si el ingreso llega a tiempo, $r_i$ vale
+uno. Si llega en el peor momento, vale menos uno. En el dibujo, tres pagadores están en
+fase y uno desfasado.
+
+Ahora el término morado de la ecuación anterior tiene sentido: uno menos $r_i$ es cero
+si todo llega a tiempo, y es grande si llega desfasado. Ese término convierte el desfase
+en déficit.
+\transicion{Antes de la aplicación a crédito, tres resultados del modelo.}
+\end{decir}
+\begin{terminos}
+\begin{description}
+\item[$\theta_i$.] Fase: posición en el ciclo de pagos, en radianes, de $0$ a $2\pi$.
+\item[$\omega_i$.] Frecuencia natural: ritmo propio de la entidad [rad/tiempo]. Se sortea
+de una distribución de Lorentz con ancho $\Delta$.
+\item[$K$.] Fuerza del acoplamiento de fase.
+\item[$\langle k\rangle$.] Ingreso medio de la red. Normalizar por él, y no por el número
+de entidades, evita que el acople desaparezca en redes grandes y dispersas (Rodrigues et
+al., 2016).
+\item[$\sin(\theta_j-\theta_i)$.] Positivo si el pagador va adelante: acelera a $i$.
+\item[$r_i$.] Coherencia local $\frac1{k_i}\sum_jW_{ij}\cos(\theta_j-\theta_i)$.
+\item[Modelo de Kuramoto.] Modelo de osciladores acoplados propuesto por Yoshiki
+Kuramoto en 1975.
+\end{description}
+\end{terminos}
+
+% ===================================================================
+\section{Lo que muestra el modelo}
+
+\diapo{7}{La red amortigua los choques solo si $R<1$}{1:15}{10:15}{Con $R=0.9$ el déficit
+se apaga; con $R=1.1$ crece.}
+\begin{decir}
+El primer resultado responde cuándo la red amortigua un choque y cuándo lo amplifica.
+
+La respuesta es un solo número, $R$: beta por rho de $W$ dividido por alfa. Arriba va el
+contagio; abajo, la corrección. Rho de $W$ es el radio espectral de la red, su valor
+propio más grande, que mide qué tan concentrados están los pagos.
+
+Funciona como el número reproductivo de una epidemia. Las gráficas muestran el déficit
+de cada entidad después de un choque. El eje horizontal es el tiempo y el vertical el
+déficit, en escala logarítmica. Cada línea de color es una entidad y la línea negra es
+el total. Con $R$ igual a 0.9, a
+la izquierda, el total baja. Con $R$ igual a 1.1, a la derecha, crece sin límite. Esto
+lo comprobamos contra la solución exacta, con error menor que una millonésima.
+\transicion{El segundo resultado es sobre el ritmo.}
+\end{decir}
+\begin{terminos}
+\begin{description}
+\item[$\rho(W)$ (radio espectral).] Mayor valor propio de $W$ en módulo. Por el teorema de
+Perron–Frobenius, en una matriz de pagos positivos es real y positivo.
+\item[Valor propio.] Número $\lambda$ tal que $Wv=\lambda v$ para algún vector $v$.
+\item[Número reproductivo ($R_0$).] En epidemiología, contagios que produce en promedio
+un infectado; la epidemia crece si es mayor que 1.
+\item[Solución exacta.] Sin umbrales, el sistema es lineal y se resuelve como
+$x(t)=e^{Mt}x_0$.
+\end{description}
+\end{terminos}
+
+\diapo{8}{Los ciclos de pago se sincronizan como predice la teoría}{1:00}{11:15}{El
+código reproduce un resultado exacto de la física.}
+\begin{decir}
+El segundo resultado valida la parte del ritmo. La gráfica muestra la sincronía
+global, $r$, en el eje vertical, contra el acoplamiento, $K$, en el horizontal. Cada
+color es un tipo de red. Cuando $r$ vale
+cero, cada entidad paga a su ritmo; cuando vale uno, todas pagan a la vez. Al aumentar
+$K$, la red se sincroniza.
+
+La línea punteada es la teoría para una red donde todos están conectados con todos. Para
+$K$ igual a 2, la teoría da 0.7071 y la simulación 0.7076. La diferencia está en la
+cuarta cifra decimal. Las redes con menos conexiones se sincronizan de forma más gradual,
+pero siguen la misma tendencia.
+\transicion{El tercer resultado es sobre las cascadas.}
+\end{decir}
+\begin{terminos}
+\begin{description}
+\item[$r$ global.] $r=\bigl|\frac1N\sum_je^{i\theta_j}\bigr|$, entre 0 y 1.
+\item[$\Delta$.] Dispersión de los ritmos propios. Teoría: $r=\sqrt{1-2\Delta/K}$ para
+$K>2\Delta$.
+\item[Topologías.] Erdős–Rényi (conexiones al azar), Barabási–Albert (pocos nodos muy
+conectados) y núcleo-periferia (núcleo denso, como en los sistemas de pagos reales).
+\end{description}
+\end{terminos}
+
+\diapo{9}{Las cascadas son máximas con conectividad intermedia}{1:00}{12:15}{Más
+conexiones no siempre significa más riesgo.}
+\begin{decir}
+Aquí ya hay impagos. Chocamos una entidad y medimos qué fracción de la red termina en
+impago, según cuántas conexiones tiene cada entidad en promedio.
+
+Con pocas conexiones, el choque no tiene por dónde propagarse. Con muchas, cada entidad
+recibe de muchos pagadores y la pérdida de uno se diluye. En el medio, las cascadas son
+máximas: en la gráfica, la fracción en impago sube rápido, llega a su máximo con un grado
+medio cercano a cinco y medio, y luego cae. Eso se conoce como ventana de contagio. Nuestro modelo, en azul, la reproduce,
+y se diferencia de dos modelos clásicos, DebtRank y Watts, que no tienen tiempo ni
+recuperación.
+\transicion{Simular todo esto es lento; por eso entrenamos modelos predictivos.}
+\end{decir}
+\begin{terminos}
+\begin{description}
+\item[Grado medio.] Número medio de contrapartes por entidad.
+\item[Colchón.] $x_i^{(c)}=c\,\mathrm{out}_i\,\varepsilon_i$: múltiplo $c$ de lo que la
+entidad paga por ciclo, con variación aleatoria $\varepsilon_i$.
+\item[DebtRank.] Medida de propagación de estrés financiero (Battiston et al., 2012).
+\item[Modelo de Watts.] Un nodo cae si la fracción de vecinos caídos supera un umbral
+(Watts, 2002).
+\end{description}
+\end{terminos}
+
+\diapo{10}{El aprendizaje automático predice el colapso en milisegundos}{1:15}{13:30}{El
+modelo físico genera los datos; el aprendizaje automático los resume.}
+\begin{decir}
+Generamos 20\,000 simulaciones sobre 300 redes distintas y entrenamos modelos para
+predecir si la red colapsa, es decir, si cae el 30~\% o más.
+
+El mejor, XGBoost, alcanza un AUC de 0.98. Más adelante explico el AUC; por ahora, 1 es
+perfecto. Una simulación tarda 0.08 segundos y una predicción 0.2 milisegundos.
+
+Esa diferencia de velocidad
+es lo que permite que la aplicación muestre el riesgo de todas las entidades al instante.
+
+Para evaluar usamos siempre redes que el modelo no vio durante el entrenamiento. La
+gráfica muestra el AUC por grupos: a la izquierda por rangos de $R$ y a la derecha por
+tipo de red. XGBoost, en naranja, se mantiene alto en todos los grupos.
+\transicion{Con el modelo construido y validado, pasamos a la aplicación: el crédito.}
+\end{decir}
+\begin{terminos}
+\begin{description}
+\item[XGBoost.] Conjunto de árboles de decisión entrenados uno tras otro, cada uno
+corrigiendo los errores del anterior.
+\item[Regresión logística.] Modelo lineal para probabilidades; es la referencia.
+\item[AUC.] Área bajo la curva ROC (diapositiva 15).
+\item[Validación por grupos (GroupKFold).] Ninguna red aparece a la vez en entrenamiento
+y en evaluación.
+\end{description}
+\end{terminos}
+\begin{preguntas}
+\pr{¿También usaron redes neuronales?}{Sí: una red neuronal sobre grafos (GCN) para
+predecir el tamaño de la cascada de cada entidad, y una red informada por la física
+(PINN) para estimar parámetros a partir de trayectorias. Están en la diapositiva de
+respaldo 5.}
+\end{preguntas}
+
+% ===================================================================
+\section{Aplicación al riesgo de crédito}
+
+\diapo{11}{Una cartera bancaria en tres capas}{1:15}{14:45}{Se simula una cartera para
+comprobar que el método encuentra lo que sabemos que está.}
+\begin{decir}
+Ahora los nodos son clientes de un banco: personas y empresas. Se relacionan de tres
+formas. La nómina: la empresa paga a su empleado cada quince o treinta días. Los
+proveedores: una empresa paga a otra sus facturas. Y las transferencias entre personas,
+que son irregulares.
+
+No existen datos públicos de la red de pagos de los clientes de un banco. Por eso
+generamos una cartera: 2000 personas y 100 empresas, con 55~\% de informalidad, una cifra
+del orden de la que reporta el DANE. Le ponemos un mecanismo conocido y verificamos que
+el método lo encuentra. Es como calibrar un instrumento: primero se mide algo cuyo valor
+se conoce.
+
+La figura es una versión reducida para ver las capas: los cuadrados son empresas, los
+puntos son personas, y el color de cada línea indica la capa.
+\transicion{El banco, sin embargo, no ve el modelo; solo ve los pagos.}
+\end{decir}
+\begin{terminos}
+\begin{description}
+\item[Cartera.] Conjunto de clientes con crédito en un banco.
+\item[Red multicapa.] Red con varios tipos de relación entre los mismos nodos; cada tipo
+es una capa.
+\item[Informalidad.] Personas sin empleador dentro del banco. Sus ingresos llegan con
+ritmos irregulares.
+\item[Datos sintéticos.] Generados por simulación con reglas conocidas.
+\item[PD verdadera.] Cada cliente tiene una probabilidad de impago oculta, calculada con
+sus variables clásicas y un componente que el banco no ve. Los modelos tienen prohibido
+usarla: el código se detiene si lo intentan.
+\end{description}
+\end{terminos}
+\begin{preguntas}
+\pr{¿Qué vale un resultado con datos sintéticos?}{Demuestra que, si el mecanismo
+existe, el método lo detecta con la información que tiene un banco, y que no detecta
+nada si no existe. No demuestra que exista en un banco real.}
+\end{preguntas}
+
+\diapo{12}{El banco solo ve transacciones; el ritmo se estima desde ellas}{1:15}{16:00}{La
+coherencia estimada coincide con la real.}
+\begin{decir}
+Este es el paso clave para que el método sea aplicable.
+
+Primero, el modelo genera los pagos tal como los registraría un banco: fecha, quién paga,
+quién recibe y cuánto. Esa tabla es lo único que usamos.
+
+Segundo, con esos pagos estimamos la fase de cada cliente. La idea es sencilla: entre un
+pago y el siguiente, el cliente completó una vuelta de su ciclo. Entonces, a mitad de
+camino entre dos pagos, está a media vuelta.
+
+Tercero, con las fases estimadas calculamos la coherencia de cada cliente con sus
+pagadores.
+
+La figura compara lo real con lo estimado para un empleado formal y para un informal. La
+correlación entre la coherencia real y la estimada es mayor que 0.8.
+
+Usamos seis meses de transacciones para observar y predecimos si el cliente cae en los
+doce meses siguientes.
+\transicion{Con eso construimos las variables.}
+\end{decir}
+\begin{terminos}
+\begin{description}
+\item[Registro de transacciones.] Tabla con fecha, pagador, receptor, tipo de pago y
+monto.
+\item[Fase por eventos.] Pikovsky et al.\ (2001):
+$\hat\theta(t)=2\pi\bigl(k+\frac{t-t_k}{t_{k+1}-t_k}\bigr)$, donde $t_k$ es la fecha del
+$k$-ésimo pago.
+\item[$\hat r_i$.] Coherencia estimada con las fases $\hat\theta$ y la red estimada
+$\hat W$. El acento circunflejo indica ``estimado''.
+\item[Ventanas.] Observación: meses 0 a 6. Predicción: meses 6 a 18.
+\item[Fuga de información.] Usar al entrenar algo que no se tendría al predecir. El código
+rechaza pagos posteriores al mes 6.
+\end{description}
+\end{terminos}
+
+\diapo{13}{Tres niveles de información}{1:00}{17:00}{El nivel 3 es el aporte del
+proyecto.}
+\begin{decir}
+Comparamos tres conjuntos de variables, y cada uno contiene al anterior.
+
+El nivel uno es el score clásico: ingreso, deuda, edad, antigüedad, moras y si el empleo
+es formal.
+
+El nivel dos agrega la red estática: de quién recibe el cliente, cuánto, qué tan
+concentrado está su ingreso en pocos pagadores y qué tan sano está su empleador.
+
+El nivel tres agrega la dinámica: la coherencia, el desfase con sus pagadores, la
+diferencia de ritmo, qué tan regulares son sus ciclos y si algún pagador dejó de pagar.
+
+Los tres se evalúan con el mismo modelo, los mismos clientes y la misma validación.
+Así, cualquier diferencia de desempeño se debe solo a la información agregada.
+\transicion{Y los evaluamos en dos mundos.}
+\end{decir}
+\begin{terminos}
+\begin{description}
+\item[Concentración (HHI).] Índice de Herfindahl–Hirschman: suma de las participaciones
+de cada pagador al cuadrado. Vale 1 si todo viene de uno solo.
+\item[Salud del empleador.] Tamaño, deuda y moras de la empresa que paga la nómina.
+\item[Desfase.] Diferencia media de fase con los pagadores.
+\item[Regularidad.] Variación de los intervalos entre pagos (coeficiente de variación).
+\end{description}
+\end{terminos}
+
+\diapo{14}{El experimento compara dos mundos idénticos}{1:00}{18:00}{Si la dinámica
+mejorara en el mundo nulo, el método estaría engañando.}
+\begin{decir}
+Este es el diseño que hace creíble el resultado.
+
+Simulamos dos mundos con los mismos clientes, la misma red y los mismos números
+aleatorios. En el mundo con red, el desfase y el contagio generan déficit. En el mundo
+nulo, los pagos ocurren igual, pero no generan déficit.
+
+En el mundo con red, la dinámica debería ayudar a predecir. En el nulo no debería. Si
+ayudara en el nulo, significaría que el método encuentra patrones que no existen, por
+ejemplo por una fuga de información.
+
+Es un control negativo, como el placebo en un ensayo clínico.
+
+Usamos 20 carteras por mundo, unos 40\,000 clientes, y validación cruzada: el modelo
+siempre se evalúa en carteras que no vio al entrenar.
+\transicion{Veamos qué pasó.}
+\end{decir}
+\begin{terminos}
+\begin{description}
+\item[Mundo nulo.] $\beta=\gamma=\lambda=0$: sin contagio, sin desfase y sin pérdida por
+pagadores caídos.
+\item[Mismos números aleatorios.] La semilla de cada cartera genera los mismos sorteos en
+ambos mundos.
+\item[Validación cruzada.] Se divide en 5 partes; se entrena con 4 y se evalúa en la
+quinta, rotando.
+\end{description}
+\end{terminos}
+
+% ===================================================================
+\section{Resultados}
+
+\diapo{15}{Cada nivel de información mejora la predicción}{1:15}{19:15}{La dinámica
+agrega información que la red estática no tiene.}
+\begin{decir}
+Primero, qué es el AUC. Tomemos al azar un cliente que cayó y uno que no cayó. El AUC es
+la probabilidad de que el modelo le asigne más riesgo al que cayó. Si vale 0.5, el
+modelo adivina al azar; si vale 1, acierta siempre.
+
+En el mundo con red, el score clásico logra 0.769. Al agregar la red estática sube a
+0.784. Al agregar la dinámica sube a 0.795. Con XGBoost el resultado final es el mismo.
+Todas estas cifras se miden en carteras que el modelo no vio.
+
+Puede parecer un cambio pequeño, pero hay que leerlo en dos pasos. El paso de la red
+estática ya estaba documentado en la literatura. El paso de la dinámica es el nuevo, y se
+suma encima del anterior: la dinámica no repite lo que ya decía la red estática.
+\transicion{¿Es real esa mejora, o es ruido?}
+\end{decir}
+\begin{terminos}
+\begin{description}
+\item[AUC.] Área bajo la curva ROC. La curva ROC grafica aciertos contra falsas alarmas
+para todos los umbrales de decisión.
+\item[Fuera de muestra.] Medido en datos que el modelo no usó para aprender.
+\item[Gini.] Métrica usada por los bancos: $2\,\mathrm{AUC}-1$.
+\end{description}
+\end{terminos}
+\begin{preguntas}
+\pr{¿Por qué el AUC del mundo nulo es mayor (0.81)?}{En el nulo el impago depende casi
+solo de la probabilidad propia de cada cliente, que es lo que mide el score. Con red,
+parte del impago viene de la red y el score no lo ve.}
+\end{preguntas}
+
+\diapo{16}{La mejora es real: aparece con red y desaparece en el control}{1:15}{20:30}{Con
+red, positiva en 5 de 5 particiones; en el nulo, cero.}
+\begin{decir}
+Cómo leer la gráfica: cada fila es una comparación. El punto es la mejora promedio de la
+dinámica sobre la red estática y la barra es su intervalo de confianza del 95~\%. La
+línea punteada vertical es el cero: si una barra la cruza, no podemos afirmar que haya
+mejora.
+
+En el mundo con red, en rojo, la mejora es de 0.011 con regresión logística y 0.014 con
+XGBoost. Los intervalos no tocan el cero y la mejora es positiva en las cinco
+particiones.
+
+En el mundo nulo, en gris, la mejora es cero. Esto es lo más importante de la
+presentación: con las mismas variables y el mismo método, cuando el mecanismo no existe,
+no aparece ninguna mejora. Eso descarta que el resultado sea un artefacto.
+\transicion{Y podemos ir más allá: medir cómo cambia la mejora con el mecanismo.}
+\end{decir}
+\begin{terminos}
+\begin{description}
+\item[$\Delta$AUC.] AUC del nivel 3 menos AUC del nivel 2, en la misma partición.
+\item[Intervalo de confianza 95~\%.] Rango que contiene la mejora verdadera con 95~\% de
+confianza. Se calcula con la distribución $t$ de Student sobre las 5 particiones.
+\item[Partición.] Cada una de las 5 divisiones de la validación cruzada.
+\end{description}
+\end{terminos}
+\begin{preguntas}
+\pr{¿Una mejora de 0.01 importa?}{En crédito sí: son 0.022 puntos de Gini sobre un
+modelo que ya usa la red. Además, el valor depende de parámetros ilustrativos; lo que se
+establece es que la mejora existe, es estable y desaparece sin el mecanismo.}
+\pr{¿Más variables no mejoran siempre?}{No fuera de muestra. El mundo nulo lo prueba: las
+mismas variables, mejora cero.}
+\end{preguntas}
+
+\diapo{17}{La mejora crece con la intensidad del desfase}{1:00}{21:30}{La señal viene de
+la desincronización, no del contagio.}
+\begin{decir}
+Este experimento responde una pregunta que surge naturalmente: ¿la mejora viene del
+desfase o del contagio? Para saberlo variamos solo gamma, el parámetro que convierte el
+desfase en déficit. Todo lo demás queda igual, incluido el contagio.
+
+En la gráfica, el eje horizontal es gamma y el vertical la mejora de la dinámica sobre la
+red estática.
+
+Con gamma igual a cero, la dinámica no aporta nada, aunque el contagio siga activo. Al
+subir gamma, la mejora crece: 0.001, 0.008 y 0.029.
+
+Esto nos dice de dónde viene la señal: de la desincronización, no del contagio. Y es una
+relación de dosis y respuesta: más mecanismo, más señal.
+\transicion{¿Significa esto que la red reemplaza al score? No.}
+\end{decir}
+\begin{terminos}
+\begin{description}
+\item[$\gamma$.] Déficit generado por el desfase [1/mes].
+\item[Dosis-respuesta.] El efecto crece con la intensidad de la causa; es un criterio
+clásico para atribuir un efecto a una causa.
+\end{description}
+\end{terminos}
+
+\diapo{18}{El score clásico sigue siendo la base}{0:45}{22:15}{El modelo híbrido
+complementa el score; no lo reemplaza.}
+\begin{decir}
+La gráfica muestra cuánto pesa cada variable en la predicción, con un método llamado
+SHAP.
+
+Cada barra es una variable; mientras más larga, más influye en la predicción. Las
+variables clásicas, en gris, son las más importantes: la deuda, el ingreso y las
+moras. Las de red estática, en azul, y las dinámicas, en rojo, agregan información. Entre
+las dinámicas pesan más la variabilidad de la coherencia, su nivel y el desfase.
+
+La conclusión práctica es que el modelo híbrido complementa al score, no lo reemplaza.
+\transicion{Un ejemplo de uso.}
+\end{decir}
+\begin{terminos}
+\begin{description}
+\item[SHAP.] \emph{SHapley Additive exPlanations} (Lundberg y Lee, 2017). Reparte cada
+predicción entre las variables usando los valores de Shapley de la teoría de juegos.
+\item[Importancia media $|\mathrm{SHAP}|$.] Promedio del tamaño de la contribución de cada
+variable.
+\item[Modelo híbrido.] Modelo con los tres niveles de variables.
+\end{description}
+\end{terminos}
+
+\diapo{19}{Uso práctico: la quiebra de un empleador}{1:15}{23:30}{Sirve para pruebas de
+estrés por concentración en empleadores.}
+\begin{decir}
+Además de predecir, el modelo permite simular escenarios. Simulamos que quiebra la
+empresa con más empleados en el banco, 74 personas, en el primer mes. La gráfica muestra
+el porcentaje de esos empleados en impago a lo largo de siete meses: en rojo con
+quiebra, en línea punteada sin ella, y en gris el mundo nulo.
+
+En el mundo con red, el 12~\% de sus empleados cae de inmediato, porque pierde su salario.
+A los seis meses, el 13~\% está en impago, frente al 7~\% si la empresa no hubiera
+quebrado. En el mundo nulo no hay efecto, como corresponde.
+
+Para un banco, esto es una prueba de estrés: cuánto riesgo concentra en los empleados de
+una misma empresa.
+\transicion{Para cerrar los resultados, qué podemos afirmar y qué no.}
+\end{decir}
+\begin{terminos}
+\begin{description}
+\item[Prueba de estrés.] Simulación de un escenario adverso para medir su impacto.
+\end{description}
+\end{terminos}
+
+\diapo{20}{Qué demuestra y qué no}{1:00}{24:30}{El siguiente paso es una cartera real
+anonimizada.}
+\begin{decir}
+El trabajo demuestra tres cosas. Si el mecanismo existe, se detecta con las transacciones
+que ya tiene un banco. Aporta información que la red estática no tiene. Y desaparece
+cuando el mecanismo no está, y crece cuando es más intenso.
+
+No demuestra que el mecanismo exista en un banco real, porque los datos son simulados.
+No da el tamaño real del efecto, porque los parámetros son ilustrativos. Y supone que el
+banco ve toda la red de sus clientes. El paso siguiente es probarlo con una cartera real
+anonimizada.
+\transicion{Termino con el software y las conclusiones.}
+\end{decir}
+\begin{preguntas}
+\pr{¿Qué haría falta para usarlo en un banco?}{Una cartera real anonimizada, bajo la Ley
+1581 de 2012 de protección de datos. El código ya recibe transacciones con esa
+estructura.}
+\end{preguntas}
+
+% ===================================================================
+\section{Cierre}
+
+\diapo{21}{Software reproducible y aplicación web}{0:45}{25:15}{Todo resultado se puede
+regenerar y explorar.}
+\begin{decir}
+Todo está implementado en Python, con una aplicación web de nueve páginas, como la
+que se ve a la derecha, donde se puede construir una red, aplicar choques y ver la
+predicción de cada cliente. Los
+parámetros están en archivos de configuración, las semillas aleatorias son fijas y hay
+127 pruebas automáticas. Con Docker, la aplicación funciona igual en cualquier
+computador, y el experimento completo de crédito se repite con un solo comando en unos
+20 segundos.
+\end{decir}
+\begin{terminos}
+\begin{description}
+\item[Streamlit.] Biblioteca de Python para aplicaciones web interactivas.
+\item[YAML.] Formato de texto para archivos de configuración.
+\item[Docker.] Empaqueta el programa con todo lo que necesita para que corra igual en
+cualquier equipo.
+\item[Prueba automática.] Código que verifica un resultado; se ejecuta con
+\texttt{pytest}.
+\end{description}
+\end{terminos}
+
+\diapo{22}{Conclusiones}{1:15}{26:30}{No solo importa cuánto recibe un cliente, también
+cuándo.}
+\begin{decir}
+Cuatro conclusiones.
+
+Primera: un solo modelo une contagio, redistribución, sincronización y cascadas, y cada
+parte se comprobó contra resultados exactos.
+
+Segunda: el número $R$ dice si la red amortigua o amplifica un choque.
+
+Tercera: el aprendizaje automático predice el colapso con AUC de 0.98 en milisegundos.
+
+Cuarta, y es la principal: la sincronización de los pagos, medida solo con
+transacciones, mejora la predicción del impago más allá del score y de la red estática,
+y no lo hace cuando el mecanismo no existe.
+
+Para la física, el proyecto muestra que las herramientas de sincronización y redes
+complejas tienen una aplicación directa en finanzas. Para un banco, sugiere una fuente
+de información que ya tiene en sus registros y que hoy no usa.
+
+En resumen: no solo importa cuánto recibe un cliente, también cuándo.
+\end{decir}
+
+\diapo{23}{Trabajo futuro}{0:30}{27:00}{Validación con datos reales.}
+\begin{decir}
+Como trabajo futuro: probar el método con datos reales, incluir las fechas de cuota como
+un ritmo impuesto, permitir que el déficit cambie el ritmo de pago, y estudiar qué pasa
+cuando un banco solo ve a sus clientes, frente al operador de Bre-B, que ve todo.
+\end{decir}
+
+\diapo{Cierre}{Gracias}{0:15}{27:15}{Abrir preguntas.}
+\begin{decir}
+Muchas gracias. Quedo atento a sus preguntas.
+\end{decir}

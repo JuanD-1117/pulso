@@ -25,6 +25,8 @@ ciclos de pago se sincronizan, y una pregunta medible:
 - v2: [presentación para exposición](docs/Presentaciones/v2/pulso_presentacion_v2.pdf)
   (31 diapositivas), [guion de la exposición](docs/Presentaciones/v2/pulso_guion_v2.pdf)
   y [manual de la aplicación](docs/Presentaciones/v2/pulso_manual_app.pdf).
+- v3, para exponer en 30 minutos: [presentación](docs/Presentaciones/v3/pulso_presentacion_v3.pdf)
+  (23 diapositivas y respaldo) y [guion cronometrado](docs/Presentaciones/v3/pulso_guion_v3.pdf).
 
 ## El modelo (tareas 1–5)
 

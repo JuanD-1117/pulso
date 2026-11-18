@@ -3,6 +3,20 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es/1.1.0/); versionado
 semántico.
 
+## [3.2.0] · 2026-11-18 · Presentación v3 de 30 minutos
+
+### Añadido
+- Presentación v3: 23 diapositivas con títulos que enuncian la conclusión, una idea por
+  diapositiva, mensaje clave al pie, diagramas nuevos (desfase salario-cuota, cadena de
+  tareas, dos mundos del experimento, intervalos de mejora) y 6 diapositivas de
+  respaldo con numeración propia.
+- Guion v3 cronometrado a partir del conteo de palabras (120 palabras por minuto, unos
+  27 minutos): transiciones, puntos de control, recortes si hay atraso, guía de las
+  diapositivas de respaldo, preguntas probables y glosario.
+
+### Corregido
+- `figures/fase4_ventana_contagio.png` regenerada: la leyenda aún decía "finnet".
+
 ## [3.1.0] · 2026-11-18 · Presentación v2, guion y manual de la aplicación
 
 ### Añadido

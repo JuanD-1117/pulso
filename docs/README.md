@@ -2,7 +2,7 @@
 
 | Archivo | Contenido |
 |---|---|
-| [`Presentaciones/`](Presentaciones/) | PDF por versión. **v1**: guía completa desde cero (53 pp.) y presentación completa (56 diapositivas). **v2**: presentación para exposición (31 diapositivas), guion de la exposición y manual de la aplicación. |
+| [`Presentaciones/`](Presentaciones/) | PDF por versión. **v1**: guía completa desde cero (53 pp.) y presentación completa (56 diapositivas). **v2**: presentación breve (31 diapositivas), guion y manual de la aplicación. **v3**: presentación de 30 minutos (23 diapositivas y respaldo) con guion cronometrado. |
 | [`bibliografia.md`](bibliografia.md) | Referencias por tarea. |
 | [`diseno/`](diseno/) | Especificación de diseño de la Tarea 6. |
 | [`latex/`](latex/) | Fuentes LaTeX de los PDF, el generador de figuras (`figuras.py`) y el script de compilación (`compilar.sh`). |
