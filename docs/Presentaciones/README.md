@@ -9,6 +9,7 @@
 | v2 | [`pulso_manual_app.pdf`](v2/pulso_manual_app.pdf) | Manual de la aplicación web (33 pp.) para quien la usa por primera vez: cada página, cada control y cada resultado, con recorridos guiados y solución de problemas. |
 | v3 | [`pulso_presentacion_v3.pdf`](v3/pulso_presentacion_v3.pdf) | **Versión para exponer en 30 minutos.** 23 diapositivas, una idea por diapositiva con su mensaje clave al pie, y 6 diapositivas de respaldo para preguntas. |
 | v3 | [`pulso_guion_v3.pdf`](v3/pulso_guion_v3.pdf) | Guion cronometrado (unos 27 minutos): texto por diapositiva con transiciones, definición de cada variable y sigla, puntos de control de tiempo, recortes si hay atraso, guía de las diapositivas de respaldo y preguntas probables. |
+| v3 | [`pulso_guion_v3_15min.pdf`](v3/pulso_guion_v3_15min.pdf) | Guion corto (unos 13 minutos) para las mismas diapositivas v3: lo esencial de cada una, plan de tiempos, puntos de control y definiciones mínimas. |
 
 **Plan de estudio:** [`ESTUDIO.pdf`](ESTUDIO.pdf) (9 pp.): los 12 bloques de temas del proyecto
 (tomando como guía la v1), cómo estudiarlos, referencias, dónde practicar en el código,

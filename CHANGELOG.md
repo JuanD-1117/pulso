@@ -3,6 +3,12 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es/1.1.0/); versionado
 semántico.
 
+## [3.2.2] · 2026-11-18 · Guion de 15 minutos
+
+### Añadido
+- Guion corto para la presentación v3 (unos 13 minutos, cronometrado por conteo de
+  palabras): lo esencial de cada diapositiva, puntos de control y definiciones mínimas.
+
 ## [3.2.1] · 2026-11-18 · Plan de estudio
 
 ### Añadido
