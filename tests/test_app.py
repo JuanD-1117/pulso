@@ -9,8 +9,12 @@ import pytest
 from streamlit.testing.v1 import AppTest
 
 APP_DIR = Path(__file__).resolve().parents[1] / "app"
-PAGES = ["Inicio.py", *sorted(p.relative_to(APP_DIR).as_posix()
-                               for p in (APP_DIR / "pages").glob("*.py"))]
+PAGES = [
+    "Inicio.py",
+    *sorted(
+        p.relative_to(APP_DIR).as_posix() for p in (APP_DIR / "pages").glob("*.py")
+    ),
+]
 
 
 @pytest.fixture(autouse=True)

@@ -60,10 +60,13 @@ select = ["E", "F", "W", "I", "B", "UP", "NPY", "RUF"]
 ignore = ["RUF001", "RUF002", "RUF003"]  # tildes y letras griegas en docstrings
 
 [tool.ruff.lint.per-file-ignores]
-"app/Inicio.py" = ["E501"]  # tabla Markdown: partirla cambia el render
+# Tablas Markdown y LaTeX: partir las líneas cambia el render.
+"app/Inicio.py" = ["E501"]
+"app/pages/7_Acerca_del_modelo.py" = ["E501"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["src"]  # no depender del .pth editable (macOS lo oculta en ~/Documents)
 addopts = "-ra"
 markers = ["slow: pruebas que tardan más de unos segundos"]
 filterwarnings = ["ignore::FutureWarning:torch.*", "ignore::DeprecationWarning:torch_geometric.*"]
