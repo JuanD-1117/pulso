@@ -311,3 +311,106 @@ def example_scenario() -> dict[str, Any]:
     cfg = merged(default_config(), load_config("breb_example.yaml"))
     net = build_network(cfg["network"], seed=cfg["seed"])
     return {**net, "config": cfg}
+
+
+# ---------------------------------------------------------------- dataset (Fase 5)
+
+TOPOLOGY_NAMES = {0: "Erdős–Rényi", 1: "Barabási–Albert", 2: "Núcleo-periferia"}
+
+
+def dataset_available() -> bool:
+    from finnet.config import data_dir
+
+    return (data_dir() / "escenarios.parquet").is_file()
+
+
+def load_scenarios() -> pd.DataFrame:
+    """Tabla ``escenarios`` con columnas derivadas para explorar."""
+    from finnet.config import data_dir
+
+    path = data_dir() / "escenarios.parquet"
+    if not path.is_file():
+        raise FileNotFoundError(
+            f"No existe {path}. Genere el dataset: "
+            "uv run finnet sweep configs/sweep.yaml"
+        )
+    df = pd.read_parquet(path)
+    df["mean_degree"] = df["density"] * (df["n"] - 1)
+    df["topologia"] = df["topology"].map(TOPOLOGY_NAMES)
+    df["tipo_choque"] = np.where(
+        df["shock_operational"] == 1, "caída operativa", "retiro de liquidez"
+    )
+    return df
+
+
+def contagion_window(df: pd.DataFrame, bins: int = 12) -> pd.DataFrame:
+    """Ventana de contagio: fracción media en impago contra grado medio."""
+    edges = np.linspace(df["mean_degree"].min(), df["mean_degree"].max(), bins + 1)
+    d = df.assign(k_bin=pd.cut(df["mean_degree"], edges, include_lowest=True))
+    g = (
+        d.groupby(["topologia", "k_bin"], observed=True)
+        .agg(
+            fraccion_impago=("fraction_defaulted", "mean"),
+            prob_colapso=("collapse", "mean"),
+            corridas=("collapse", "size"),
+        )
+        .reset_index()
+    )
+    g["grado_medio"] = g["k_bin"].map(lambda iv: iv.mid).astype(float)
+    return g.drop(columns="k_bin")
+
+
+# ---------------------------------------------------------------- predicción (Fase 6)
+
+
+def models_available() -> bool:
+    from finnet.config import models_dir
+    from finnet.ml.predict import models_available as _avail
+
+    return _avail(models_dir())
+
+
+def risk_context(W: np.ndarray, cfg: dict):
+    """Contexto de predicción con la misma simulación con que se generó el dataset."""
+    from finnet.ml.predict import make_context
+
+    sweep = load_config("sweep.yaml")
+    net_cfg = NetworkConfig.from_dict(cfg["network"], seed=int(cfg["seed"]))
+    params = make_params(W, cfg["model"], seed=int(cfg["seed"]))
+    return make_context(
+        W,
+        params,
+        net_cfg,
+        buffer=cfg["model"]["buffer"],
+        loss=cfg["model"]["loss"],
+        shock_size=sweep["nodes"]["shock_size"],
+        sim=sweep["simulation"],
+        seed=int(cfg["seed"]),
+    )
+
+
+def predict_risk(ctx, cfg: dict) -> pd.DataFrame:
+    from finnet.config import models_dir
+    from finnet.ml.predict import predict_risk as _predict
+
+    return _predict(ctx, models_dir(), omega_width=cfg["model"]["omega_width"])
+
+
+def explain(ctx, entity: int) -> pd.DataFrame:
+    from finnet.config import models_dir
+    from finnet.ml.predict import explain as _explain
+
+    return _explain(ctx, entity, models_dir())
+
+
+def verify(ctx, entity: int) -> float:
+    from finnet.ml.predict import verify as _verify
+
+    return _verify(ctx, entity)
+
+
+def model_report() -> pd.DataFrame | None:
+    from finnet.config import models_dir
+
+    path = models_dir() / "comparison.csv"
+    return pd.read_csv(path) if path.is_file() else None
