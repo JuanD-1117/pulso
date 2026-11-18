@@ -1,0 +1,101 @@
+% ===================================================================
+\section{Recorridos guiados}
+
+Tres recorridos cortos que muestran los resultados principales del proyecto.
+
+\subsection{De la estabilidad a la cascada (10 minutos)}
+\begin{enumerate}
+\item En \emph{Inicio}, presione \boton{Volver a la red por defecto}.
+\item En \emph{Diagnóstico}, deje $\alpha=1$ y mueva $\beta$ hasta $R\approx0.8$. El
+semáforo está en verde.
+\item Vaya a \emph{Simulador de choques}. Choque la entidad que más paga con un retiro de
+3 ciclos y colchón 0.5. Anote el porcentaje en impago.
+\item Vuelva a \emph{Diagnóstico}, suba $\beta$ hasta $R\approx1.2$ (semáforo rojo) y repita
+el choque. La cascada es mucho mayor.
+\item Suba el colchón a 1.2 y repita. La cascada se reduce: el colchón es la defensa de
+cada entidad.
+\end{enumerate}
+
+\subsection{La ventana de contagio (5 minutos)}
+\begin{enumerate}
+\item En \emph{Explorar escenarios}, deje todos los filtros abiertos.
+\item Observe la gráfica \emph{Ventana de contagio}: la fracción en impago es máxima con
+grado medio intermedio.
+\item Filtre solo choques de liquidez y luego solo operativos, y compare.
+\end{enumerate}
+
+\subsection{La sincronía como riesgo (10 minutos)}
+\begin{enumerate}
+\item En \emph{Cartera multicapa}, simule la cartera por defecto en el mundo con red y
+coloree por coherencia $\hat r$. Los formales aparecen verdes; los informales, amarillos o
+rojos.
+\item Revise los diagramas de caja de \emph{¿Quién está desincronizado?}.
+\item Simule la quiebra del mayor empleador y compare con el mundo nulo.
+\item En \emph{Riesgo crediticio híbrido}, lea las tres métricas superiores: la dinámica
+mejora a la red estática en el mundo con red y no mejora nada en el nulo.
+\item Abra el cliente con mayor riesgo oculto y lea sus barras SHAP.
+\end{enumerate}
+
+% ===================================================================
+\section{Solución de problemas}
+
+\begin{longtable}{p{0.36\textwidth}p{0.58\textwidth}}
+\toprule
+\textbf{Síntoma} & \textbf{Causa y solución} \\
+\midrule
+\endhead
+\emph{Red demasiado grande para simulación en vivo} & La red tiene más de 300 entidades.
+Redúzcala en \emph{Construir red} o use el \emph{Mapa de riesgo}. \\
+\emph{El grado medio debe ser menor que n - 1} & El grado pedido es imposible para ese
+tamaño. Baje el grado o suba el número de entidades. \\
+\emph{No hay dataset} (Explorar escenarios) & Ejecute \texttt{uv run pulso sweep
+configs/sweep.yaml}. \\
+\emph{No hay modelos entrenados} (Mapa de riesgo) & Ejecute \texttt{uv run pulso train
+configs/train.yaml}. \\
+\emph{No hay resultados del experimento} (páginas 8 y 9) & Ejecute \texttt{uv run pulso
+credit configs/credit.yaml}. \\
+La página no cambia al mover un control & Si el control está dentro de un formulario,
+presione su botón azul. Espere a que desaparezca el indicador de ejecución. \\
+Los valores volvieron a los iniciales & Se recargó la pestaña del navegador. El estado
+dura solo mientras la pestaña esté abierta. \\
+\emph{Port 8501 is already in use} & Otra aplicación usa el puerto. Agregue
+\texttt{--server.port=8502}. \\
+\emph{ModuleNotFoundError: No module named 'pulso'} (macOS) & macOS oculta un archivo de
+la instalación dentro de \texttt{\textasciitilde/Documents}. Ejecute
+\texttt{chflags -R nohidden .venv} o anteponga \texttt{PYTHONPATH=src} al comando. \\
+Una simulación tarda mucho & Redes grandes o tiempos largos. La primera vez cada
+cálculo tarda más; después queda guardado en memoria. \\
+\bottomrule
+\end{longtable}
+
+% ===================================================================
+\section{Glosario rápido}
+
+\begin{longtable}{p{0.24\textwidth}p{0.7\textwidth}}
+\toprule
+\textbf{Término} & \textbf{Significado} \\
+\midrule
+\endhead
+$\alpha$ & Velocidad con que una entidad corrige su déficit. \\
+$\beta$ & Intensidad del contagio de déficit entre pagador y receptor. \\
+$\gamma$ & Déficit que genera el ingreso desfasado. \\
+$\Delta$ & Dispersión de los ritmos naturales de pago. \\
+$\lambda$ & Déficit que genera perder un pagador. \\
+$\lambda_2$ & Conectividad algebraica de la red. \\
+$\sigma$ & Estabilidad: negativa, la red se recupera; positiva, amplifica. \\
+$\tau_\text{rec}$ & Tiempo de recuperación tras un choque. \\
+$D_0$ & Intensidad de la redistribución de liquidez. \\
+$K$ & Intensidad con que se ajustan los ritmos de pago. \\
+$R$ & Índice de amplificación; menor que 1, la red amortigua. \\
+$r$, $\hat r$ & Sincronía real y estimada desde transacciones. \\
+AUC & Capacidad de un modelo para ordenar a los que caen por encima de los que no. \\
+Colapso global & Impago del 30~\% o más de la red. \\
+DebtRank & Medida del daño sistémico de un choque. \\
+GCN & Red neuronal que trabaja sobre grafos. \\
+Mundo nulo & Control en que la red no transmite déficit. \\
+PD & Probabilidad de impago a 12 meses. \\
+SHAP & Método que explica cuánto aporta cada variable a una predicción. \\
+SMMLV & Salario mínimo mensual legal vigente. \\
+XGBoost & Modelo de aprendizaje automático basado en árboles de decisión. \\
+\bottomrule
+\end{longtable}

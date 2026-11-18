@@ -74,8 +74,7 @@ ningún experimento.
 \section{Regenerar esta documentación}
 \begin{codigo}[label=terminal]
 PYTHONPATH=src uv run python docs/latex/figuras.py   # figuras de la tarea 6
-cd docs/latex/guia         && latexmk -lualatex guia.tex
-cd docs/latex/presentacion && latexmk -lualatex presentacion.tex
+bash docs/latex/compilar.sh                          # todos los PDF -> docs/Presentaciones/
 \end{codigo}
 
 \section{Modificación de parámetros}
@@ -169,11 +168,12 @@ pulso/
 ├── models/                        modelos versionados; models/credit/v1
 ├── figures/                       figuras de las tareas 1–6
 └── docs/
-    ├── pulso_guia_completa.pdf   esta guía
-    ├── pulso_presentacion.pdf    la presentación
+    ├── Presentaciones/
+    │   ├── v1/                    esta guía y la presentación completa
+    │   └── v2/                    presentación breve, guion y manual de la app
     ├── bibliografia.md
     ├── diseno/                    especificación de diseño de la tarea 6
-    └── latex/                     fuentes de los PDF y generador de figuras
+    └── latex/                     fuentes de los PDF, figuras y compilar.sh
 \end{codigo}
 
 Archivos que \emph{no} se guardan en git porque se regeneran: el entorno

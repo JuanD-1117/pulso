@@ -1,0 +1,141 @@
+% Guion de exposición de PULSO (acompaña a la presentación v2).
+% Compilar desde docs/latex/guion:
+%   latexmk -lualatex guion.tex
+\documentclass[11pt,a4paper,oneside]{article}
+
+\usepackage{fontspec}
+\usepackage[spanish,es-noshorthands,es-tabla,es-nodecimaldot]{babel}
+\usepackage{amsmath,amssymb}
+\setmainfont{TeX Gyre Pagella}
+\setsansfont{TeX Gyre Heros}
+\setmonofont{DejaVu Sans Mono}[Scale=0.82]
+\usepackage[margin=2.3cm,headheight=14pt]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs,longtable,array}
+\usepackage{xcolor}
+\usepackage[most]{tcolorbox}
+\usepackage{enumitem}
+\usepackage{needspace}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage[hidelinks]{hyperref}
+
+\graphicspath{{../figuras/}{../../../figures/}}
+
+\definecolor{azul}{HTML}{2563A8}
+\definecolor{rojo}{HTML}{C2362B}
+\definecolor{verde}{HTML}{2F7D5B}
+\definecolor{ambar}{HTML}{E0A100}
+\definecolor{gris}{HTML}{5F6B77}
+
+\titleformat{\section}{\sffamily\bfseries\Large\color{azul}}{}{0em}{}
+\titleformat{\subsection}{\sffamily\bfseries\large}{}{0em}{}
+\titlespacing*{\subsection}{0pt}{1.4em}{0.5em}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\sffamily\color{gris}PULSO · guion de exposición}
+\fancyhead[R]{\small\sffamily\color{gris}\nouppercase{\leftmark}}
+\fancyfoot[C]{\small\thepage}
+\renewcommand{\headrulewidth}{0.3pt}
+
+\setlength{\parskip}{0.5em}
+\setlength{\parindent}{0pt}
+\setlist{itemsep=0.15em,topsep=0.25em}
+\setlist[description]{font=\normalfont\bfseries,leftmargin=1.2em,labelindent=0em}
+
+% Encabezado de cada diapositiva: número, título y tiempo sugerido.
+\newcommand{\diapo}[3]{%
+  \par\needspace{12\baselineskip}\vspace{0.8em}%
+  \begin{tcolorbox}[colback=azul!8,colframe=azul,boxrule=0.6pt,arc=2pt,
+    left=6pt,right=6pt,top=3pt,bottom=3pt,fontupper=\sffamily]
+  \textbf{Diapositiva #1} \quad #2 \hfill {\small\color{gris}#3}
+  \end{tcolorbox}\nopagebreak}
+% Bloques del guion
+\newtcolorbox{decir}{colback=white,colframe=gris!40,boxrule=0.4pt,arc=2pt,
+  left=6pt,right=6pt,before upper={\setlength{\parskip}{0.55em}},title={\sffamily\small Qué decir},fonttitle=\color{black},
+  coltitle=black,colbacktitle=gris!12,breakable}
+\newtcolorbox{terminos}{colback=verde!5,colframe=verde,boxrule=0.5pt,arc=2pt,
+  left=6pt,right=6pt,title={\sffamily\small Variables y términos},
+  fonttitle=\color{black},colbacktitle=verde!15,breakable}
+\newtcolorbox{preguntas}{colback=ambar!7,colframe=ambar!80!black,boxrule=0.5pt,
+  arc=2pt,left=6pt,right=6pt,title={\sffamily\small Si preguntan},
+  fonttitle=\color{black},colbacktitle=ambar!20,breakable}
+\newcommand{\pr}[2]{\textbf{P.} \emph{#1}\par\textbf{R.} #2\par\smallskip}
+
+\hypersetup{pdftitle={PULSO: guion de exposición},pdfauthor={Juan Diego Martínez Ayala}}
+
+\begin{document}
+
+\begin{titlepage}
+\centering
+\vspace*{3cm}
+{\sffamily\bfseries\Huge\color{azul} PULSO\par}
+\vspace{0.2cm}
+{\sffamily\large\color{gris} Pagos, Umbrales, Liquidez y Sincronización Operativa\par}
+\vspace{0.9cm}
+{\sffamily\LARGE Guion de exposición\par}
+\vspace{0.4cm}
+{\large Texto de apoyo para cada diapositiva de la presentación (versión 2),\\
+con la definición de cada variable, modelo, método y sigla\par}
+\vfill
+{\large Juan Diego Martínez Ayala\par}
+{\normalsize Dirección: Jhon Hernán Díaz Forero\par}
+{\normalsize Semillero de Modelamiento de Sistemas Complejos y Física Computacional\par}
+\vspace{0.4cm}
+{\normalsize Noviembre de 2026 · software v3.1.0\par}
+\end{titlepage}
+
+\tableofcontents
+\clearpage
+
+\section*{Cómo usar este guion}
+\addcontentsline{toc}{section}{Cómo usar este guion}
+
+La presentación (\texttt{pulso\_presentacion\_v2.pdf}) muestra pocos elementos por
+diapositiva para respetar el tiempo de exposición. Este guion contiene lo que la
+diapositiva no dice. Para cada diapositiva incluye:
+
+\begin{description}
+\item[Qué decir.] El texto de la exposición. Está escrito para decirse en voz alta y se
+puede leer o parafrasear.
+\item[Variables y términos.] La definición de cada símbolo de las ecuaciones y de cada
+modelo, método o sigla que aparece en la diapositiva. Sirve para responder con
+precisión.
+\item[Si preguntan.] Preguntas probables del jurado o del público y una respuesta
+breve y defendible.
+\end{description}
+
+El número de cada diapositiva es el que aparece en la esquina inferior derecha de la
+presentación. Las páginas separadoras de sección no tienen número. Los tiempos
+sugeridos suman unos 30 minutos.
+
+\begin{center}
+\small
+\begin{tabular}{lll}
+\toprule
+Sección & Diapositivas & Tiempo \\
+\midrule
+Planteamiento & 1–5 & 5 min \\
+Modelo unificado & 6 & 2 min \\
+Tareas 1 a 4 & 7–10 & 5 min \\
+Tarea 5 & 11–12 & 2.5 min \\
+Tarea 6 & 13–17 & 6 min \\
+Resultados & 18–25 & 7 min \\
+Implementación & 26–28 & 1.5 min \\
+Conclusiones & 29–31 & 1.5 min \\
+\midrule
+Total & & 30.5 min \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\clearpage
+
+\input{guion_planteamiento}
+\input{guion_tareas}
+\input{guion_tarea6}
+\input{guion_resultados}
+\input{guion_glosario}
+
+\end{document}

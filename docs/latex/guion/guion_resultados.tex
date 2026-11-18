@@ -1,0 +1,324 @@
+% ===================================================================
+\section{Resultados}
+
+\diapo{18}{Validación numérica}{45 s}
+\begin{decir}
+Antes de interpretar resultados hay que confiar en el código. Cada componente se
+comparó con un resultado conocido.
+
+La integración coincide con la solución exacta del sistema lineal con error menor que
+$10^{-6}$. La redistribución conserva el déficit total con precisión de $10^{-10}$. La
+sincronización reproduce el valor teórico de Kuramoto. El modelo multicapa con una sola
+capa coincide exactamente con la versión anterior. Y la coherencia estimada desde
+transacciones se correlaciona por encima de 0.8 con la real.
+
+El conjunto de datos se regenera idéntico bit a bit. En total el proyecto tiene 127
+pruebas automáticas, y todas pasan.
+\end{decir}
+\begin{terminos}
+\begin{description}
+\item[RK4.] Método de Runge–Kutta de cuarto orden: evalúa la derivada cuatro veces por
+paso y combina los resultados. Error global proporcional a $\Delta t^4$. Integrador de
+las tareas 1–5.
+\item[$e^{Mt}x_0$.] Solución exacta de $\dot x=Mx$ con condición inicial $x_0$; $e^{Mt}$
+es la exponencial de una matriz.
+\item[Varianza de Ornstein–Uhlenbeck.] Con solo $-\alpha x+\sigma\xi$, la varianza
+estacionaria es $\sigma^2/(2\alpha)$. La simulación la reproduce dentro del 10~\% y
+valida el ruido.
+\item[Bit a bit.] Dos ejecuciones producen archivos idénticos byte por byte.
+\item[Prueba automática.] Función que ejecuta una parte del código y comprueba su
+resultado; se corre con \texttt{pytest}.
+\end{description}
+\end{terminos}
+
+\diapo{19}{Carteras simuladas}{45 s}
+\begin{decir}
+Estas son las carteras del experimento. En el régimen nulo hay unos 40\,000 clientes
+modelados, con una tasa de impago a doce meses de 5.9~\%. En el régimen con red hay unos
+37\,000, porque más clientes caen durante la observación, y la tasa de impago sube a
+9.6~\%. La diferencia es el efecto de la red. El índice de amplificación está entre 0.09
+y 0.17: la red amortigua, no está cerca de la inestabilidad.
+
+La figura muestra la coherencia estimada por grupo. Los empleados formales están
+sincronizados con su nómina. Los informales reciben ingresos de pagadores con ritmos
+distintos y su coherencia está cerca de cero. En el régimen con red, los impagos por
+umbral, 2\,335, superan a los idiosincráticos, 1\,264.
+\end{decir}
+\begin{terminos}
+\begin{description}
+\item[Clientes modelados.] Clientes vivos al final de la observación, sumados en las 20
+carteras.
+\item[Diagrama de caja.] La caja va del primer al tercer cuartil; la línea interior es la
+mediana; los bigotes muestran la dispersión.
+\item[Impago por umbral.] Causado por la dinámica: el déficit superó el colchón.
+\item[Impago idiosincrático.] Programado por la PD propia, independiente de la red.
+\end{description}
+\end{terminos}
+
+\diapo{20}{Desempeño predictivo por nivel}{1 min}
+\begin{decir}
+Este es el resultado principal. En el régimen con red, con regresión logística, el AUC
+pasa de 0.769 con el score clásico a 0.784 al agregar la red estática, y a 0.795 al
+agregar la dinámica. Con XGBoost el patrón es el mismo y llega también a 0.795. Las
+demás métricas mejoran en la misma dirección: la PR-AUC, que es la métrica relevante
+cuando los impagos son pocos, sube de 0.277 a 0.323.
+
+En el régimen nulo, en la parte izquierda de la figura, el AUC es más alto, 0.81, pero
+los tres niveles son iguales. Es más alto porque allí casi todos los impagos dependen
+solo de la probabilidad propia de cada cliente, que es justamente lo que mide el score
+clásico. Los tres niveles son iguales porque la red no tiene nada que aportar.
+\end{decir}
+\begin{terminos}
+\begin{description}
+\item[Niveles 1, 2 y 3.] Clásico, clásico más red estática, y clásico más red estática
+más red dinámica.
+\item[PR-AUC.] Promedio de la precisión sobre todos los niveles de exhaustividad. Un
+modelo al azar obtiene la tasa de impago, aquí cerca de 0.096.
+\item[Precisión.] De los clientes marcados como riesgosos, fracción que cae.
+\item[Exhaustividad (\emph{recall}).] De los clientes que caen, fracción marcada como
+riesgosa.
+\item[KS.] Estadístico de Kolmogorov–Smirnov: máxima distancia entre las distribuciones
+acumuladas del score de quienes caen y de quienes no. Es una métrica habitual en banca.
+\item[Brier.] Error cuadrático medio de la probabilidad, $\frac1n\sum(p_i-y_i)^2$.
+Menor es mejor.
+\item[ECE.] Error de calibración esperado: diferencia media entre la probabilidad
+predicha y la frecuencia observada, por tramos de probabilidad.
+\item[Fuera de muestra.] Métricas calculadas sobre carteras que el modelo no vio.
+\end{description}
+\end{terminos}
+\begin{preguntas}
+\pr{¿Por qué el AUC del régimen nulo es mayor?}{En el nulo el impago depende casi solo
+de la PD de cada cliente, que es función de las variables clásicas. En el régimen con
+red, parte del impago viene de la red y el score clásico no lo ve. Por eso el score
+clásico pierde AUC con red y las variables de red recuperan una parte.}
+\end{preguntas}
+
+\diapo{21}{Mejoras pareadas y control nulo}{1 min}
+\begin{decir}
+Para saber si las diferencias son reales, comparamos los niveles dentro de cada
+partición. La figura muestra cada mejora con su intervalo de confianza del 95~\%; en
+verde, las que están por encima de cero.
+
+En el régimen con red, la dinámica mejora a la red estática en 0.011 de AUC con
+regresión logística, con intervalo entre 0.006 y 0.016, y en 0.014 con XGBoost. La
+mejora es positiva en las cinco particiones. El intervalo no incluye el cero.
+
+En el régimen nulo, la mejora está entre $-0.002$ y $+0.001$. Este es el control: cuando
+el mecanismo no existe, el método no encuentra nada. Eso descarta que la mejora venga de
+una fuga de información o de que el modelo tenga más variables.
+\end{decir}
+\begin{terminos}
+\begin{description}
+\item[$\Delta\mathrm{AUC}$.] AUC del nivel superior menos AUC del nivel de comparación,
+en la misma partición.
+\item[Gráfico de bosque.] Cada fila es una comparación: el punto es la media y la barra
+el intervalo de confianza.
+\end{description}
+\end{terminos}
+\begin{preguntas}
+\pr{¿Una mejora de 0.01 en AUC es relevante?}{En riesgo de crédito sí. El Gini, que usan
+los bancos, es $2\,\mathrm{AUC}-1$, así que la mejora es de 0.022 puntos de Gini sobre un
+modelo que ya incluye la red estática. Sobre el score clásico, la mejora total con
+XGBoost es de 0.031 de AUC. Además, el valor depende de parámetros ilustrativos: lo que
+el experimento establece es que la mejora existe, es estable y se anula sin el
+mecanismo.}
+\pr{¿Más variables no siempre mejoran el AUC?}{No fuera de muestra: variables sin
+información agregan ruido. El régimen nulo lo muestra: con las mismas variables, la
+mejora es cero.}
+\end{preguntas}
+
+\diapo{22}{Respuesta a la intensidad del mecanismo}{1 min}
+\begin{decir}
+Este experimento adicional responde de dónde viene la mejora. Variamos $\gamma$, el
+parámetro que convierte el desfase en déficit, y dejamos todo lo demás igual.
+
+Con $\gamma$ igual a cero, el contagio y la pérdida de ingreso siguen activos, y aun así la
+dinámica no aporta nada. La mejora aparece solo cuando el desfase genera déficit, y crece
+de manera monótona: 0.001, 0.008 y 0.029 de AUC con $\gamma$ igual a 0.25, 0.5 y 1.
+
+Conclusión: la información que aportan las variables dinámicas proviene de la
+desincronización, no del contagio. Es una relación dosis-respuesta: más mecanismo, más
+señal.
+\end{decir}
+\begin{terminos}
+\begin{description}
+\item[Sensibilidad.] Variación del resultado ante cambios en un parámetro.
+\item[Diseño del experimento.] Regresión logística, 10 carteras por valor de $\gamma$,
+misma validación; barras de error con IC 95~\%.
+\item[Monótona.] Que siempre crece (o siempre decrece) al aumentar el parámetro.
+\item[Dosis-respuesta.] Término de epidemiología: el efecto crece con la intensidad de la
+causa. Es un criterio clásico para atribuir un efecto a una causa.
+\end{description}
+\end{terminos}
+
+\diapo{23}{Interpretación y relación sincronía--impago}{1 min}
+\begin{decir}
+A la izquierda, la importancia de cada variable en el modelo híbrido. Las clásicas,
+en gris, siguen siendo las más importantes: endeudamiento, ingreso y moras. Las de red
+estática, en azul, y las dinámicas, en rojo, aportan información adicional. Entre las
+dinámicas destacan la variabilidad de la coherencia, su nivel medio y el desfase. El
+modelo híbrido complementa al score; no lo reemplaza.
+
+A la derecha, la tasa de impago según la coherencia estimada. En el régimen con red, el
+impago pasa de 4.4~\% en los clientes bien sincronizados a entre 11 y 14~\% en los
+desincronizados. En el régimen nulo también hay una diferencia, más pequeña, porque los
+informales son más riesgosos y además están menos sincronizados. Por eso esta gráfica
+por sí sola no prueba nada: la prueba es la comparación de modelos de las diapositivas
+anteriores.
+\end{decir}
+\begin{terminos}
+\begin{description}
+\item[SHAP.] \emph{SHapley Additive exPlanations} (Lundberg y Lee, 2017). Reparte la
+predicción de un cliente entre sus variables usando los valores de Shapley de la teoría
+de juegos: la contribución de cada variable promediada sobre todos los órdenes en que se
+pueden agregar las variables. La suma de las contribuciones más un valor base da la
+predicción.
+\item[Importancia media $|\mathrm{SHAP}|$.] Promedio sobre los clientes del valor
+absoluto de la contribución de cada variable, en unidades de log-odds.
+\item[Log-odds.] $\ln\frac{p}{1-p}$, la escala en que el modelo suma contribuciones.
+\item[Variable de confusión.] Variable que influye a la vez en la causa aparente y en el
+efecto. Aquí, la informalidad.
+\end{description}
+\end{terminos}
+\begin{preguntas}
+\pr{¿El modelo está calibrado?}{Sí. En la curva de calibración ambos modelos siguen la
+diagonal y el híbrido separa mejor el decil de mayor riesgo: 35~\% de impago observado
+frente a 30~\% del clásico. La figura está en la guía completa y en la presentación v1.}
+\end{preguntas}
+
+\diapo{24}{Escenario: quiebra de un empleador}{1 min}
+\begin{decir}
+El modelo también sirve para pruebas de estrés. Simulamos la quiebra del mayor empleador
+de la cartera, con 74 empleados, en el primer mes, y promediamos cinco semillas.
+
+En el régimen con red, el 12~\% de los empleados cae de inmediato, porque pierde todo su
+salario de un momento a otro. A los seis meses el impago acumulado de esos empleados es
+13~\%, frente a 7~\% sin quiebra. En el régimen nulo la quiebra no tiene efecto, como
+corresponde.
+
+La aplicación directa para un banco es medir cuánto riesgo concentra en los empleados de
+una misma empresa.
+\end{decir}
+\begin{terminos}
+\begin{description}
+\item[Prueba de estrés.] Simulación de un escenario adverso extremo para medir pérdidas.
+\item[Choque de quiebra.] Impago forzado de la firma en $t_0=1$ mes: deja de pagar
+nómina, proveedores y cuota.
+\item[Semilla.] Número que inicializa el generador aleatorio; misma semilla, mismo
+resultado.
+\end{description}
+\end{terminos}
+
+\diapo{25}{Alcance e interpretación}{45 s}
+\begin{decir}
+Para cerrar los resultados, separo lo que el diseño respalda de lo que no.
+
+Respalda tres afirmaciones. Si el mecanismo existe, es detectable con las transacciones
+de que ya dispone un banco. La dinámica aporta información que la red estática no tiene.
+Y el aporte se anula sin el mecanismo y crece con su intensidad.
+
+No respalda que el mecanismo exista en una cartera real: los datos son sintéticos y los
+parámetros ilustrativos. Además, supusimos que el banco ve toda la red de sus clientes.
+\end{decir}
+\begin{preguntas}
+\pr{¿Qué haría falta para usarlo en un banco?}{Aplicar el mismo pipeline a una cartera
+real anonimizada, bajo la Ley 1581 de 2012 de protección de datos personales. El código
+ya recibe un registro de transacciones con la misma estructura.}
+\end{preguntas}
+
+% ===================================================================
+\section{Implementación}
+
+\diapo{26}{Arquitectura y reproducibilidad}{30 s}
+\begin{decir}
+El software está organizado en cuatro capas. La interfaz es una aplicación web. La capa
+de servicio prepara las tablas que la interfaz muestra. El núcleo contiene el modelo y los
+algoritmos. La configuración y los datos están separados del código. Cada capa solo
+depende de la de abajo.
+
+Todos los parámetros están en archivos de configuración, las semillas son explícitas, las
+tablas tienen esquemas validados, hay 127 pruebas, integración continua y una imagen de
+Docker que ejecuta la aplicación igual en cualquier equipo.
+\end{decir}
+\begin{terminos}
+\begin{description}
+\item[Streamlit.] Biblioteca de Python que convierte un programa en una aplicación web
+interactiva.
+\item[YAML.] Formato de texto para configuración, legible por personas.
+\item[Esquema validado.] Lista de columnas, tipos y rangos que toda tabla debe cumplir;
+si no se cumple, el programa se detiene.
+\item[Integración continua.] Ejecución automática de pruebas en cada cambio del código
+(GitHub Actions).
+\item[Docker.] Herramienta que empaqueta el programa con todas sus dependencias en una
+imagen que se ejecuta igual en cualquier computador.
+\end{description}
+\end{terminos}
+
+\diapo{27}{Flujo de datos de la tarea 6}{30 s}
+\begin{decir}
+Este es el recorrido completo de la tarea 6: generar la cartera, simular el modelo,
+producir las transacciones, estimar la red y las fases, construir las variables, validar
+y comparar los modelos. Un solo comando ejecuta todo el flujo en unos 20 segundos.
+\end{decir}
+\begin{terminos}
+\begin{description}
+\item[\texttt{uv}.] Gestor de entornos y dependencias de Python.
+\item[\texttt{pulso credit}.] Comando del proyecto que ejecuta el experimento de la
+tarea 6 y guarda resultados y modelos finales.
+\end{description}
+\end{terminos}
+
+\diapo{28}{Aplicación web}{30 s}
+\begin{decir}
+Todo lo presentado se puede explorar en la aplicación. A la izquierda, el simulador de
+choques de las tareas 1 a 4: se elige una entidad, se aplica un choque y se ve la
+cascada. A la derecha, la comparación de los tres niveles de la tarea 6 y la
+probabilidad de impago por cliente, con su explicación. El manual de la aplicación
+describe cada página.
+\end{decir}
+
+% ===================================================================
+\section{Conclusiones}
+
+\diapo{29}{Conclusiones}{1 min}
+\begin{decir}
+Primero, un único modelo dinámico integra contagio, redistribución, sincronización y
+cascadas, y cada componente se valida contra resultados analíticos.
+
+Segundo, el índice $R$ y el espectro del sistema dicen cuándo la red amortigua y cuándo
+amplifica un choque.
+
+Tercero, el aprendizaje automático predice el colapso del sistema con AUC de 0.98 en
+milisegundos.
+
+Cuarto, y es el resultado central: en una cartera multicapa, la sincronización de los
+ciclos de pago, estimada solo con transacciones, mejora la predicción del impago sobre la
+red estática. No tiene efecto en el control nulo y crece con la intensidad del
+mecanismo.
+
+Quinto, el software es reproducible, está probado y funciona como aplicación web.
+\end{decir}
+
+\diapo{30}{Trabajo futuro}{30 s}
+\begin{decir}
+El paso más importante es la validación con datos reales de un banco, anonimizados.
+También queda pendiente una revisión sistemática de la literatura. En el modelo, faltan
+las fechas de cuota como ritmo impuesto desde fuera, la retroalimentación del déficit
+sobre el ritmo de pago, y el caso en que un banco solo ve a sus clientes, frente al
+operador de Bre-B, que ve la red completa.
+\end{decir}
+\begin{terminos}
+\begin{description}
+\item[Revisión sistemática.] Búsqueda bibliográfica con protocolo explícito en bases como
+Scopus y Web of Science.
+\item[Forzamiento externo.] Ritmo impuesto desde fuera del sistema, por ejemplo la fecha
+fija de la cuota.
+\item[Observabilidad parcial.] Situación en la que solo se ve una parte de la red.
+\end{description}
+\end{terminos}
+
+\diapo{31}{Referencias principales}{15 s}
+\begin{decir}
+Estas son las referencias principales. La bibliografía completa está en el repositorio.
+Muchas gracias; quedo atento a sus preguntas.
+\end{decir}

@@ -1,0 +1,95 @@
+% ===================================================================
+\section{Preguntas generales para la defensa}
+
+Estas preguntas no dependen de una diapositiva concreta.
+
+\begin{preguntas}
+\pr{¿Cuál es la contribución original del proyecto?}{Mostrar, con un experimento
+controlado, que la sincronización de los ciclos de pago, estimada solo con
+transacciones, contiene información sobre el impago que no está en el score clásico ni
+en la estructura estática de la red. Incluye el método para estimarla (fase por eventos y
+coherencia local) y un control nulo que descarta artefactos.}
+\pr{¿Por qué un físico trabaja en riesgo de crédito?}{Porque las herramientas son de la
+física: sistemas dinámicos, análisis espectral, osciladores acoplados, transiciones de
+fase y avalanchas. La red de pagos es un sistema complejo y estas herramientas permiten
+responder cuándo amplifica y cómo se sincroniza.}
+\pr{¿El resultado es causal o solo predictivo?}{En el mundo simulado la causa se conoce
+porque la pusimos: el desfase genera déficit. El experimento de $\gamma$ muestra que la
+señal depende de esa causa. Con datos reales, el método sería predictivo; establecer
+causalidad requeriría otro diseño.}
+\pr{¿Cómo se evitó la fuga de información?}{De cuatro formas. Las variables solo usan
+transacciones anteriores al fin de la observación, y el código rechaza cualquier pago
+posterior. Las columnas de verdad del modelo están vetadas por esquema. La validación
+separa carteras completas. Y el control nulo muestra mejora cero.}
+\pr{¿Por qué no se usó una GCN en la tarea 6?}{Las variables de red ya resumen la
+información relevante de los vecinos de cada cliente, y la pregunta es qué tipo de
+información aporta. Comparar niveles de variables con el mismo modelo responde esa
+pregunta de forma más limpia que un modelo de grafo de caja negra.}
+\pr{¿Qué pasa si los parámetros son otros?}{El tamaño de la mejora cambia: crece con
+$\gamma$ y se anula sin él. Lo que se mantiene es el patrón: sin mecanismo no hay
+mejora, con mecanismo sí. Los parámetros están en \texttt{configs/credit.yaml} y el
+experimento completo se vuelve a correr en unos 20 segundos.}
+\pr{¿Funciona si el banco no ve toda la red?}{No se probó. Un banco ve solo a sus
+clientes y los pagos que pasan por él. Es parte del trabajo futuro: el operador de un
+sistema interoperable como Bre-B tendría la vista completa.}
+\pr{¿Cuánto tarda todo?}{Las pruebas rápidas, unos 10 segundos. El experimento de la
+tarea 6, unos 20 segundos. El conjunto de datos de la tarea 5, unos 20 minutos en ocho
+núcleos.}
+\end{preguntas}
+
+% ===================================================================
+\section{Glosario de siglas, modelos y métodos}
+
+\begin{longtable}{p{0.2\textwidth}p{0.74\textwidth}}
+\toprule
+\textbf{Término} & \textbf{Significado} \\
+\midrule
+\endhead
+AUC & Área bajo la curva ROC. Probabilidad de que un positivo al azar reciba más riesgo
+que un negativo al azar. \\
+BA & Barabási–Albert: red con conexión preferencial y nodos concentradores. \\
+Bre-B & Sistema de pagos inmediatos del Banco de la República de Colombia. \\
+Brier & Error cuadrático medio de una probabilidad predicha. \\
+DANE & Departamento Administrativo Nacional de Estadística. \\
+DebtRank & Medida de propagación de estrés en redes financieras (Battiston et al.,
+2012). \\
+ECE & Error de calibración esperado. \\
+Eisenberg–Noe & Modelo de liquidación de obligaciones en una red (2001). \\
+ER & Erdős–Rényi: red aleatoria con probabilidad de conexión uniforme. \\
+Euler–Maruyama & Integrador de ecuaciones diferenciales con ruido. \\
+Fiedler & Vector propio de la conectividad algebraica $\lambda_2$; separa comunidades. \\
+GCN & Red neuronal convolucional sobre grafos. \\
+Gini & $2\,\mathrm{AUC}-1$. Métrica de discriminación usada en banca. \\
+GroupKFold & Validación cruzada que mantiene cada grupo en una sola partición. \\
+HHI & Índice de Herfindahl–Hirschman: concentración, suma de participaciones al
+cuadrado. \\
+IC 95~\% & Intervalo de confianza del 95~\%. \\
+Kuramoto & Modelo de osciladores de fase acoplados. \\
+KS & Estadístico de Kolmogorov–Smirnov: máxima separación entre distribuciones
+acumuladas. \\
+Laplaciano & Matriz $D-W$ que describe flujos que se conservan en una red. \\
+Lorentz & Distribución de Cauchy; da la solución exacta de Kuramoto en la red
+completa. \\
+NP & Núcleo-periferia. \\
+Parquet & Formato de archivo para tablas, comprimido y con tipos fijos. \\
+Pareto & Distribución de cola pesada: pocos valores muy grandes. \\
+PD & Probabilidad de incumplimiento a un horizonte (aquí 12 meses). \\
+Perron–Frobenius & Teorema sobre el valor propio dominante de matrices no negativas. \\
+PINN & Red neuronal informada por la física. \\
+PR-AUC & Área bajo la curva precisión-exhaustividad. \\
+PageRank & Centralidad por recorridos aleatorios sobre la red. \\
+$R$ & Índice de amplificación $\beta\rho(W)/\alpha$. \\
+$r$, $r_i$ & Parámetro de orden global y coherencia local. \\
+RK4 & Runge–Kutta de cuarto orden. \\
+ROC & Curva de tasa de verdaderos positivos contra falsos positivos. \\
+SBM & Modelo de bloques estocástico: la probabilidad de conexión depende del grupo de
+cada nodo. Se usa en las transferencias. \\
+SeedSequence & Generador de semillas independientes de NumPy. \\
+SHAP & Explicación aditiva de predicciones basada en valores de Shapley. \\
+SMMLV & Salario mínimo mensual legal vigente. \\
+Spearman & Correlación entre rangos. \\
+Watts & Modelo de cascadas por umbral fraccional (2002). \\
+XGBoost & Árboles de decisión con \emph{gradient boosting}. \\
+YAML & Formato de texto para archivos de configuración. \\
+\bottomrule
+\end{longtable}

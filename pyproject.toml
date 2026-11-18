@@ -1,6 +1,6 @@
 [project]
 name = "pulso"
-version = "3.0.1"
+version = "3.1.0"
 description = "Redes complejas, sincronización y riesgo sistémico y crediticio en sistemas de pagos digitales: del modelo físico a la aplicación."
 readme = "README.md"
 authors = [

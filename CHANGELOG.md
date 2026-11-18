@@ -3,6 +3,22 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es/1.1.0/); versionado
 semántico.
 
+## [3.1.0] · 2026-11-18 · Presentación v2, guion y manual de la aplicación
+
+### Añadido
+- Presentación v2 para exposición (31 diapositivas y cierre, unos 30 minutos), con el
+  detalle trasladado al guion.
+- Guion de la exposición: texto de cada diapositiva, definición de cada variable de las
+  ecuaciones y de cada modelo, método y sigla, preguntas probables con respuesta y
+  glosario.
+- Manual de la aplicación para usuarios nuevos: cada página, control y resultado, con
+  capturas actuales, recorridos guiados y solución de problemas.
+- `docs/latex/compilar.sh`: compila todos los documentos y copia los PDF.
+
+### Cambiado
+- Los PDF pasan a `docs/Presentaciones/v1/` (guía y presentación completas) y
+  `docs/Presentaciones/v2/` (presentación breve, guion y manual).
+
 ## [3.0.1] · 2026-11-18 · Presentación completa
 
 ### Cambiado
