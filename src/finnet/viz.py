@@ -247,8 +247,9 @@ def _play_button(duration: int = 120) -> dict:
     }
 
 
-def _slider(labels: list[str], prefix: str) -> dict:
+def _slider(labels: list[str], prefix: str, active: int = 0) -> dict:
     return {
+        "active": active,
         "currentvalue": {"prefix": prefix},
         "pad": {"t": 30},
         "x": 0.12,
@@ -302,7 +303,8 @@ def cascade_animation(
         )
 
     fig = go.Figure(
-        data=[edges, nodes_at(frames_idx[0])],
+        # Se muestra el estado final; ▶ reproduce la cascada desde t = 0.
+        data=[edges, nodes_at(frames_idx[-1])],
         frames=[
             go.Frame(data=[edges, nodes_at(k)], name=f"{t[k]:.2f}") for k in frames_idx
         ],
@@ -313,7 +315,11 @@ def cascade_animation(
         xaxis={"visible": False},
         yaxis={"visible": False, "scaleanchor": "x"},
         updatemenus=[_play_button(150)],
-        sliders=[_slider([f"{t[k]:.2f}" for k in frames_idx], "t = ")],
+        sliders=[
+            _slider(
+                [f"{t[k]:.2f}" for k in frames_idx], "t = ", active=len(frames_idx) - 1
+            )
+        ],
         plot_bgcolor="rgba(0,0,0,0)",
     )
     return fig
