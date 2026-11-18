@@ -1,0 +1,44 @@
+# Valores por defecto de la app y del servicio. Ningún número del modelo vive en el código.
+seed: 42
+
+network:
+  topology: core_periphery   # erdos_renyi | barabasi_albert | core_periphery
+  n: 80
+  mean_degree: 6.0           # grado medio de entrada (= de salida) esperado
+  amount_sigma: 0.8          # dispersión lognormal de montos y tamaños
+  core_frac: 0.10            # fracción de nodos en el núcleo
+  p_core: 0.8                # densidad dentro del núcleo
+  periphery_share: 0.1       # fracción de aristas restantes entre periferia
+
+model:
+  alpha: 1.0                 # 1/ciclo
+  beta: 0.10                 # 1/(ciclo * pago medio)
+  R: 0.8                     # si no es null, fija β = R α / ρ(W)
+  D0: 0.0
+  K: 0.0
+  gamma: 0.0
+  omega_mean: 6.283185307    # 2*pi: un ciclo intradía por día hábil
+  omega_width: 0.5           # ancho de Lorentz de los ritmos naturales
+  buffer: 0.5                # c: colchón como múltiplo de pagos salientes por ciclo
+  buffer_dispersion: 0.2     # sigma lognormal del colchón
+  loss: 1.0                  # lambda: déficit que crea perder el 100 % del ingreso
+
+simulation:
+  dt: 0.01
+  t_end: 20.0
+  save_every: 5
+
+shock:
+  kind: liquidity            # liquidity | operational
+  size: 2.0                  # en ciclos de pagos salientes de la entidad chocada
+  t0: 1.0
+  duration: 3.0              # solo caída operativa (T ciclos)
+
+metrics:
+  collapse_fraction: 0.3     # fracción en impago para declarar colapso global
+  importance_seeds: 2
+  importance_dt: 0.02
+  importance_t_end: 15.0
+
+app:
+  max_live_entities: 300
