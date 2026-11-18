@@ -1,0 +1,22 @@
+# PINN para el problema inverso (Fase 6, opcional). Notebook 06 y tests/test_fase6.py.
+seed: 0
+tolerance: 0.30            # error relativo máximo aceptado por parámetro (fijado antes de la prueba)
+
+data:                      # trayectoria sintética con parámetros conocidos
+  network: {topology: erdos_renyi, n: 8, mean_degree: 3.0, amount_sigma: 0.5,
+            core_frac: 0.1, p_core: 0.8, periphery_share: 0.1, seed: 4}
+  params_true: {alpha: 0.8, beta: 0.15, gamma: 0.3, K: 1.5}
+  omega_mean: 1.0
+  omega_std: 1.0
+  x0_scale: 5.0            # déficit inicial grande: el transitorio es lo que identifica α y β
+  t_end: 3.0
+  dt: 0.01
+  save_every: 5
+
+pinn:
+  hidden: 64
+  layers: 3
+  epochs: 6000
+  lr: 0.003
+  physics_weight: 0.05
+  n_collocation: 256
