@@ -1,0 +1,336 @@
+{
+  "version": "v1",
+  "created": "2026-11-18T01:35:30",
+  "trained_on": "regime=red",
+  "n_rows": 37431,
+  "n_worlds": 20,
+  "base_rate": 0.09615024979295236,
+  "levels": {
+    "clasico": [
+      "is_person",
+      "log_income",
+      "debt_ratio",
+      "age_years",
+      "tenure_months",
+      "n_products",
+      "past_due_12m",
+      "formal",
+      "log_employees"
+    ],
+    "red_estatica": [
+      "is_person",
+      "log_income",
+      "debt_ratio",
+      "age_years",
+      "tenure_months",
+      "n_products",
+      "past_due_12m",
+      "formal",
+      "log_employees",
+      "net_income_share",
+      "in_share_N",
+      "in_share_S",
+      "in_share_T",
+      "out_share_S",
+      "out_share_T",
+      "n_payers",
+      "n_payees",
+      "income_hhi",
+      "pagerank",
+      "employer_log_size",
+      "employer_debt_ratio",
+      "employer_past_due",
+      "payer_past_due",
+      "payer_debt_ratio"
+    ],
+    "red_dinamica": [
+      "is_person",
+      "log_income",
+      "debt_ratio",
+      "age_years",
+      "tenure_months",
+      "n_products",
+      "past_due_12m",
+      "formal",
+      "log_employees",
+      "net_income_share",
+      "in_share_N",
+      "in_share_S",
+      "in_share_T",
+      "out_share_S",
+      "out_share_T",
+      "n_payers",
+      "n_payees",
+      "income_hhi",
+      "pagerank",
+      "employer_log_size",
+      "employer_debt_ratio",
+      "employer_past_due",
+      "payer_past_due",
+      "payer_debt_ratio",
+      "r_mean",
+      "r_std",
+      "r_low_frac",
+      "phase_lag_abs",
+      "freq_mismatch",
+      "period_cv",
+      "payer_period_cv",
+      "income_lost_frac"
+    ]
+  },
+  "models": [
+    "logistic",
+    "xgboost"
+  ],
+  "cv_summary": [
+    {
+      "regime": "nulo",
+      "model": "logistic",
+      "level": "clasico",
+      "auc_mean": 0.8096727508,
+      "auc_std": 0.0111639404,
+      "pr_auc_mean": 0.2551887271,
+      "pr_auc_std": 0.0118365308,
+      "ks_mean": 0.4871009673,
+      "ks_std": 0.0252207049,
+      "brier_mean": 0.0497288737,
+      "brier_std": 0.0013523473,
+      "ece_mean": 0.005603636,
+      "ece_std": 0.0011214217
+    },
+    {
+      "regime": "nulo",
+      "model": "logistic",
+      "level": "red_dinamica",
+      "auc_mean": 0.8088825961,
+      "auc_std": 0.011699895,
+      "pr_auc_mean": 0.2524951367,
+      "pr_auc_std": 0.0120417489,
+      "ks_mean": 0.4863776426,
+      "ks_std": 0.0226656019,
+      "brier_mean": 0.0498183974,
+      "brier_std": 0.0013722582,
+      "ece_mean": 0.0055441666,
+      "ece_std": 0.0009171324
+    },
+    {
+      "regime": "nulo",
+      "model": "logistic",
+      "level": "red_estatica",
+      "auc_mean": 0.8091801674,
+      "auc_std": 0.0117806312,
+      "pr_auc_mean": 0.2528167408,
+      "pr_auc_std": 0.0115555787,
+      "ks_mean": 0.4844691326,
+      "ks_std": 0.0240773825,
+      "brier_mean": 0.0498029084,
+      "brier_std": 0.0013751788,
+      "ece_mean": 0.0061019664,
+      "ece_std": 0.0007880832
+    },
+    {
+      "regime": "nulo",
+      "model": "xgboost",
+      "level": "clasico",
+      "auc_mean": 0.8052815033,
+      "auc_std": 0.0123430876,
+      "pr_auc_mean": 0.2434552119,
+      "pr_auc_std": 0.0136637791,
+      "ks_mean": 0.4807590961,
+      "ks_std": 0.0243634721,
+      "brier_mean": 0.0501257181,
+      "brier_std": 0.0015073767,
+      "ece_mean": 0.0059134393,
+      "ece_std": 0.0015010839
+    },
+    {
+      "regime": "nulo",
+      "model": "xgboost",
+      "level": "red_dinamica",
+      "auc_mean": 0.8039296713,
+      "auc_std": 0.0110221966,
+      "pr_auc_mean": 0.2405971194,
+      "pr_auc_std": 0.0107896428,
+      "ks_mean": 0.4767637432,
+      "ks_std": 0.0207312832,
+      "brier_mean": 0.0502225615,
+      "brier_std": 0.0016579864,
+      "ece_mean": 0.006087382,
+      "ece_std": 0.0009872221
+    },
+    {
+      "regime": "nulo",
+      "model": "xgboost",
+      "level": "red_estatica",
+      "auc_mean": 0.8032102696,
+      "auc_std": 0.0118855373,
+      "pr_auc_mean": 0.2413961056,
+      "pr_auc_std": 0.0114272004,
+      "ks_mean": 0.473777169,
+      "ks_std": 0.0255987689,
+      "brier_mean": 0.0501884937,
+      "brier_std": 0.0014887385,
+      "ece_mean": 0.0058129882,
+      "ece_std": 0.0010941121
+    },
+    {
+      "regime": "red",
+      "model": "logistic",
+      "level": "clasico",
+      "auc_mean": 0.7692269474,
+      "auc_std": 0.0070653658,
+      "pr_auc_mean": 0.2768187497,
+      "pr_auc_std": 0.0119772804,
+      "ks_mean": 0.4157696433,
+      "ks_std": 0.0211437647,
+      "brier_mean": 0.078521459,
+      "brier_std": 0.0038574486,
+      "ece_mean": 0.0113629017,
+      "ece_std": 0.0017636695
+    },
+    {
+      "regime": "red",
+      "model": "logistic",
+      "level": "red_dinamica",
+      "auc_mean": 0.7950007115,
+      "auc_std": 0.0081499414,
+      "pr_auc_mean": 0.3229839911,
+      "pr_auc_std": 0.0176149682,
+      "ks_mean": 0.4569671742,
+      "ks_std": 0.0107604451,
+      "brier_mean": 0.075740978,
+      "brier_std": 0.0033421055,
+      "ece_mean": 0.0091405999,
+      "ece_std": 0.0027920056
+    },
+    {
+      "regime": "red",
+      "model": "logistic",
+      "level": "red_estatica",
+      "auc_mean": 0.7840534711,
+      "auc_std": 0.0074316699,
+      "pr_auc_mean": 0.3069964036,
+      "pr_auc_std": 0.0158225129,
+      "ks_mean": 0.4367731767,
+      "ks_std": 0.0201971662,
+      "brier_mean": 0.0767927379,
+      "brier_std": 0.0033724106,
+      "ece_mean": 0.0115455194,
+      "ece_std": 0.0027738553
+    },
+    {
+      "regime": "red",
+      "model": "xgboost",
+      "level": "clasico",
+      "auc_mean": 0.764346997,
+      "auc_std": 0.00675328,
+      "pr_auc_mean": 0.2663656079,
+      "pr_auc_std": 0.0090060866,
+      "ks_mean": 0.4070373237,
+      "ks_std": 0.0157266499,
+      "brier_mean": 0.0790240929,
+      "brier_std": 0.0039127055,
+      "ece_mean": 0.0087637262,
+      "ece_std": 0.0013762262
+    },
+    {
+      "regime": "red",
+      "model": "xgboost",
+      "level": "red_dinamica",
+      "auc_mean": 0.7951054406,
+      "auc_std": 0.0119738237,
+      "pr_auc_mean": 0.3191589668,
+      "pr_auc_std": 0.0149558132,
+      "ks_mean": 0.4484672308,
+      "ks_std": 0.0226520366,
+      "brier_mean": 0.0757628068,
+      "brier_std": 0.0041384353,
+      "ece_mean": 0.0075281339,
+      "ece_std": 0.0026201778
+    },
+    {
+      "regime": "red",
+      "model": "xgboost",
+      "level": "red_estatica",
+      "auc_mean": 0.780720086,
+      "auc_std": 0.0089762135,
+      "pr_auc_mean": 0.3006248815,
+      "pr_auc_std": 0.0136000093,
+      "ks_mean": 0.4242184401,
+      "ks_std": 0.0229236129,
+      "brier_mean": 0.0771130189,
+      "brier_std": 0.0038591735,
+      "ece_mean": 0.0086501255,
+      "ece_std": 0.0026111412
+    }
+  ],
+  "config": {
+    "seed": 2026,
+    "world_config": "world.yaml",
+    "dynamics": {
+      "alpha": 1.0,
+      "beta": {
+        "N": 0.5,
+        "S": 0.4,
+        "T": 0.3
+      },
+      "K": {
+        "N": 0.8,
+        "S": 1.0,
+        "T": 0.3
+      },
+      "gamma": 0.5,
+      "loss": 1.0,
+      "noise": 0.3
+    },
+    "thresholds": {
+      "buffer": 1.1,
+      "pd_ref": 0.04,
+      "kappa": 0.35,
+      "dispersion": 0.2
+    },
+    "simulation": {
+      "dt": 0.01,
+      "t_obs": 6.0,
+      "horizon": 12.0,
+      "save_every": 2
+    },
+    "transactions": {
+      "jitter_days": 1.0,
+      "amount_sigma": 0.15,
+      "cuota_months": 24
+    },
+    "regimes": {
+      "nulo": {
+        "beta": {
+          "N": 0.0,
+          "S": 0.0,
+          "T": 0.0
+        },
+        "gamma": 0.0,
+        "loss": 0.0
+      },
+      "red": {}
+    },
+    "experiment": {
+      "worlds_per_regime": 20,
+      "n_jobs": -1,
+      "n_splits": 5,
+      "phase_grid_step": 0.05
+    },
+    "models": {
+      "logistic": {
+        "C": 1.0,
+        "max_iter": 2000
+      },
+      "xgboost": {
+        "n_estimators": 300,
+        "max_depth": 3,
+        "learning_rate": 0.05,
+        "subsample": 0.8,
+        "colsample_bytree": 0.8,
+        "min_child_weight": 5
+      }
+    }
+  }
+}

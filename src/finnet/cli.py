@@ -60,10 +60,28 @@ def _cmd_world(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_credit(args: argparse.Namespace) -> int:
+    from finnet.credit.experiment import run_experiment
+
+    paths = run_experiment(
+        load_config(args.config),
+        out_dir=args.out,
+        models_dir=args.models,
+        n_worlds=args.worlds,
+        n_jobs=args.jobs,
+    )
+    for name, path in paths.items():
+        log.info("%-12s -> %s", name, path)
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="finnet",
-        description="Riesgo sistémico en redes de pagos: experimentos y modelos.",
+        description=(
+            "Riesgo sistémico y crediticio en redes de pagos digitales: "
+            "experimentos y modelos."
+        ),
     )
     parser.add_argument("-v", "--verbose", action="store_true", help="Logging DEBUG")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -109,6 +127,23 @@ def build_parser() -> argparse.ArgumentParser:
     wo.add_argument("--out", type=Path, default=Path("data/world/demo"))
     wo.add_argument("--seed", type=int, default=None, help="Sobrescribe la semilla")
     wo.set_defaults(func=_cmd_world)
+
+    cr = sub.add_parser(
+        "credit",
+        help="Riesgo crediticio híbrido: mundos, variables, comparación y modelos",
+    )
+    cr.add_argument(
+        "config", type=Path, help="YAML del experimento (configs/credit.yaml)"
+    )
+    cr.add_argument("--out", type=Path, default=Path("data/credit"))
+    cr.add_argument("--models", type=Path, default=Path("models/credit"))
+    cr.add_argument(
+        "--worlds", type=int, default=None, help="Sobrescribe worlds_per_regime"
+    )
+    cr.add_argument(
+        "--jobs", type=int, default=None, help="Procesos (por defecto: YAML)"
+    )
+    cr.set_defaults(func=_cmd_credit)
     return parser
 
 
