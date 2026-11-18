@@ -34,6 +34,9 @@ from finnet import metrics, spectral
 from finnet.integrate import Shock, simulate
 from finnet.model import Params, lorentz_frequencies, make_thresholds
 from finnet.networks import NetworkConfig, generate, summary
+from finnet.schema import validate_schema
+
+__all__ = ["validate_schema"]  # reexportado: lo usan pruebas y versiones previas
 
 log = logging.getLogger(__name__)
 
@@ -127,34 +130,6 @@ NODE_LABEL = "cascade_size"
 NODE_FEATURES = tuple(
     c for c in NODE_SCHEMA if c not in (NODE_LABEL, "network_id", "entity")
 )
-
-
-def validate_schema(df: pd.DataFrame, schema: dict) -> pd.DataFrame:
-    """Valida columnas, tipos y rangos; devuelve el DataFrame con tipos exactos.
-
-    Raises
-    ------
-    ValueError si falta una columna, sobra una, o un valor cae fuera de rango.
-    """
-    missing = set(schema) - set(df.columns)
-    extra = set(df.columns) - set(schema)
-    if missing or extra:
-        raise ValueError(
-            f"Esquema inválido. Faltan: {sorted(missing)}; sobran: {sorted(extra)}"
-        )
-    out = df[list(schema)].copy()
-    tol = 1e-9
-    for col, (dtype, lo, hi) in schema.items():
-        out[col] = out[col].astype(dtype)
-        vals = out[col].to_numpy(dtype=float)
-        finite = vals[np.isfinite(vals)]
-        if lo is not None and (finite < lo - tol).any():
-            raise ValueError(f"{col}: valores < {lo} (mín {finite.min()})")
-        if hi is not None and (finite > hi + tol).any():
-            raise ValueError(f"{col}: valores > {hi} (máx {finite.max()})")
-        if np.isinf(vals).any():
-            raise ValueError(f"{col}: contiene infinitos; use un tope explícito")
-    return out
 
 
 # ----------------------------------------------------------------- muestreo

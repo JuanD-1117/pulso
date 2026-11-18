@@ -1,0 +1,58 @@
+# Mundo sintético multicapa: cartera de clientes de un banco (Tarea 6).
+# Unidades: dinero en SMMLV por mes; tiempo en meses. Parámetros ILUSTRATIVOS.
+seed: 7
+
+persons:
+  n: 2000
+  informal_frac: 0.55          # sin empleador en la red (orden de magnitud DANE)
+  income_formal:   {median: 2.2, sigma: 0.6}   # salario, lognormal
+  income_informal: {median: 1.3, sigma: 0.7}
+  debt_ratio: {a: 2.0, b: 5.0}                 # deuda/ingreso anual, Beta(a, b) x 2
+  debt_ratio_scale: 2.0
+  age: [18, 70]
+  tenure_mean_months: 48
+  n_products_mean: 1.6
+  n_communities: 20            # barrios / círculos sociales (no observables)
+
+firms:
+  n: 100
+  size_pareto_shape: 1.6       # cola pesada: pocas firmas grandes
+  payroll_share: {a: 3.5, b: 6.5}              # nómina / ventas, media 0.35
+  debt_ratio: {a: 2.5, b: 3.0}                 # apalancamiento, Beta(a, b)
+  debt_ratio_scale: 1.0
+  age: [1, 40]
+  tenure_mean_months: 72
+  n_products_mean: 3.0
+  n_sectors: 5
+  io_concentration: 0.7        # Dirichlet de la matriz insumo-producto (menor = más concentrada)
+
+calendar:
+  biweekly_frac: 0.4           # firmas con nómina quincenal (ω = 4π/mes)
+  monthly_pay_days: [30, 15, 5]
+  biweekly_first_days: [15, 5]
+  firm_omega_cv: 0.02          # dispersión relativa de ritmos naturales
+  formal_omega_cv: 0.04        # formales: alrededor del ritmo del empleador
+  informal_omega_cv: 0.25      # informales: ritmos dispersos
+  formal_phase_sd: 0.15        # rad; formales arrancan cerca del día de pago
+
+layers:
+  T:                           # transferencias P -> P
+    mean_out_degree: 2.0
+    coworker_frac: 0.3
+    community_frac: 0.6
+    amount_frac: {median: 0.05, sigma: 0.8}    # fracción del ingreso del pagador
+  S:                           # proveedores F -> F (el comprador paga al proveedor)
+    mean_suppliers: 3.0
+    amount_frac: {median: 0.08, sigma: 0.7}    # fracción de las ventas del comprador
+
+truth:                         # PD anual idiosincrática (no observable)
+  target_pd: {firm: 0.03, person: 0.05}
+  past_due_base: 0.4           # media de moras en 12 meses de un cliente típico
+  past_due_link: 0.8           # cuánto revela la mora del componente latente
+  latent_sd: 0.9
+  coef:                        # sobre variables estandarizadas dentro de cada tipo
+    debt_ratio: 0.7
+    log_income: -0.5
+    tenure: -0.3
+    age: -0.2
+    formal: -0.5
