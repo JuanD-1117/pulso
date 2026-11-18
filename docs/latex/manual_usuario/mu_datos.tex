@@ -1,0 +1,117 @@
+% ===================================================================
+\chapter{Datos, modelos y uso como biblioteca}
+
+\section{Datos de la tarea 5 (\ruta{data/})}
+\begin{longtable}{L{0.24\textwidth}L{0.14\textwidth}L{0.54\textwidth}}
+\toprule
+\textbf{Archivo} & \textbf{Tamaño} & \textbf{Una fila es…} \\
+\midrule
+\endhead
+\texttt{redes.parquet} & 300 × 12 & Una red: topología, tamaño, grado medio, parámetros
+del núcleo, semilla, número de aristas, densidad y dispersión de montos. \\
+\texttt{networks.npz} & 300 matrices & La matriz $W$ de cada red, bajo la clave
+\texttt{net\_<id>}. $W_{ij}$ es el pago de $j$ a $i$. \\
+\texttt{escenarios.parquet} & 20\,000 × 35 & Una simulación: 31 variables medidas antes
+del choque y 4 etiquetas posteriores (colapso, fracción en impago, liquidez no pagada,
+tiempo al primer impago). \\
+\texttt{nodos.parquet} & 27\,008 × 26 & Una entidad de una red: sus variables y la
+etiqueta, el tamaño de la cascada si el choque empieza en ella. \\
+\bottomrule
+\end{longtable}
+La ficha completa, con la definición de cada columna, está en \ruta{data/README.md}.
+
+\section{Datos de la tarea 6 (\ruta{data/credit/})}
+\begin{longtable}{L{0.24\textwidth}L{0.68\textwidth}}
+\toprule
+\textbf{Archivo} & \textbf{Contenido} \\
+\midrule
+\endhead
+\texttt{clientes.parquet} & Una fila por cliente y cartera (unas 78\,000): 32 variables
+en tres niveles y las etiquetas. No se guarda en git; lo regenera
+\texttt{pulso credit}. \\
+\texttt{cv\_metricas.csv} & Métricas por partición, régimen, nivel y modelo. \\
+\texttt{resumen.csv} & Media y desviación de cada métrica. \\
+\texttt{mejoras.csv} & Mejoras pareadas entre niveles con intervalo de confianza. \\
+\texttt{impago\_por\_r.csv} & Tasa de impago por tramos de coherencia $\hat r$. \\
+\bottomrule
+\end{longtable}
+
+\subsection*{Composición de una cartera}
+Una cartera generada con \texttt{pulso world} tiene tres partes:
+\begin{description}
+\item[\texttt{entities.parquet}.] Una fila por cliente. Columnas observables:
+\texttt{kind} (0 empresa, 1 persona), \texttt{employer}, \texttt{sector},
+\texttt{income} (SMMLV/mes), \texttt{debt\_ratio}, \texttt{age\_years},
+\texttt{tenure\_months}, \texttt{n\_products}, \texttt{past\_due\_12m}, \texttt{formal},
+\texttt{n\_employees}. Columnas ocultas, que ningún modelo puede usar:
+\texttt{truth\_pd}, \texttt{truth\_latent}, \texttt{truth\_omega},
+\texttt{truth\_theta0}, \texttt{truth\_community}.
+\item[\texttt{edges.parquet}.] Una fila por relación: \texttt{src} (pagador),
+\texttt{dst} (receptor), \texttt{layer} (0 nómina, 1 proveedores, 2 transferencias) y
+\texttt{weight} (flujo mensual en SMMLV).
+\item[\texttt{world.json}.] Semilla y configuración con que se generó.
+\end{description}
+Las transacciones se generan al simular: columnas \texttt{t} (mes), \texttt{src},
+\texttt{dst} ($-1$ es el banco), \texttt{layer} (3 es la cuota del crédito) y
+\texttt{amount}. En la aplicación se pueden ver y descargar desde \emph{Cartera
+multicapa}.
+
+\section{Modelos (\ruta{models/})}
+Cada modelo de la tarea 5 tiene su carpeta con una subcarpeta por versión:
+\begin{archivo}[label=models/xgb\_collapse/]
+LATEST            versión que usa la aplicación (por ejemplo 1.0.0)
+1.0.0/
+  model.joblib    el modelo entrenado
+  meta.json       variables, etiqueta, semilla, fecha
+  metrics.json    métricas de validación
+\end{archivo}
+Para entrenar una versión nueva sin perder la anterior, cambie \texttt{version} en
+\texttt{configs/train.yaml}. La tabla \ruta{models/comparison.csv} compara los modelos.
+
+Los modelos de la tarea 6 están en \ruta{models/credit/v1/}: un archivo
+\texttt{<nivel>\_\_<modelo>.joblib} por cada combinación de nivel (\texttt{clasico},
+\texttt{red\_estatica}, \texttt{red\_dinamica}) y modelo (\texttt{logistic},
+\texttt{xgboost}), más \texttt{metrics.json}.
+
+% ===================================================================
+\section{Uso como biblioteca de Python}
+\label{sec:biblioteca}
+Las funciones del modelo se pueden usar en programas o notebooks propios. Ejemplo:
+construir una red, aplicar un retiro de liquidez a la entidad que más paga y medir la
+cascada.
+
+\begin{archivo}[label=ejemplo.py]
+import numpy as np
+from pulso.networks import NetworkConfig, generate
+from pulso.model import Params, make_thresholds
+from pulso.integrate import Shock, simulate
+from pulso.spectral import perron_root
+
+# Red núcleo-periferia: tipo, n, grado medio, dispersión de montos,
+# fracción de núcleo, densidad del núcleo, aristas entre periferia, semilla
+W = generate(NetworkConfig("core_periphery", 80, 6.0, 0.8, 0.1, 0.8, 0.1, seed=42))
+
+rho = perron_root(W)                       # radio espectral
+p = Params(alpha=1.0, beta=0.8 / rho,      # R = 0.8
+           loss=1.0,
+           thresholds=make_thresholds(W, 0.5, 0.2, np.random.default_rng(0)))
+
+objetivo = int(np.argmax(W.sum(axis=0)))   # la entidad que más paga
+tr = simulate(W, p, t_end=20, dt=0.01,
+              shock=Shock("liquidity", (objetivo,), size=3.0), save_every=10)
+print(f"en impago: {tr.defaulted.mean():.1%}")
+\end{archivo}
+\begin{terminal}
+uv run python ejemplo.py
+\end{terminal}
+
+Para la tarea 6, una cartera se genera así:
+\begin{archivo}[label=cartera.py]
+from pulso.config import load_config
+from pulso.world import generate_world
+
+mundo = generate_world(load_config("world.yaml"), seed=7)
+print(mundo.n, len(mundo.edges))           # 2100 clientes, ~5000 relaciones
+print(mundo.entities.head())
+\end{archivo}
+Los notebooks de \ruta{notebooks/} contienen más ejemplos, uno por tarea.

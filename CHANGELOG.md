@@ -3,6 +3,15 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es/1.1.0/); versionado
 semántico.
 
+## [3.3.0] · 2026-11-18 · Manual de usuario
+
+### Añadido
+- `docs/Presentaciones/MANUAL_DE_USUARIO.pdf`: instalación (uv y Docker), mapa de
+  carpetas y función de cada archivo, aplicación web página por página, comandos
+  `pulso` con sus opciones y salidas, configuración YAML y variables de entorno, datos y
+  modelos producidos, uso como biblioteca, pruebas, regeneración de documentos y
+  solución de problemas.
+
 ## [3.2.2] · 2026-11-18 · Guion de 15 minutos
 
 ### Añadido

@@ -1,0 +1,114 @@
+% ===================================================================
+\chapter{Línea de comandos}
+\label{cap:cli}
+
+El comando \texttt{pulso} genera los datos, entrena los modelos y corre el experimento de
+crédito. Se ejecuta desde la raíz del proyecto con \texttt{uv run}:
+
+\begin{terminal}
+uv run pulso --help              # lista de comandos
+uv run pulso <comando> --help    # opciones de un comando
+uv run pulso -v <comando> ...    # con mensajes detallados (nivel DEBUG)
+\end{terminal}
+
+\begin{center}
+\begin{tabular}{llL{0.4\textwidth}l}
+\toprule
+\textbf{Comando} & \textbf{Configuración} & \textbf{Qué produce} & \textbf{Tiempo} \\
+\midrule
+\texttt{sweep} & \texttt{sweep.yaml} & Conjunto de datos de la tarea 5 en \ruta{data/} &
+$\sim$20 min (8 núcleos) \\
+\texttt{train} & \texttt{train.yaml} & Modelos de la tarea 5 en \ruta{models/} & minutos \\
+\texttt{world} & \texttt{world.yaml} & Una cartera de clientes en
+\ruta{data/world/demo/} & segundos \\
+\texttt{credit} & \texttt{credit.yaml} & Experimento y modelos de la tarea 6 &
+$<$1 min \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+El repositorio ya trae los datos y modelos generados. Solo hace falta correr estos
+comandos para regenerarlos o para probar otros parámetros.
+
+\section{\texttt{pulso sweep}: barrido de escenarios}
+Genera 300 redes y 20\,000 escenarios, los simula y guarda las tablas.
+\begin{terminal}
+uv run pulso sweep configs/sweep.yaml
+uv run pulso sweep configs/sweep.yaml --scenarios 500 --networks 30   # prueba rápida
+\end{terminal}
+\begin{center}
+\small
+\begin{tabular}{lp{0.65\textwidth}}
+\toprule
+\textbf{Opción} & \textbf{Efecto} \\
+\midrule
+\texttt{--out DIR} & Carpeta de salida (por defecto, la del YAML: \ruta{data/}). \\
+\texttt{--scenarios N} & Número de escenarios (reemplaza \texttt{scenarios.n}). \\
+\texttt{--networks N} & Número de redes (reemplaza \texttt{pool.n\_networks}). \\
+\texttt{--jobs N} & Procesos en paralelo; $-1$ usa todos los núcleos. \\
+\texttt{--skip-nodes} & No genera la tabla de nodos. \\
+\texttt{--skip-scenarios} & No genera la tabla de escenarios. \\
+\bottomrule
+\end{tabular}
+\end{center}
+Salida: \texttt{redes.parquet}, \texttt{networks.npz}, \texttt{escenarios.parquet} y
+\texttt{nodos.parquet}. El resultado es idéntico con cualquier número de procesos,
+porque cada escenario tiene su propia semilla.
+
+\section{\texttt{pulso train}: modelos predictivos}
+Entrena la regresión logística y XGBoost para el colapso, y XGBoost y la GCN para la
+cascada de cada entidad. Valida con GroupKFold por red y guarda los modelos versionados.
+\begin{terminal}
+uv run pulso train configs/train.yaml
+uv run pulso train configs/train.yaml --data data --models models
+\end{terminal}
+Salida: una carpeta por modelo en \ruta{models/} (\texttt{logistic\_collapse},
+\texttt{xgb\_collapse}, \texttt{xgb\_nodes}, \texttt{gcn\_nodes}) y la tabla
+\ruta{models/comparison.csv}.
+
+\section{\texttt{pulso world}: una cartera de clientes}
+Genera una cartera multicapa (personas, empresas y sus relaciones) y la guarda.
+\begin{terminal}
+uv run pulso world configs/world.yaml
+uv run pulso world configs/world.yaml --seed 11 --out data/world/semilla11
+\end{terminal}
+Salida: \texttt{entities.parquet}, \texttt{edges.parquet} y \texttt{world.json} en la
+carpeta indicada.
+
+\section{\texttt{pulso credit}: experimento de riesgo crediticio}
+Genera las carteras de los dos regímenes (con red y nulo), simula, estima las variables,
+compara los tres niveles con validación cruzada y entrena los modelos finales.
+\begin{terminal}
+uv run pulso credit configs/credit.yaml
+uv run pulso credit configs/credit.yaml --worlds 5 --jobs 4     # versión reducida
+\end{terminal}
+\begin{center}
+\small
+\begin{tabular}{lp{0.65\textwidth}}
+\toprule
+\textbf{Opción} & \textbf{Efecto} \\
+\midrule
+\texttt{--out DIR} & Carpeta de resultados (por defecto \ruta{data/credit/}). \\
+\texttt{--models DIR} & Carpeta de modelos (por defecto \ruta{models/credit/}). \\
+\texttt{--worlds N} & Carteras por régimen (reemplaza
+\texttt{experiment.worlds\_per\_regime}). \\
+\texttt{--jobs N} & Procesos en paralelo. \\
+\bottomrule
+\end{tabular}
+\end{center}
+Salida: \texttt{clientes.parquet}, \texttt{cv\_metricas.csv}, \texttt{resumen.csv},
+\texttt{mejoras.csv} e \texttt{impago\_por\_r.csv} en \ruta{data/credit/}, y los seis
+modelos finales en \ruta{models/credit/v1/}.
+
+\section{Códigos de salida}
+\begin{center}
+\begin{tabular}{cl}
+\toprule
+\textbf{Código} & \textbf{Significado} \\
+\midrule
+0 & Terminó bien. \\
+2 & Falta un archivo (por ejemplo, la configuración o los datos). \\
+130 & Interrumpido por el usuario con \texttt{Ctrl+C}. \\
+\bottomrule
+\end{tabular}
+\end{center}

@@ -1,0 +1,99 @@
+% ===================================================================
+\chapter{Introducción}
+
+\section{Qué es PULSO}
+PULSO es un software para estudiar el riesgo en redes de pagos digitales. Modela cómo un
+problema de liquidez se propaga entre entidades que se pagan entre sí, cómo se
+sincronizan sus ciclos de pago y cuándo se producen cascadas de impagos. También aplica
+ese modelo al riesgo de crédito de la cartera de un banco: estima, a partir de las
+transacciones, si los ciclos de pago de cada cliente están sincronizados con los de
+quienes le pagan, y usa esa información para predecir el impago.
+
+El software tiene cuatro formas de uso:
+
+\begin{center}
+\begin{tabular}{p{0.26\textwidth}p{0.66\textwidth}}
+\toprule
+\textbf{Forma de uso} & \textbf{Para qué sirve} \\
+\midrule
+Aplicación web & Explorar el modelo de forma interactiva, sin programar
+(capítulo~\ref{cap:app}). \\
+Línea de comandos & Generar los datos, entrenar los modelos y correr el experimento de
+crédito (capítulo~\ref{cap:cli}). \\
+Biblioteca de Python & Usar las funciones del modelo en programas o notebooks propios
+(sección~\ref{sec:biblioteca}). \\
+Notebooks & Reproducir las figuras y el análisis de cada tarea
+(\ruta{notebooks/}). \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{aviso}
+Todos los datos son sintéticos y los parámetros son ilustrativos, no calibrados con
+información real. Los resultados sirven para estudiar mecanismos, no para medir el
+riesgo de una institución concreta.
+\end{aviso}
+
+\section{A quién está dirigido este manual}
+A quien instala, ejecuta o modifica el software. No supone conocimientos previos de
+finanzas ni de redes: los conceptos necesarios se explican en la sección~\ref{sec:conceptos}.
+Para el fundamento teórico completo, consulte la guía completa
+(\ruta{docs/Presentaciones/v1/pulso\_guia\_completa.pdf}).
+
+% ===================================================================
+\chapter{Instalación}
+
+\section{Requisitos}
+\begin{center}
+\begin{tabular}{p{0.24\textwidth}p{0.68\textwidth}}
+\toprule
+\textbf{Elemento} & \textbf{Requisito} \\
+\midrule
+Sistema operativo & macOS o Linux. En Windows, use Docker o WSL. \\
+Python & 3.12 o superior (lo instala \texttt{uv} si no está). \\
+uv & Gestor de entornos y dependencias: \url{https://docs.astral.sh/uv/}. \\
+Espacio en disco & Unos 2 GB para el entorno (PyTorch ocupa la mayor parte). \\
+Memoria & 8 GB recomendados. \\
+Navegador & Cualquier navegador moderno, para la aplicación. \\
+Docker (opcional) & Para ejecutar la aplicación sin instalar Python. \\
+TeX Live (opcional) & Solo para regenerar los documentos PDF. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Instalación con uv}
+En una terminal, dentro de la carpeta del proyecto:
+\begin{terminal}
+uv sync                       # crea el entorno .venv e instala las versiones exactas de uv.lock
+uv run pytest -m "not slow"   # comprobación rápida: unas 107 pruebas en ~10 s
+\end{terminal}
+Si todas las pruebas pasan, la instalación es correcta. La batería completa, con las
+pruebas lentas, se corre con \texttt{uv run pytest} y tarda alrededor de un minuto.
+
+\section{Instalación con Docker}
+\begin{terminal}
+docker build -t pulso .
+docker run -p 8501:8501 pulso
+\end{terminal}
+Abra \texttt{http://localhost:8501}. La imagen incluye los datos y los modelos ya
+entrenados, así que la aplicación funciona sin correr ningún experimento.
+
+\section{Primeros pasos}
+\begin{enumerate}
+\item Abra la aplicación:
+\begin{terminal}
+uv run streamlit run app/Inicio.py
+\end{terminal}
+Se abre \texttt{http://localhost:8501}. Para usar otro puerto, agregue
+\texttt{--server.port=8502}.
+\item En \emph{Inicio}, presione \boton{Cargar escenario de ejemplo “Bre-B estilizado”}.
+\item Recorra las páginas en orden con la barra lateral.
+\item Para cerrar la aplicación, presione \texttt{Ctrl+C} en la terminal.
+\end{enumerate}
+
+\begin{aviso}
+En macOS, si el proyecto está dentro de \texttt{\textasciitilde/Documents}, puede aparecer
+\texttt{ModuleNotFoundError: No module named 'pulso'}. La solución está en el
+capítulo~\ref{cap:problemas}.
+\end{aviso}
+

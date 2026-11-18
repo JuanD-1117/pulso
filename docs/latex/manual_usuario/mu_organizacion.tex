@@ -1,0 +1,153 @@
+% ===================================================================
+\chapter{Organización del proyecto}
+
+\section{Mapa de carpetas}
+\begin{archivo}[label=estructura]
+pulso/
+├── README.md               qué es el proyecto, resultados y cómo usarlo
+├── CHANGELOG.md            historial de versiones
+├── pyproject.toml          ficha del paquete: nombre, versión, dependencias, comando pulso
+├── uv.lock                 versiones exactas de todas las dependencias
+├── .python-version         versión de Python (3.12)
+├── Dockerfile              receta de la imagen de la aplicación
+├── .dockerignore           lo que no entra en la imagen
+├── .gitignore              lo que git no guarda (entorno, cachés, temporales)
+├── .github/workflows/ci.yml   integración continua: ruff, pytest y Docker
+├── .streamlit/config.toml  tema y opciones del servidor de la aplicación
+├── configs/                TODOS los parámetros, en YAML
+├── src/pulso/              el código del modelo (paquete de Python)
+├── app/                    la aplicación web (Streamlit)
+├── data/                   datos generados por los experimentos
+├── models/                 modelos entrenados y versionados
+├── figures/                figuras de las tareas 1 a 6
+├── notebooks/              análisis y figuras de cada tarea
+├── tests/                  pruebas automáticas
+└── docs/                   documentación, fuentes LaTeX y PDF
+\end{archivo}
+
+La regla del proyecto es separar responsabilidades: los \textbf{parámetros} viven en
+\ruta{configs/}, el \textbf{cálculo} en \ruta{src/pulso/}, la \textbf{presentación} en
+\ruta{app/} y los \textbf{resultados} en \ruta{data/}, \ruta{models/} y
+\ruta{figures/}. Ningún número del modelo está escrito en el código.
+
+\section{El código: \texttt{src/pulso/}}
+
+\subsection*{Núcleo del modelo (tareas 1 a 4)}
+\begin{longtable}{L{0.24\textwidth}L{0.68\textwidth}}
+\toprule
+\textbf{Archivo} & \textbf{Qué hace} \\
+\midrule
+\endhead
+\texttt{networks.py} & Genera redes de pagos: Erdős–Rényi, Barabási–Albert y
+núcleo-periferia, con montos lognormales escalados a media 1. \\
+\texttt{model.py} & Define los parámetros del modelo (\texttt{Params}), los colchones
+de impago y el lado derecho de las ecuaciones de déficit y fase, incluido el
+acoplamiento multicapa. \\
+\texttt{integrate.py} & Integra las ecuaciones en el tiempo (Runge–Kutta 4, ruido de
+Euler–Maruyama), aplica choques y detecta impagos y cascadas. \\
+\texttt{spectral.py} & Análisis espectral: radio espectral, índice $R$, estabilidad
+$\sigma$, tiempo de recuperación, $\lambda_2$, comunidades y ranking de entidades. \\
+\texttt{cascades.py} & Modelos clásicos de contagio para comparar: Eisenberg–Noe,
+DebtRank y Watts. \\
+\texttt{metrics.py} & Indicadores de cada simulación: fracción en impago, liquidez no
+pagada, primer contagio, colapso e importancia sistémica. \\
+\bottomrule
+\end{longtable}
+
+\subsection*{Experimentos y predicción (tarea 5)}
+\begin{longtable}{L{0.24\textwidth}L{0.68\textwidth}}
+\toprule
+\textbf{Archivo} & \textbf{Qué hace} \\
+\midrule
+\endhead
+\texttt{experiments.py} & Barrido de escenarios: muestrea redes y parámetros, simula y
+guarda las tablas con su esquema validado. \\
+\texttt{ml/train.py} & Entrena y valida (GroupKFold por red) la regresión logística,
+XGBoost y la GCN; guarda métricas. \\
+\texttt{ml/gnn.py} & Red neuronal sobre grafos (GCN) con conexión residual. \\
+\texttt{ml/pinn.py} & Red neuronal informada por la física para estimar parámetros. \\
+\texttt{ml/predict.py} & Predicción instantánea para una red nueva, explicación SHAP y
+verificación por simulación. \\
+\texttt{ml/registry.py} & Guarda y carga modelos con versión y metadatos. \\
+\bottomrule
+\end{longtable}
+
+\subsection*{Cartera de un banco (tarea 6)}
+\begin{longtable}{L{0.24\textwidth}L{0.68\textwidth}}
+\toprule
+\textbf{Archivo} & \textbf{Qué hace} \\
+\midrule
+\endhead
+\texttt{world/schema.py} & Constantes (tipos de cliente, capas) y esquemas de las tablas
+de la cartera. \\
+\texttt{world/entities.py} & Genera personas y empresas con sus variables y su
+probabilidad de impago verdadera. \\
+\texttt{world/layers.py} & Genera las relaciones de nómina, proveedores y
+transferencias. \\
+\texttt{world/core.py} & Reúne todo en un objeto \texttt{World}; lo guarda y lo carga. \\
+\texttt{world/transactions.py} & Convierte la simulación en un registro de
+transacciones como el de un banco. \\
+\texttt{credit/engine.py} & Parámetros y simulación del modelo multicapa, colchones según
+la PD e impagos idiosincráticos. \\
+\texttt{credit/estimate.py} & Estima la red, las fases y la coherencia a partir de las
+transacciones. \\
+\texttt{credit/features.py} & Calcula las variables de cada cliente en tres niveles:
+clásico, red estática y red dinámica. \\
+\texttt{credit/pipeline.py} & Une generación, simulación, transacciones y variables para
+una cartera. \\
+\texttt{credit/evaluate.py} & Validación cruzada por cartera, métricas, diferencias
+pareadas e intervalos de confianza. \\
+\texttt{credit/experiment.py} & Experimento completo de la tarea 6: carteras, regímenes,
+resultados y modelos finales. \\
+\texttt{credit/service.py} & Funciones que usa la aplicación en las páginas 8 y 9. \\
+\bottomrule
+\end{longtable}
+
+\subsection*{Utilidades}
+\begin{longtable}{L{0.24\textwidth}L{0.68\textwidth}}
+\toprule
+\textbf{Archivo} & \textbf{Qué hace} \\
+\midrule
+\endhead
+\texttt{config.py} & Lee los YAML de \ruta{configs/} y resuelve las carpetas de datos y
+modelos (admite variables de entorno). \\
+\texttt{schema.py} & Valida columnas, tipos y rangos de las tablas, y prohíbe usar las
+columnas de verdad \texttt{truth\_*}. \\
+\texttt{service.py} & Funciones que usa la aplicación en las páginas 1 a 7. \\
+\texttt{viz.py} & Gráficas interactivas (Plotly) de la aplicación. \\
+\texttt{cli.py} & El comando \texttt{pulso} (capítulo~\ref{cap:cli}). \\
+\bottomrule
+\end{longtable}
+
+\section{Las demás carpetas}
+\begin{longtable}{L{0.3\textwidth}L{0.62\textwidth}}
+\toprule
+\textbf{Carpeta o archivo} & \textbf{Contenido} \\
+\midrule
+\endhead
+\ruta{app/Inicio.py} & Página de inicio de la aplicación. \\
+\ruta{app/common.py} & Estado compartido y cachés de la aplicación. \\
+\ruta{app/pages/1\_…9\_*.py} & Una página por archivo (capítulo~\ref{cap:app}). \\
+\ruta{configs/*.yaml} & Parámetros (capítulo~\ref{cap:config}). \\
+\ruta{data/*.parquet}, \texttt{networks.npz} & Conjunto de datos de la tarea 5; ficha en
+\ruta{data/README.md}. \\
+\ruta{data/credit/} & Resultados del experimento de la tarea 6. \\
+\ruta{models/} & Modelos de la tarea 5 por nombre y versión; \ruta{models/credit/v1/}
+para la tarea 6. \\
+\ruta{figures/} & Figuras de los notebooks y de la aplicación. \\
+\ruta{notebooks/01…06} & Un notebook por tarea, del 01 (red y déficit) al 06 (PINN). \\
+\ruta{tests/test\_fase*.py} & Pruebas por fase; \texttt{test\_app.py} prueba que cada
+página de la aplicación se ejecute sin errores. \\
+\ruta{docs/Presentaciones/} & PDF finales: v1, v2, v3, manuales y plan de estudio. \\
+\ruta{docs/latex/} & Fuentes LaTeX, generador de figuras (\texttt{figuras.py}) y
+\texttt{compilar.sh}. \\
+\ruta{docs/diseno/} & Especificación de diseño de la tarea 6. \\
+\ruta{docs/bibliografia.md} & Referencias por tarea. \\
+\bottomrule
+\end{longtable}
+
+\begin{aviso}
+No se guardan en git: el entorno (\ruta{.venv/}), las cachés de Python y la tabla
+grande de clientes \ruta{data/credit/clientes.parquet}, que se regenera con
+\texttt{uv run pulso credit configs/credit.yaml}.
+\end{aviso}

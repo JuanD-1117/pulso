@@ -1,0 +1,130 @@
+% ===================================================================
+\chapter{Pruebas, calidad y documentación}
+
+\section{Pruebas automáticas}
+\begin{terminal}
+uv run pytest -m "not slow"          # pruebas rápidas (~10 s)
+uv run pytest                        # todas, incluidas las lentas (~1 min)
+uv run pytest tests/test_fase3.py    # solo una fase
+uv run pytest -k kuramoto            # solo las que contienen "kuramoto" en el nombre
+\end{terminal}
+Muchas pruebas comparan el código con resultados analíticos conocidos: la solución
+exacta del sistema lineal, la conservación bajo difusión, el valor de Kuramoto en la red
+completa, Eisenberg–Noe resuelto a mano. \texttt{tests/test\_app.py} comprueba que cada
+página de la aplicación se ejecute sin errores.
+
+\section{Estilo del código}
+\begin{terminal}
+uv run ruff check src app tests          # errores y estilo
+uv run ruff format src app tests         # formato automático
+\end{terminal}
+
+\section{Integración continua}
+Al subir cambios a GitHub, el flujo \ruta{.github/workflows/ci.yml} instala las
+dependencias, corre ruff y pytest y construye la imagen de Docker. Un cambio que rompa
+una prueba aparece marcado en rojo en el repositorio.
+
+\section{Reproducibilidad}
+\begin{itemize}
+\item Todos los parámetros están en \ruta{configs/}.
+\item Todas las semillas son explícitas: la misma configuración produce los mismos
+resultados, bit a bit, con cualquier número de procesos.
+\item Las tablas se validan contra un esquema de columnas, tipos y rangos antes de
+guardarse o de entrar a un modelo.
+\item \texttt{uv.lock} fija la versión exacta de cada dependencia.
+\end{itemize}
+
+\section{Documentos y cómo regenerarlos}
+\begin{longtable}{L{0.4\textwidth}L{0.52\textwidth}}
+\toprule
+\textbf{Documento} & \textbf{Contenido} \\
+\midrule
+\endhead
+\ruta{v1/pulso\_guia\_completa.pdf} & Fundamento completo desde cero. \\
+\ruta{v1/pulso\_presentacion.pdf} & Presentación completa (56 diapositivas). \\
+\ruta{v2/pulso\_presentacion\_v2.pdf}, guion & Presentación breve y su guion. \\
+\ruta{v2/pulso\_manual\_app.pdf} & Manual de la aplicación (incluido en este manual). \\
+\ruta{v3/pulso\_presentacion\_v3.pdf} & Presentación de 30 minutos. \\
+\ruta{v3/pulso\_guion\_v3.pdf}, \texttt{\_15min} & Guiones de 30 y 15 minutos. \\
+\ruta{ESTUDIO.pdf} & Plan de estudio de los temas del proyecto. \\
+\ruta{MANUAL\_DE\_USUARIO.pdf} & Este manual. \\
+\bottomrule
+\end{longtable}
+Todas las rutas son relativas a \ruta{docs/Presentaciones/}. Para regenerarlos se
+necesita TeX Live con \texttt{lualatex}, \texttt{latexmk} y el tema \emph{metropolis}:
+\begin{terminal}
+uv run pulso credit configs/credit.yaml              # resultados de la tarea 6
+PYTHONPATH=src uv run python docs/latex/figuras.py    # figuras de la tarea 6
+bash docs/latex/compilar.sh                           # todos los PDF
+\end{terminal}
+
+% ===================================================================
+\chapter{Solución de problemas}
+\label{cap:problemas}
+
+\begin{longtable}{L{0.38\textwidth}L{0.56\textwidth}}
+\toprule
+\textbf{Síntoma} & \textbf{Causa y solución} \\
+\midrule
+\endhead
+\texttt{ModuleNotFoundError: No module named 'pulso'} (macOS) & macOS oculta un archivo
+de la instalación cuando el proyecto está dentro de \texttt{\textasciitilde/Documents}.
+Ejecute \texttt{chflags -R nohidden .venv}, o anteponga \texttt{PYTHONPATH=src} a cada
+comando. \\
+\texttt{No existe el directorio de configuración} & El comando no se corrió desde la raíz
+del proyecto. Cámbiese a esa carpeta o defina \texttt{PULSO\_CONFIG\_DIR}. \\
+\texttt{No se encontró el archivo de configuración} & La ruta del YAML está mal escrita.
+Use \texttt{configs/<nombre>.yaml}. \\
+\emph{Port 8501 is already in use} & Otra aplicación usa el puerto. Agregue
+\texttt{--server.port=8502}. \\
+\emph{No hay dataset} (Explorar escenarios) & Ejecute \texttt{uv run pulso sweep
+configs/sweep.yaml}. \\
+\emph{No hay modelos entrenados} (Mapa de riesgo) & Ejecute \texttt{uv run pulso train
+configs/train.yaml}. \\
+\emph{No hay resultados del experimento} (páginas 8 y 9) & Ejecute \texttt{uv run pulso
+credit configs/credit.yaml}. \\
+\emph{Red demasiado grande para simulación en vivo} & La red tiene más de 300 entidades.
+Redúzcala en \emph{Construir red}. \\
+La página no cambia al mover un control & El control está en un formulario: presione su
+botón azul y espere a que termine el indicador de ejecución. \\
+Los valores volvieron a los iniciales & Se recargó la pestaña del navegador. \\
+Cierre inesperado al usar XGBoost y PyTorch juntos & Ambos traen su propia librería
+OpenMP. El proyecto ya carga XGBoost primero y limita PyTorch a un hilo; si escribe código
+propio, importe \texttt{xgboost} antes que \texttt{torch}. \\
+Error de YAML al leer la configuración & Revise la sangría (solo espacios) y los dos
+puntos después de cada clave. \\
+\bottomrule
+\end{longtable}
+
+% ===================================================================
+\chapter{Glosario rápido}
+
+\begin{longtable}{L{0.24\textwidth}L{0.7\textwidth}}
+\toprule
+\textbf{Término} & \textbf{Significado} \\
+\midrule
+\endhead
+$\alpha$ & Velocidad con que una entidad corrige su déficit. \\
+$\beta$ & Intensidad del contagio de déficit. \\
+$\gamma$ & Déficit que genera el ingreso desfasado. \\
+$\Delta$ & Dispersión de los ritmos naturales de pago. \\
+$\lambda$ & Déficit que genera perder un pagador. \\
+$D_0$ & Intensidad de la redistribución de liquidez. \\
+$K$ & Fuerza con que se ajustan los ritmos de pago. \\
+$R$ & Índice de amplificación; menor que 1, la red amortigua. \\
+$\sigma$, $\tau_\text{rec}$ & Estabilidad y tiempo de recuperación. \\
+$r$, $\hat r$ & Sincronía real y estimada desde transacciones. \\
+AUC & Capacidad de un modelo para ordenar a quienes caen por encima de quienes no. \\
+CLI & Interfaz de línea de comandos: el comando \texttt{pulso}. \\
+Docker & Empaqueta el programa para que corra igual en cualquier equipo. \\
+GCN & Red neuronal que trabaja sobre grafos. \\
+Parquet & Formato de archivo para tablas, comprimido y con tipos fijos. \\
+PD & Probabilidad de impago a doce meses. \\
+SHAP & Método que explica cuánto aporta cada variable a una predicción. \\
+SMMLV & Salario mínimo mensual legal vigente. \\
+Streamlit & Biblioteca con que está hecha la aplicación web. \\
+uv & Gestor de entornos y dependencias de Python. \\
+XGBoost & Modelo de árboles de decisión entrenados en secuencia. \\
+YAML & Formato de texto de los archivos de configuración. \\
+\bottomrule
+\end{longtable}

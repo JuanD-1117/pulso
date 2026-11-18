@@ -19,6 +19,7 @@ documentos=(
   "guion_v3/guion_v3.tex:v3/pulso_guion_v3.pdf"
   "guion_v3_15min/guion_15min.tex:v3/pulso_guion_v3_15min.pdf"
   "estudio/estudio.tex:ESTUDIO.pdf"
+  "manual_usuario/manual_usuario.tex:MANUAL_DE_USUARIO.pdf"
 )
 
 compilar() {
