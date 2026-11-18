@@ -1,0 +1,397 @@
+% Plan de estudio para dominar los temas de PULSO (guía: versión 1).
+% Compilar desde docs/latex/estudio:
+%   latexmk -lualatex estudio.tex
+\documentclass[11pt,a4paper,oneside]{article}
+
+\usepackage{fontspec}
+\usepackage[spanish,es-noshorthands,es-tabla,es-nodecimaldot]{babel}
+\usepackage{amsmath,amssymb}
+\setmainfont{TeX Gyre Pagella}
+\setsansfont{TeX Gyre Heros}
+\setmonofont{DejaVu Sans Mono}[Scale=0.82]
+\usepackage[margin=2.3cm,headheight=14pt]{geometry}
+\usepackage{booktabs,longtable,array}
+\usepackage{xcolor}
+\usepackage[most]{tcolorbox}
+\usepackage{enumitem}
+\usepackage{needspace}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage[hidelinks]{hyperref}
+
+\definecolor{azul}{HTML}{2563A8}
+\definecolor{rojo}{HTML}{C2362B}
+\definecolor{verde}{HTML}{2F7D5B}
+\definecolor{ambar}{HTML}{E0A100}
+\definecolor{gris}{HTML}{5F6B77}
+
+\titleformat{\section}{\sffamily\bfseries\Large\color{azul}}{\thesection}{0.7em}{}
+\titleformat{\subsection}{\sffamily\bfseries\large}{\thesubsection}{0.7em}{}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\sffamily\color{gris}PULSO · ESTUDIO}
+\fancyhead[R]{\small\sffamily\color{gris}\nouppercase{\leftmark}}
+\fancyfoot[C]{\small\thepage}
+\renewcommand{\headrulewidth}{0.3pt}
+
+\setlength{\parskip}{0.5em}
+\setlength{\parindent}{0pt}
+\setlist{itemsep=0.15em,topsep=0.25em}
+\setlist[description]{font=\normalfont\bfseries,leftmargin=1.2em,labelindent=0em}
+
+% \bloque{número}{título}{horas defender}{horas dominar}
+\newcommand{\bloque}[4]{%
+  \par\needspace{12\baselineskip}\vspace{0.6em}%
+  \subsection*{\color{azul}Bloque #1 · #2\hfill{\normalsize\color{gris}defender #3 h · dominar #4 h}}%
+  \addcontentsline{toc}{subsection}{Bloque #1 · #2}}
+\newtcolorbox{hito}{colback=verde!6,colframe=verde,boxrule=0.5pt,arc=2pt,left=6pt,
+  right=6pt,top=3pt,bottom=3pt,title={\sffamily\small Lo dominas si puedes},
+  coltitle=black,colbacktitle=verde!15}
+\newtcolorbox{nota}{colback=ambar!8,colframe=ambar!80!black,boxrule=0.5pt,arc=2pt,
+  left=6pt,right=6pt}
+
+\hypersetup{pdftitle={PULSO: ESTUDIO},pdfauthor={Juan Diego Martínez Ayala}}
+
+\begin{document}
+
+\begin{titlepage}
+\centering
+\vspace*{3.5cm}
+{\sffamily\bfseries\Huge\color{azul} ESTUDIO\par}
+\vspace{0.4cm}
+{\sffamily\LARGE Plan para dominar los temas de PULSO\par}
+\vspace{0.4cm}
+{\large Temas, orden, método, referencias y tiempo estimado,\\
+tomando como guía la versión 1 (guía completa y presentación de 56 diapositivas)\par}
+\vfill
+{\large Juan Diego Martínez Ayala\par}
+{\normalsize Semillero de Modelamiento de Sistemas Complejos y Física Computacional\par}
+\vspace{0.4cm}
+{\normalsize Noviembre de 2026\par}
+\end{titlepage}
+
+\tableofcontents
+\clearpage
+
+% ===================================================================
+\section{Punto de partida y niveles}
+
+El plan supone la formación de un físico: álgebra lineal, ecuaciones diferenciales,
+probabilidad y programación en Python. Esas bases no se repasan desde cero. El tiempo se
+concentra en lo que no suele venir de la física: finanzas y crédito, ciencia de redes,
+aprendizaje automático con su validación, y las herramientas de software del proyecto.
+
+Hay dos niveles de profundidad:
+
+\begin{center}
+\begin{tabular}{p{0.15\textwidth}p{0.55\textwidth}c}
+\toprule
+\textbf{Nivel} & \textbf{Qué significa} & \textbf{Tiempo total} \\
+\midrule
+Defender & Explicar cada concepto, responder preguntas y leer cualquier gráfica del
+proyecto. & $\sim$70 h \\
+Dominar & Derivar los resultados en papel, implementarlos desde cero y criticarlos. &
+$\sim$190 h \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{center}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Dedicación} & \textbf{Defender} & \textbf{Dominar} \\
+\midrule
+10 h por semana & 7 semanas & 4.5 meses \\
+15 h por semana & 5 semanas & 3 meses \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+% ===================================================================
+\section{Método para cada bloque}
+
+Cada bloque se estudia con los mismos cinco pasos:
+
+\begin{enumerate}
+\item \textbf{Leer} el capítulo de la guía completa (v1) que corresponde al bloque.
+\item \textbf{Estudiar} la referencia principal, solo en las secciones indicadas; no el
+libro entero.
+\item \textbf{Derivar en papel} el resultado clave del bloque.
+\item \textbf{Reproducirlo con el código}: correr el notebook y la prueba del bloque,
+cambiar un parámetro y predecir qué pasará \emph{antes} de ejecutarlo.
+\item \textbf{Explicarlo en 2 minutos} sin notas, y luego contestar las preguntas del
+guion v2 sobre ese tema.
+\end{enumerate}
+
+\begin{nota}
+El paso 4 es el que convierte la lectura en dominio. El repositorio es el laboratorio:
+cada resultado del proyecto tiene una prueba automática que se puede modificar y volver a
+correr.
+\end{nota}
+
+% ===================================================================
+\section{Bloques de estudio}
+
+Los bloques están en orden de dependencia: cada uno usa lo de los anteriores.
+
+\bloque{1}{Finanzas y crédito}{6}{15}
+\begin{description}
+\item[Temas.] Liquidez frente a solvencia, déficit, mora, impago, probabilidad de impago
+(PD), score crediticio, riesgo sistémico, sistemas de pagos y Bre-B.
+\item[Referencias.] Thomas, Edelman y Crook, \emph{Credit Scoring and Its Applications}
+(caps.\ 1–4). Hull, \emph{Risk Management and Financial Institutions} (capítulos de
+riesgo de crédito y de liquidez).
+\end{description}
+\begin{hito}
+Explicar por qué una entidad solvente puede caer por falta de liquidez, y cómo un banco
+construye y usa un score.
+\end{hito}
+
+\bloque{2}{Ciencia de redes}{6}{15}
+\begin{description}
+\item[Temas.] Grafos dirigidos y ponderados, matriz $W$, grados, redes de Erdős–Rényi,
+Barabási–Albert y núcleo-periferia, PageRank, índice de concentración HHI.
+\item[Referencias.] Newman, \emph{Networks} (caps.\ 6, 7, 11 y 12). Barabási,
+\emph{Network Science} (caps.\ 3–5).
+\end{description}
+\begin{hito}
+Generar las tres topologías a mano y explicar por qué la núcleo-periferia se parece a los
+sistemas de pagos reales.
+\end{hito}
+
+\bloque{3}{Estabilidad lineal y espectro}{4}{10}
+\begin{description}
+\item[Temas.] Valores propios de matrices no negativas, teorema de Perron–Frobenius,
+índice de amplificación $R=\beta\rho(W)/\alpha$, vectores propios izquierdo y derecho
+(importancia y vulnerabilidad), exponencial de matrices $e^{Mt}$.
+\item[Referencias.] Newman, cap.\ 7 (centralidad por vector propio). Meyer,
+\emph{Matrix Analysis and Applied Linear Algebra}, cap.\ 8.
+\end{description}
+\begin{hito}
+Demostrar que el sistema $\dot x=(-\alpha I+\beta W)x$ es estable si y solo si $R<1$, y
+reproducir la frontera de estabilidad del notebook 01.
+\end{hito}
+
+\bloque{4}{Laplaciano y difusión}{4}{10}
+\begin{description}
+\item[Temas.] Laplaciano de flujo $L=D_\text{out}-W$, conservación del déficit,
+estabilidad $\sigma$, tiempo de recuperación $\tau_\text{rec}$, conectividad algebraica
+$\lambda_2$, vector de Fiedler, corte normalizado y comunidades.
+\item[Referencias.] Von Luxburg, ``A tutorial on spectral clustering'' (2007). Shi y
+Malik, ``Normalized cuts and image segmentation'' (2000).
+\end{description}
+\begin{hito}
+Demostrar que $\mathbf 1^\top L=0$ conserva el déficit total, y explicar por qué el corte
+normalizado evita separar solo los nodos de la periferia.
+\end{hito}
+
+\bloque{5}{Sincronización}{8}{18}
+\begin{description}
+\item[Temas.] Osciladores de fase, modelo de Kuramoto, parámetro de orden $r$,
+acoplamiento crítico $K_c=2\Delta$ con frecuencias de Lorentz, Kuramoto en redes,
+coherencia local $r_i$, fase estimada por eventos.
+\item[Referencias.] Strogatz, ``From Kuramoto to Crawford'' (2000). Acebrón et al.,
+``The Kuramoto model'' (2005). Rodrigues et al., ``The Kuramoto model in complex
+networks'' (2016). Pikovsky, Rosenblum y Kurths, \emph{Synchronization} (cap.\ 3 y
+estimación de fase desde señales).
+\end{description}
+\begin{hito}
+Derivar $r=\sqrt{1-2\Delta/K}$ por autoconsistencia, y justificar la normalización del
+acoplamiento por $\langle k\rangle$ en lugar de por $N$.
+\end{hito}
+
+\bloque{6}{Cascadas y riesgo sistémico}{6}{15}
+\begin{description}
+\item[Temas.] Umbrales de impago, cascadas, modelo de Eisenberg–Noe, DebtRank, modelo de
+Watts, ventana de contagio, Gai–Kapadia, Acemoglu et al.
+\item[Referencias.] Eisenberg y Noe (2001). Battiston et al., ``DebtRank'' (2012). Watts,
+``A simple model of global cascades on random networks'' (2002). Gai y Kapadia (2010).
+Acemoglu, Ozdaglar y Tahbaz-Salehi (2015).
+\end{description}
+\begin{hito}
+Resolver a mano Eisenberg–Noe en una red de 3 nodos, explicar en qué difiere DebtRank de
+la dinámica del proyecto, y explicar por qué existe la ventana de contagio.
+\end{hito}
+
+\bloque{7}{Métodos numéricos}{3}{8}
+\begin{description}
+\item[Temas.] Runge–Kutta de orden 4, error de truncamiento, eventos dentro del paso,
+ecuaciones diferenciales estocásticas, método de Euler–Maruyama, proceso de
+Ornstein–Uhlenbeck.
+\item[Referencias.] Higham, ``An algorithmic introduction to numerical simulation of
+stochastic differential equations'' (2001). Strogatz, \emph{Nonlinear Dynamics and
+Chaos} (repaso de estabilidad).
+\end{description}
+\begin{hito}
+Implementar RK4 y Euler–Maruyama desde cero, y verificar la varianza estacionaria
+$\sigma^2/(2\alpha)$ del proceso de Ornstein–Uhlenbeck.
+\end{hito}
+
+\bloque{8}{Aprendizaje automático y evaluación}{10}{25}
+\begin{description}
+\item[Temas.] Regresión logística, árboles de decisión, \emph{gradient boosting} y
+XGBoost, sobreajuste, validación cruzada, AUC y curva ROC, PR-AUC, KS, Brier,
+calibración y ECE, explicaciones SHAP.
+\item[Referencias.] James, Witten, Hastie y Tibshirani, \emph{An Introduction to
+Statistical Learning} (caps.\ 4, 5 y 8). Chen y Guestrin, ``XGBoost'' (2016). Lundberg y
+Lee, ``A unified approach to interpreting model predictions'' (2017). Niculescu-Mizil y
+Caruana, ``Predicting good probabilities with supervised learning'' (2005).
+\end{description}
+\begin{hito}
+Explicar qué mide cada métrica y cuál usar cuando hay pocos impagos, interpretar un gráfico
+SHAP y detectar una fuga de información en un experimento.
+\end{hito}
+
+\bloque{9}{Diseño experimental y estadística}{5}{10}
+\begin{description}
+\item[Temas.] Hipercubo latino, semillas y reproducibilidad, GroupKFold, diferencias
+pareadas, intervalos de confianza con la $t$ de Student, control nulo, relación
+dosis-respuesta, fuga de información.
+\item[Referencias.] McKay, Beckman y Conover (1979), sobre el hipercubo latino. Kaufman
+et al., ``Leakage in data mining'' (2012). Cualquier texto de inferencia, en la parte de
+prueba $t$ pareada.
+\end{description}
+\begin{hito}
+Defender por qué la validación agrupa por cartera, por qué las diferencias son pareadas y
+qué descarta el control nulo.
+\end{hito}
+
+\bloque{10}{Redes neuronales en grafos y PINN}{5}{15}
+\begin{description}
+\item[Temas.] Redes neuronales básicas, convolución en grafos (GCN), sobre-suavizado,
+conexión residual, redes informadas por la física (PINN), problema inverso,
+identificabilidad de parámetros.
+\item[Referencias.] Kipf y Welling, ``Semi-supervised classification with graph
+convolutional networks'' (2017). Raissi, Perdikaris y Karniadakis, ``Physics-informed
+neural networks'' (2019). Hamilton, \emph{Graph Representation Learning} (caps.\ 5–7).
+\end{description}
+\begin{hito}
+Explicar qué promedia una capa GCN, por qué se añadió la conexión residual, y por qué
+$\beta$ no es identificable frente a $\alpha$ en la PINN.
+\end{hito}
+
+\bloque{11}{Tarea 6: integración}{8}{15}
+\begin{description}
+\item[Temas.] Redes multicapa, cartera sintética, PD verdadera y su calibración por
+bisección, colchones según la PD, impagos idiosincráticos, registro de transacciones,
+estimación de $\hat W$ y $\hat\theta$, tres niveles de variables.
+\item[Referencias.] Boccaletti et al., ``The structure and dynamics of multilayer
+networks'' (2014). Letizia y Lillo (2019). Óskarsdóttir y Bravo (2021). Especificación
+de diseño en \texttt{docs/diseno/}.
+\end{description}
+\begin{hito}
+Recorrer sin notas el flujo completo de la tarea 6, desde la generación de la cartera
+hasta los resultados finales, y modificar un parámetro de \texttt{configs/credit.yaml}
+prediciendo su efecto.
+\end{hito}
+
+\bloque{12}{Software}{4}{12}
+\begin{description}
+\item[Temas.] uv, YAML, Parquet y esquemas validados, pytest, ruff, git con ramas,
+integración continua, Docker, Streamlit, arquitectura en capas.
+\item[Referencias.] Documentación oficial de cada herramienta. \texttt{README.md} del
+proyecto. Guía completa v1, parte IV.
+\end{description}
+\begin{hito}
+Clonar el repositorio en una carpeta limpia, correr pruebas, experimento y aplicación, y
+añadir una variable nueva con su prueba.
+\end{hito}
+
+\subsection*{Resumen de tiempos}
+\begin{center}
+\begin{tabular}{clcc}
+\toprule
+\textbf{Bloque} & \textbf{Tema} & \textbf{Defender} & \textbf{Dominar} \\
+\midrule
+1 & Finanzas y crédito & 6 h & 15 h \\
+2 & Ciencia de redes & 6 h & 15 h \\
+3 & Estabilidad lineal y espectro & 4 h & 10 h \\
+4 & Laplaciano y difusión & 4 h & 10 h \\
+5 & Sincronización & 8 h & 18 h \\
+6 & Cascadas y riesgo sistémico & 6 h & 15 h \\
+7 & Métodos numéricos & 3 h & 8 h \\
+8 & Aprendizaje automático y evaluación & 10 h & 25 h \\
+9 & Diseño experimental y estadística & 5 h & 10 h \\
+10 & Redes neuronales en grafos y PINN & 5 h & 15 h \\
+11 & Tarea 6: integración & 8 h & 15 h \\
+12 & Software & 4 h & 12 h \\
+\midrule
+ & \textbf{Total} & \textbf{69 h} & \textbf{168 h} \\
+ & \textbf{Con repaso final} (exponer y responder) & \textbf{$\sim$70 h} & \textbf{$\sim$190 h} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+% ===================================================================
+\section{Dónde practicar cada bloque}
+
+\begin{center}
+\small
+\begin{tabular}{p{0.11\textwidth}p{0.3\textwidth}p{0.24\textwidth}p{0.24\textwidth}}
+\toprule
+\textbf{Bloques} & \textbf{Notebook} & \textbf{Pruebas} & \textbf{Módulos} \\
+\midrule
+2–3 & \texttt{01\_base\_red\_y\_deficit} & \texttt{test\_fase1} &
+\texttt{networks.py}, \texttt{spectral.py} \\
+4 & \texttt{02\_redistribucion} & \texttt{test\_fase2} & \texttt{spectral.py} \\
+5 & \texttt{03\_ritmo\_de\_pagos} & \texttt{test\_fase3} & \texttt{model.py},
+\texttt{integrate.py} \\
+6 & \texttt{04\_impagos\_y\_cascadas} & \texttt{test\_fase4} & \texttt{cascades.py},
+\texttt{metrics.py} \\
+7 & — & — & \texttt{integrate.py} \\
+8–10 & \texttt{05\_prediccion}, \texttt{06\_pinn\_problema\_inverso} &
+\texttt{test\_fase5}, \texttt{test\_fase6} & \texttt{experiments.py}, \texttt{ml/} \\
+9 y 11 & — & \texttt{test\_fase10}, \texttt{test\_fase11}, \texttt{test\_fase12} &
+\texttt{world/}, \texttt{credit/} \\
+12 & — & \texttt{test\_app} & \texttt{app/} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Las pruebas están en \texttt{tests/} y se corren con \texttt{uv run pytest
+tests/test\_fase3.py}, por ejemplo. Los notebooks están en \texttt{notebooks/}.
+
+% ===================================================================
+\section{Calendario sugerido}
+
+Dedicación de 10 horas por semana, nivel dominar.
+
+\begin{center}
+\begin{tabular}{lp{0.18\textwidth}p{0.5\textwidth}}
+\toprule
+\textbf{Semanas} & \textbf{Bloques} & \textbf{Por qué en este orden} \\
+\midrule
+1–2 & 1 y 12 & El vocabulario financiero y poder correr todo son la base de lo demás. \\
+3–5 & 2, 3 y 4 & Redes y espectro sostienen las tareas 1 y 2. \\
+6–7 & 5 & Sincronización: es el corazón de la hipótesis. \\
+8–9 & 6 y 7 & Cascadas y métodos numéricos. \\
+10–12 & 8 y 9 & Aprendizaje automático y validación: lo que más preguntará un jurado. \\
+13–14 & 10 & Redes neuronales en grafos y PINN; es lo menos central. \\
+15–17 & 11 & Integración de la tarea 6, ya con todas las piezas. \\
+18–19 & Repaso & Exponer dos veces la presentación v3 completa con su guion y contestar
+todas las preguntas sin mirar. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+% ===================================================================
+\needspace{16\baselineskip}
+\section{Si hay poco tiempo antes de una exposición}
+
+Priorice los bloques \textbf{1, 5, 8, 9 y 11}. En el nivel defender suman unas
+\textbf{37 horas} y cubren casi todas las preguntas probables:
+
+\begin{itemize}
+\item \textbf{1 · Finanzas y crédito}: el vocabulario de la pregunta de investigación.
+\item \textbf{5 · Sincronización}: el mecanismo que se pone a prueba.
+\item \textbf{8 · Aprendizaje automático}: cómo se mide la mejora (AUC, SHAP).
+\item \textbf{9 · Diseño experimental}: por qué el resultado es creíble (control nulo,
+diferencias pareadas).
+\item \textbf{11 · Tarea 6}: el flujo completo, de la cartera a los resultados.
+\end{itemize}
+
+Para la preparación final, use el guion v3: sus secciones \emph{Si preguntan},
+\emph{Preguntas generales} y las diapositivas de respaldo.
+
+\end{document}

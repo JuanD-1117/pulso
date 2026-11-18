@@ -3,6 +3,12 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es/1.1.0/); versionado
 semántico.
 
+## [3.2.1] · 2026-11-18 · Plan de estudio
+
+### Añadido
+- `docs/Presentaciones/ESTUDIO.pdf`: plan para dominar los temas del proyecto en 12
+  bloques, con método, referencias, hitos, ejercicios en el código, tiempos y calendario.
+
 ## [3.2.0] · 2026-11-18 · Presentación v3 de 30 minutos
 
 ### Añadido

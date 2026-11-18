@@ -10,6 +10,10 @@
 | v3 | [`pulso_presentacion_v3.pdf`](v3/pulso_presentacion_v3.pdf) | **Versión para exponer en 30 minutos.** 23 diapositivas, una idea por diapositiva con su mensaje clave al pie, y 6 diapositivas de respaldo para preguntas. |
 | v3 | [`pulso_guion_v3.pdf`](v3/pulso_guion_v3.pdf) | Guion cronometrado (unos 27 minutos): texto por diapositiva con transiciones, definición de cada variable y sigla, puntos de control de tiempo, recortes si hay atraso, guía de las diapositivas de respaldo y preguntas probables. |
 
+**Plan de estudio:** [`ESTUDIO.pdf`](ESTUDIO.pdf) (9 pp.): los 12 bloques de temas del proyecto
+(tomando como guía la v1), cómo estudiarlos, referencias, dónde practicar en el código,
+tiempo estimado (~70 h para defender, ~190 h para dominar) y calendario.
+
 Las fuentes están en [`../latex/`](../latex/). Para regenerar todos los PDF, desde la
 raíz del repositorio:
 
