@@ -17,7 +17,7 @@ model:
   R: 0.85                    # β se deduce: β = R α / ρ(W)
   D0: 0.05
   K: 3.0
-  gamma: 0.03
+  gamma: 0.0                 # sin fragilidad previa: todo impago lo causa el choque
   buffer: 0.5
   buffer_dispersion: 0.3
   loss: 1.0

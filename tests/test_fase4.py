@@ -155,3 +155,25 @@ def test_systemic_importance_shape_and_range(W_er):
     )
     assert imp.shape == (15,)
     assert ((imp >= 0) & (imp <= 1)).all()
+
+
+def test_defaults_before_shock_not_counted_as_contagion(W_er):
+    n = W_er.shape[0]
+    # Umbral nulo para la entidad 5: cae en el primer paso, antes del choque en t0=1.
+    th = np.full(n, 1e6)
+    th[5] = 0.0
+    p = Params(
+        alpha=1.0,
+        beta=0.0,
+        gamma=0.5,
+        omega=np.linspace(0, 3, n),
+        loss=0.0,
+        thresholds=th,
+    )
+    shock = Shock("liquidity", (0,), size=1.0, t0=1.0)
+    traj = simulate(W_er, p, 3.0, 0.01, theta0=np.linspace(0, 6, n), shock=shock)
+    ev = traj.events.set_index("entity")
+    assert ev.loc[5, "cause"] == "previo_al_choque"
+    s = risk_summary(traj, W_er, collapse_fraction=0.3, shock=shock)
+    assert s["n_defaulted_before_shock"] == 1
+    assert np.isnan(s["time_to_first_contagion"])

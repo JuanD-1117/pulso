@@ -146,6 +146,9 @@ def simulate(
     default_time = np.full(n, np.nan)
     events: list[dict] = []
     targets = set(shock.targets) if shock is not None else set()
+    # Impagos antes del choque vienen de la fragilidad previa (p. ej. desincronización),
+    # no del choque: se registran aparte para no contarlos como contagio.
+    t_shock = shock.t0 if shock is not None else np.inf
 
     def build() -> Dynamics:
         paying = ~(defaulted | down)
@@ -178,7 +181,13 @@ def simulate(
                         "t": t,
                         "entity": int(i),
                         "event": "impago",
-                        "cause": "choque" if i in targets else "contagio",
+                        "cause": (
+                            "choque"
+                            if i in targets
+                            else "previo_al_choque"
+                            if t < t_shock - _EPS_T
+                            else "contagio"
+                        ),
                     }
                 )
             changed = True

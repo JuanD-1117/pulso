@@ -86,3 +86,13 @@ def test_communities_split_two_disconnected_blocks():
     labels = communities(W, n_communities=2)
     assert len(set(labels[:5])) == 1 and len(set(labels[5:])) == 1
     assert labels[0] != labels[5]
+
+
+def test_normalized_communities_balanced_on_core_periphery():
+    from finnet.networks import NetworkConfig, generate
+
+    W = generate(
+        NetworkConfig("core_periphery", 200, 8.0, 1.0, 0.06, 0.9, 0.05, seed=1)
+    )
+    sizes = np.bincount(communities(W, n_communities=2))
+    assert sizes.min() >= 0.15 * W.shape[0]

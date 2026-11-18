@@ -101,9 +101,24 @@ def fiedler_vector(W: np.ndarray) -> np.ndarray:
     return vecs[:, 1]
 
 
+def normalized_fiedler_vector(W: np.ndarray) -> np.ndarray:
+    """Fiedler de ``I - D^{-1/2} S D^{-1/2}`` devuelto como ``D^{-1/2} u``.
+
+    Es la relajación del corte normalizado (Shi y Malik, 2000). El Laplaciano sin
+    normalizar tiende a separar unos pocos nodos de periferia poco conectados; el
+    normalizado pesa cada lado por su volumen y da comunidades balanceadas.
+    """
+    S = 0.5 * (np.asarray(W, dtype=float) + np.asarray(W, dtype=float).T)
+    d = S.sum(axis=1)
+    inv = np.where(d > 0, 1.0 / np.sqrt(np.where(d > 0, d, 1.0)), 0.0)
+    Ln = np.eye(S.shape[0]) - inv[:, None] * S * inv[None, :]
+    _, vecs = np.linalg.eigh(Ln)
+    return inv * vecs[:, 1]
+
+
 def _bisect(W: np.ndarray, nodes: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     sub = W[np.ix_(nodes, nodes)]
-    f = fiedler_vector(sub)
+    f = normalized_fiedler_vector(sub)
     left = nodes[f < np.median(f)] if (f < 0).all() or (f >= 0).all() else nodes[f < 0]
     right = np.setdiff1d(nodes, left)
     return left, right
@@ -114,8 +129,9 @@ def communities(
 ) -> np.ndarray:
     """Etiqueta de comunidad por entidad.
 
-    ``spectral``: bisección recursiva con el vector de Fiedler de la parte simétrica
-    de L, partiendo siempre la comunidad más grande. ``greedy``: modularidad de
+    ``spectral``: bisección recursiva con el vector de Fiedler del Laplaciano
+    normalizado de la parte simétrica, partiendo siempre la comunidad más grande.
+    ``greedy``: modularidad de
     networkx (respaldo para redes desconectadas o muy heterogéneas).
     """
     W = np.asarray(W, dtype=float)

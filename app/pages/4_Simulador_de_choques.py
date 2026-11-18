@@ -82,10 +82,17 @@ if met["collapse"]:
         f"Colapso global: cae ≥ {100 * c['metrics']['collapse_fraction']:.0f} %"
         " de la red."
     )
+if met["n_defaulted_before_shock"]:
+    st.info(
+        f"{met['n_defaulted_before_shock']} entidades cayeron antes del choque por "
+        "fragilidad previa (desincronización con γ > 0); no cuentan como contagio."
+    )
 
 traj = res["trajectory"]
 st.plotly_chart(
-    viz.cascade_animation(W, common.positions(), traj.t, res["status"]),
+    viz.cascade_animation(
+        W, common.positions(), traj.t, res["status"], highlight=[target]
+    ),
     use_container_width=True,
 )
 left, right = st.columns(2)

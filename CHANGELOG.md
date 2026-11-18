@@ -3,6 +3,22 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es/1.1.0/); versionado
 semántico.
 
+## [1.0.1] · 2026-11-18
+
+### Corregido
+- Impagos ocurridos antes del choque (fragilidad previa con γ > 0) se marcan como
+  `previo_al_choque` y ya no cuentan como contagio; `risk_summary` reporta
+  `n_defaulted_before_shock` y `time_to_first_contagion` solo mira `t ≥ t0`.
+- Comunidades espectrales con el Laplaciano normalizado (corte normalizado de
+  Shi y Malik): particiones balanceadas en redes núcleo-periferia.
+- Escenario Bre-B estilizado con `gamma: 0.0`: todo impago lo causa el choque.
+
+### Cambiado
+- Animación de cascada resalta las entidades chocadas (contorno y tamaño).
+- Círculo de fases muestra el estado final al cargar; ▶ reproduce desde t = 0.
+- *Ritmo de pagos*: aviso cuando γ = 0 (no hay acople ritmo → déficit) y sin
+  delta espurio en el déficit.
+
 ## [1.0.0] · 2026-11-17
 
 ### Agregado
