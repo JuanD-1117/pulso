@@ -1,0 +1,39 @@
+# Entrenamiento de modelos predictivos (Fase 6). `uv run finnet train configs/train.yaml`
+seed: 7
+version: "1.0.0"
+n_splits: 5                 # GroupKFold por red: ninguna red en train y test a la vez
+
+logistic:
+  C: 1.0
+  max_iter: 2000
+
+xgboost:
+  n_estimators: 400
+  max_depth: 5
+  learning_rate: 0.05
+  subsample: 0.8
+  colsample_bytree: 0.8
+  min_child_weight: 2.0
+  n_jobs: 4
+
+xgboost_nodes:
+  n_estimators: 400
+  max_depth: 6
+  learning_rate: 0.05
+  subsample: 0.8
+  colsample_bytree: 0.8
+  min_child_weight: 2.0
+  n_jobs: 4
+
+gcn:
+  hidden: 64
+  layers: 3
+  dropout: 0.1
+  lr: 0.01
+  weight_decay: 0.0005
+  epochs: 200
+  batch_graphs: 16
+  centered_weight: 2.0      # peso del error dentro de cada grafo (orden)
+
+timing:
+  n_predictions: 200        # repeticiones para medir ms por predicción
