@@ -168,44 +168,62 @@ groups = np.where(
     np.where(tab["is_person"] & (tab["formal"] == 1), "formales", "informales"),
 )
 df = pd.DataFrame(
-    {"grupo": groups, "r̂": tab["r_mean"], "impago 12m": tab["y"], "vivo": alive_obs}
+    {
+        "grupo": groups,
+        "r̂": tab["r_mean"],
+        "impago 12m": tab["y"],
+        # Sin ingreso por la red no hay desincronización medible (r̂ = 1 por convención).
+        "medible": alive_obs & (tab["n_payers"] > 0),
+    }
 )
-df = df[df["vivo"]]
+df = df[df["medible"]]
 g1, g2 = st.columns(2)
 with g1:
     fig = go.Figure(
         [go.Box(y=d["r̂"], name=name, boxmean=True) for name, d in df.groupby("grupo")]
     )
     fig.update_layout(
-        title="Coherencia local r̂ por grupo",
-        height=320,
+        title="Coherencia local r̂ por grupo (cartera activa)",
+        height=340,
         margin={"l": 10, "r": 10, "t": 50, "b": 10},
         showlegend=False,
     )
     st.plotly_chart(fig, width="stretch")
 with g2:
-    df["tramo de r̂"] = pd.cut(df["r̂"], [-1.01, 0.25, 0.5, 0.75, 0.9, 1.01])
-    rate = df.groupby("tramo de r̂", observed=True)["impago 12m"].agg(["mean", "size"])
-    fig = go.Figure(
-        go.Bar(
-            x=[str(i) for i in rate.index],
-            y=100 * rate["mean"],
-            text=[f"n={n}" for n in rate["size"]],
-            marker_color="#c2362b",
+    if common.credit_service.results_available():
+        byr = common.credit_service.experiment_results()["by_coherence"]
+        fig = go.Figure(
+            [
+                go.Bar(
+                    x=g["tramo"],
+                    y=100 * g["rate"],
+                    name={"red": "con red", "nulo": "nulo (control)"}[reg],
+                    marker_color={"red": "#c2362b", "nulo": "#9aa5b1"}[reg],
+                    text=[f"n={n:,}".replace(",", ".") for n in g["n"]],
+                )
+                for reg, g in byr.groupby("regime", sort=False)
+            ]
         )
-    )
-    fig.update_layout(
-        title="Impago a 12 meses según r̂",
-        xaxis_title="r̂ (coherencia local estimada)",
-        yaxis_title="% impago",
-        height=320,
-        margin={"l": 10, "r": 10, "t": 50, "b": 10},
-    )
-    st.plotly_chart(fig, width="stretch")
+        fig.update_layout(
+            barmode="group",
+            title="Impago a 12 meses según r̂ (20 mundos del experimento)",
+            xaxis_title="r̂ (coherencia local estimada)",
+            yaxis_title="% impago",
+            height=340,
+            margin={"l": 10, "r": 10, "t": 50, "b": 10},
+            legend={"orientation": "h", "y": -0.3},
+        )
+        st.plotly_chart(fig, width="stretch")
+    else:
+        st.info(
+            "Ejecute `uv run finnet credit configs/credit.yaml` para ver esta gráfica."
+        )
 st.caption(
-    "En el mundo **con red**, los clientes desincronizados de sus pagadores caen más. "
-    "En el mundo **nulo** la misma desincronización existe pero no crea déficit: "
-    "la diferencia entre tramos se explica solo por las variables clásicas."
+    "Solo clientes con ingreso por la red. En el mundo **con red** el impago crece "
+    "al bajar r̂: el ingreso desfasado se vuelve déficit. En el mundo **nulo** también "
+    "hay un gradiente, pero menor y explicado por variables clásicas (los informales, "
+    "más riesgosos, están menos sincronizados); por eso la prueba de la tesis es la "
+    "comparación de modelos de la página *Riesgo crediticio híbrido*, no esta gráfica."
 )
 
 st.subheader("Escenario: quiebra de un empleador")

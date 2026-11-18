@@ -189,3 +189,20 @@ def test_dynamic_features_help_only_when_network_drives_defaults(credit_cfg):
     assert auc_gain["nulo"] < 0.005
     assert auc_gain["red"] > 0.01
     assert auc_gain["red"] > auc_gain["nulo"] + 0.01
+
+
+def test_default_by_coherence_excludes_clients_without_network_income():
+    from finnet.credit.evaluate import default_by_coherence
+
+    t = pd.DataFrame(
+        {
+            "regime": ["red"] * 4,
+            "r_mean": [1.0, 0.95, 0.1, 0.1],
+            "n_payers": [0, 2, 1, 3],
+            "y": [1, 0, 1, 0],
+        }
+    )
+    out = default_by_coherence(t).set_index("tramo")
+    assert out["n"].sum() == 3
+    assert out.loc["(0.9, 1.01]", "rate"] == 0.0
+    assert out.loc["(-1.01, 0.25]", "rate"] == 0.5
