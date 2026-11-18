@@ -99,7 +99,7 @@ st.plotly_chart(
         title="Ventana de contagio: fracción en impago contra grado medio",
         labels={"grado_medio": "grado medio", "fraccion_impago": "fracción en impago"},
     ),
-    use_container_width=True,
+    width="stretch",
 )
 
 left, right = st.columns(2)
@@ -114,7 +114,7 @@ with left:
             title="Fracción en impago contra R",
             labels={"fraction_defaulted": "fracción en impago"},
         ),
-        use_container_width=True,
+        width="stretch",
     )
 with right:
     st.plotly_chart(
@@ -127,7 +127,7 @@ with right:
             title="Distribución del tamaño de cascada",
             labels={"fraction_defaulted": "fracción en impago"},
         ),
-        use_container_width=True,
+        width="stretch",
     )
 
 st.subheader("Comparar escenarios lado a lado")
@@ -157,9 +157,7 @@ ids = st.multiselect(
     max_selections=4,
 )
 if ids:
-    st.dataframe(
-        f.set_index("scenario_id").loc[ids, cols[1:]].T, use_container_width=True
-    )
+    st.dataframe(f.set_index("scenario_id").loc[ids, cols[1:]].T, width="stretch")
 st.download_button(
     "Exportar filtro (CSV)",
     f[cols].to_csv(index=False).encode(),

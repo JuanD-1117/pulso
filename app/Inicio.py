@@ -6,15 +6,17 @@ import common
 import streamlit as st
 
 st.set_page_config(
-    page_title="finnet · riesgo en redes de pagos", page_icon="🕸️", layout="wide"
+    page_title="finnet · riesgo en redes de pagos digitales",
+    page_icon="🕸️",
+    layout="wide",
 )
 
-st.title("finnet · riesgo sistémico en redes de pagos")
+st.title("finnet · redes complejas, sincronización y riesgo en pagos digitales")
 st.markdown(
     """
-Herramienta para explorar cómo un problema de liquidez en una entidad se propaga por
-una red de pagos inmediatos tipo **Bre-B**. Un solo modelo dinámico, construido en
-capas:
+Herramienta para explorar cómo un problema de liquidez se propaga por una red de
+pagos digitales y cómo la **sincronía de los ciclos de pago** se convierte en riesgo
+de impago. Un solo modelo dinámico, construido en capas (tareas de la propuesta):
 
 | Capa | Qué modela | Página |
 |---|---|---|
@@ -23,8 +25,10 @@ capas:
 | Ritmo de pagos | Fases del ciclo intradía (Kuramoto); el ingreso desfasado crea déficit | Ritmo de pagos |
 | Impagos | Al cruzar su colchón una entidad deja de pagar: cascada | Simulador de choques |
 | Datos y predicción | Miles de corridas y modelos que responden en milisegundos | Explorar escenarios · Mapa de riesgo |
+| **Riesgo crediticio (Tarea 6)** | Clientes de un banco en tres capas (nómina, proveedores, transferencias): ¿la sincronía predice impagos que el score clásico no ve? | Cartera multicapa · Riesgo crediticio híbrido |
 
-Los parámetros de ejemplo son **ilustrativos**, no calibrados con datos reales.
+Los parámetros son **ilustrativos**, no calibrados con datos reales. Bre-B (pagos
+inmediatos de Colombia) es solo un escenario de ejemplo.
 """
 )
 
@@ -49,5 +53,6 @@ c3.metric("Grado medio", f"{net['summary']['mean_degree']:.1f}")
 c4.metric("CV de montos", f"{net['summary']['amount_cv']:.2f}")
 st.caption(
     "Recorre las páginas de la barra lateral en orden: construir → diagnosticar → "
-    "ritmo → choque → explorar → mapa de riesgo."
+    "ritmo → choque → explorar → mapa de riesgo → cartera multicapa → riesgo "
+    "crediticio híbrido."
 )

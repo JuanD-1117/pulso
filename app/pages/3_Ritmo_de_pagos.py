@@ -74,22 +74,20 @@ if m["gamma"] == 0:
 
 left, right = st.columns(2)
 with left:
-    st.plotly_chart(
-        viz.phase_circle_figure(res["t"], res["theta"]), use_container_width=True
-    )
+    st.plotly_chart(viz.phase_circle_figure(res["t"], res["theta"]), width="stretch")
 with right:
     ys = {"r (con desconexión)" if res is not base else "r": res["r"]}
     if res is not base:
         ys["r (red completa)"] = base["r"]
     st.plotly_chart(
         viz.line_figure(res["t"], ys, "Parámetro de orden r(t)", "r"),
-        use_container_width=True,
+        width="stretch",
     )
     ys = {"Σ x": res["deficit"]}
     if res is not base:
         ys["Σ x (red completa)"] = base["deficit"]
     st.plotly_chart(
-        viz.line_figure(res["t"], ys, "Déficit total", "Σ x"), use_container_width=True
+        viz.line_figure(res["t"], ys, "Déficit total", "Σ x"), width="stretch"
     )
 
 st.plotly_chart(
@@ -103,5 +101,5 @@ st.plotly_chart(
         cmax=1,
         title="Coherencia local al final de la corrida",
     ),
-    use_container_width=True,
+    width="stretch",
 )

@@ -80,7 +80,7 @@ with left:
             discrete_colors=colors,
             title="Comunidades (bisección espectral de Fiedler)",
         ),
-        use_container_width=True,
+        width="stretch",
     )
 with right:
     st.markdown("**Ranking por vector propio dominante**")
@@ -96,7 +96,7 @@ with right:
             }
         ),
         hide_index=True,
-        use_container_width=True,
+        width="stretch",
     )
     st.caption(
         "Importancia: vector izquierdo (cuánto propaga). "
@@ -119,11 +119,11 @@ shock = service.make_shock(
 res = service.simulate(W, p, shock, c["simulation"])
 st.plotly_chart(
     viz.trajectories_figure(res["t"], res["x"], highlight=[int(target)]),
-    use_container_width=True,
+    width="stretch",
 )
 st.plotly_chart(
     viz.line_figure(
         res["t"], {"Σ x": res["total_deficit"]}, "Déficit total del sistema", "Σ x"
     ),
-    use_container_width=True,
+    width="stretch",
 )

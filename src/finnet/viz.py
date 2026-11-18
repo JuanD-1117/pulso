@@ -370,3 +370,152 @@ def events_timeline(events, height: int = 300) -> go.Figure:
         margin={"l": 10, "r": 10, "t": 50, "b": 10},
     )
     return fig
+
+
+# ------------------------------------------------------------- Tarea 6: crédito
+
+LAYER_COLORS = {
+    0: "rgba(37,99,168,0.35)",  # nómina
+    1: "rgba(194,54,43,0.45)",  # proveedores
+    2: "rgba(120,120,120,0.22)",  # transferencias
+}
+LEVEL_COLORS = {
+    "clasico": "#9aa5b1",
+    "red_estatica": "#2563a8",
+    "red_dinamica": "#c2362b",
+}
+
+
+def multilayer_figure(
+    edges,
+    pos: np.ndarray,
+    kind: np.ndarray,
+    color: np.ndarray | None = None,
+    color_title: str = "",
+    hover: Sequence[str] | None = None,
+    highlight: Sequence[int] = (),
+    layer_names: dict[int, str] | None = None,
+    colorscale: str | list = "RdYlGn",
+    cmin=None,
+    cmax=None,
+    height: int = 560,
+) -> go.Figure:
+    """Red multicapa: aristas coloreadas por capa; firmas como cuadrados."""
+    layer_names = layer_names or {0: "nómina", 1: "proveedores", 2: "transferencias"}
+    traces = []
+    for layer, g in edges.groupby("layer"):
+        src, dst = g["src"].to_numpy(), g["dst"].to_numpy()
+        if src.size > MAX_EDGES_DRAWN:
+            keep = np.argsort(-g["weight"].to_numpy())[:MAX_EDGES_DRAWN]
+            src, dst = src[keep], dst[keep]
+        nan = np.full(src.size, np.nan)
+        traces.append(
+            go.Scatter(
+                x=np.column_stack([pos[src, 0], pos[dst, 0], nan]).ravel(),
+                y=np.column_stack([pos[src, 1], pos[dst, 1], nan]).ravel(),
+                mode="lines",
+                line={"width": 0.7, "color": LAYER_COLORS.get(int(layer), "#999")},
+                hoverinfo="skip",
+                name=layer_names.get(int(layer), str(layer)),
+            )
+        )
+    n = len(kind)
+    hover = list(hover) if hover is not None else [f"Cliente {i}" for i in range(n)]
+    hl = np.zeros(n, dtype=bool)
+    hl[list(highlight)] = True
+    marker: dict = {
+        "size": np.where(kind == 0, 13, 6) * np.where(hl, 1.6, 1.0),
+        "symbol": np.where(kind == 0, "square", "circle"),
+        "line": {"width": np.where(hl, 2.5, 0.4), "color": "#111"},
+    }
+    if color is not None:
+        marker.update(
+            color=np.asarray(color),
+            colorscale=colorscale,
+            showscale=True,
+            cmin=cmin,
+            cmax=cmax,
+            colorbar={"title": color_title, "thickness": 12},
+        )
+    else:
+        marker["color"] = np.where(kind == 0, PALETTE["accent"], PALETTE["ok"])
+    traces.append(
+        go.Scatter(
+            x=pos[:, 0],
+            y=pos[:, 1],
+            mode="markers",
+            marker=marker,
+            text=hover,
+            hoverinfo="text",
+            showlegend=False,
+        )
+    )
+    fig = go.Figure(traces)
+    fig.update_layout(
+        height=height,
+        margin={"l": 10, "r": 10, "t": 30, "b": 10},
+        xaxis={"visible": False},
+        yaxis={"visible": False, "scaleanchor": "x"},
+        plot_bgcolor="rgba(0,0,0,0)",
+        legend={"orientation": "h", "y": 1.04},
+    )
+    return fig
+
+
+def level_bars(
+    summary,
+    metric: str,
+    title: str,
+    level_labels: dict[str, str],
+    regime_labels: dict[str, str],
+    height: int = 380,
+) -> go.Figure:
+    """Métrica media (± desviación entre particiones) por nivel y régimen."""
+    fig = go.Figure()
+    for level, label in level_labels.items():
+        g = summary[summary["level"] == level]
+        fig.add_trace(
+            go.Bar(
+                x=[regime_labels.get(r, r) for r in g["regime"]],
+                y=g[f"{metric}_mean"],
+                error_y={"type": "data", "array": g[f"{metric}_std"]},
+                name=label,
+                marker_color=LEVEL_COLORS.get(level),
+            )
+        )
+    fig.update_layout(
+        barmode="group",
+        title=title,
+        height=height,
+        margin={"l": 10, "r": 10, "t": 50, "b": 10},
+        legend={"orientation": "h", "y": -0.15},
+    )
+    return fig
+
+
+def delta_forest(deltas, labels: Sequence[str], title: str, xtitle: str) -> go.Figure:
+    """Mejoras pareadas con IC 95 %: un punto por comparación."""
+    d = deltas.reset_index(drop=True)
+    colors = np.where(d["ci_low"] > 0, PALETTE["ok"], "#777")
+    fig = go.Figure(
+        go.Scatter(
+            x=d["delta_mean"],
+            y=list(labels),
+            mode="markers",
+            marker={"size": 11, "color": colors},
+            error_x={
+                "type": "data",
+                "symmetric": False,
+                "array": d["ci_high"] - d["delta_mean"],
+                "arrayminus": d["delta_mean"] - d["ci_low"],
+            },
+        )
+    )
+    fig.add_vline(x=0, line={"color": "#444", "dash": "dot"})
+    fig.update_layout(
+        title=title,
+        xaxis_title=xtitle,
+        height=60 + 42 * len(d),
+        margin={"l": 10, "r": 10, "t": 50, "b": 10},
+    )
+    return fig
