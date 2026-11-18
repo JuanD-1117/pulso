@@ -1,0 +1,146 @@
+% ===================================================================
+\chapter{Configuración}
+\label{cap:config}
+
+Todos los parámetros están en archivos YAML dentro de \ruta{configs/}. Para cambiar un
+experimento se edita el YAML y se vuelve a correr el comando; no se toca el código.
+
+\section{Qué es un archivo YAML}
+Es un archivo de texto con pares \texttt{clave: valor}, organizados por sangría. Se
+parece a un diccionario de Python. El símbolo \texttt{\#} empieza un comentario.
+\begin{archivo}[label=ejemplo]
+dynamics:
+  alpha: 1.0                       # 1/mes: el déficit se corrige en ~1 mes
+  beta: {N: 0.5, S: 0.4, T: 0.3}   # un valor por capa
+\end{archivo}
+Reglas: use espacios y no tabuladores para la sangría, y mantenga los nombres de las
+claves tal como están.
+
+\section{Los archivos}
+\begin{longtable}{L{0.2\textwidth}L{0.2\textwidth}L{0.52\textwidth}}
+\toprule
+\textbf{Archivo} & \textbf{Lo usa} & \textbf{Contenido} \\
+\midrule
+\endhead
+\texttt{default.yaml} & Aplicación, páginas 1–7 & Red inicial, parámetros del modelo,
+simulación, choque por defecto, umbral de colapso y límite de simulación en vivo. \\
+\texttt{breb\_example.yaml} & Botón de ejemplo de \emph{Inicio} & Escenario ``Bre-B
+estilizado'': red núcleo-periferia de 245 entidades. Solo cambia lo que difiere de
+\texttt{default.yaml}. \\
+\texttt{sweep.yaml} & \texttt{pulso sweep} & Rangos de las redes y de los escenarios,
+semilla global y parámetros de simulación. \\
+\texttt{train.yaml} & \texttt{pulso train} & Hiperparámetros de la regresión logística,
+XGBoost y la GCN; número de particiones; versión de los modelos. \\
+\texttt{pinn.yaml} & Notebook 06 y pruebas & Problema sintético y entrenamiento de la
+PINN. \\
+\texttt{world.yaml} & \texttt{pulso world}, \texttt{pulso credit}, páginas 8–9 &
+Composición de la cartera: personas, empresas, calendarios de pago, capas y
+probabilidad de impago verdadera. \\
+\texttt{credit.yaml} & \texttt{pulso credit}, páginas 8–9 & Dinámica multicapa,
+colchones, ventanas de tiempo, transacciones, regímenes, experimento y modelos. \\
+\bottomrule
+\end{longtable}
+
+\section{Parámetros principales}
+
+\needspace{10\baselineskip}
+\subsection*{\texttt{default.yaml} (aplicación, páginas 1 a 7)}
+\begin{longtable}{L{0.34\textwidth}L{0.2\textwidth}L{0.38\textwidth}}
+\toprule
+\textbf{Clave} & \textbf{Valor} & \textbf{Significado} \\
+\midrule
+\endhead
+\texttt{seed} & 42 & Semilla de la red inicial. \\
+\texttt{network.topology} & \texttt{core\_\-periphery} & \texttt{erdos\_renyi},
+\texttt{barabasi\_albert} o \texttt{core\_periphery}. \\
+\texttt{network.n} & 80 & Número de entidades. \\
+\texttt{network.mean\_degree} & 6.0 & Grado medio. \\
+\texttt{network.amount\_sigma} & 0.8 & Dispersión lognormal de los montos. \\
+\texttt{model.alpha} & 1.0 & Autocorrección [1/ciclo]. \\
+\texttt{model.R} & 0.8 & Si no es \texttt{null}, fija $\beta=R\alpha/\rho(W)$. \\
+\texttt{model.D0}, \texttt{K}, \texttt{gamma} & 0 & Redistribución, acople de fase y
+peso del desfase. \\
+\texttt{model.omega\_width} & 0.5 & Dispersión de los ritmos naturales. \\
+\texttt{model.buffer} & 0.5 & Colchón en ciclos de pagos salientes. \\
+\texttt{model.loss} & 1.0 & Déficit por perder todo el ingreso. \\
+\texttt{simulation.t\_end}, \texttt{dt} & 20, 0.01 & Duración y paso de la simulación,
+en ciclos. \\
+\texttt{shock.kind}, \texttt{size} & \texttt{liquidity}, 2.0 & Tipo y tamaño del choque. \\
+\texttt{metrics.collapse\_fraction} & 0.3 & Fracción en impago que define el colapso. \\
+\texttt{app.max\_live\_entities} & 300 & Límite para simular en vivo. \\
+\bottomrule
+\end{longtable}
+
+\needspace{10\baselineskip}
+\subsection*{\texttt{credit.yaml} (tarea 6)}
+\begin{longtable}{L{0.36\textwidth}L{0.2\textwidth}L{0.36\textwidth}}
+\toprule
+\textbf{Clave} & \textbf{Valor} & \textbf{Significado} \\
+\midrule
+\endhead
+\texttt{dynamics.alpha} & 1.0 & Autocorrección [1/mes]. \\
+\texttt{dynamics.beta} & N 0.5, S 0.4, T 0.3 & Contagio por capa [1/mes]. \\
+\texttt{dynamics.K} & N 0.8, S 1.0, T 0.3 & Acople de fase por capa [rad/mes]. \\
+\texttt{dynamics.gamma} & 0.5 & Déficit por desfase [1/mes]. \\
+\texttt{dynamics.loss} & 1.0 & Perder todo el ingreso equivale a un mes de ingreso. \\
+\texttt{dynamics.noise} & 0.3 & Intensidad de los choques aleatorios. \\
+\texttt{thresholds.buffer}, \texttt{pd\_ref}, \texttt{kappa} & 1.1, 0.04, 0.35 & Colchón
+$c\,(\mathrm{PD}_\text{ref}/\mathrm{PD})^\kappa$. \\
+\texttt{simulation.t\_obs}, \texttt{horizon} & 6, 12 & Meses de observación y de
+predicción. \\
+\texttt{regimes.nulo} & $\beta=\gamma=\lambda=0$ & Mundo de control. \\
+\texttt{experiment.}\-\texttt{worlds\_per\_regime} & 20 & Carteras por régimen. \\
+\texttt{experiment.n\_splits} & 5 & Particiones de la validación cruzada. \\
+\bottomrule
+\end{longtable}
+
+\needspace{10\baselineskip}
+\subsection*{\texttt{world.yaml} (composición de la cartera)}
+\begin{longtable}{L{0.34\textwidth}L{0.14\textwidth}L{0.44\textwidth}}
+\toprule
+\textbf{Clave} & \textbf{Valor} & \textbf{Significado} \\
+\midrule
+\endhead
+\texttt{persons.n}, \texttt{firms.n} & 2000, 100 & Personas y empresas. \\
+\texttt{persons.informal\_frac} & 0.55 & Fracción de personas sin empleador. \\
+\texttt{persons.income\_formal.median} & 2.2 & Ingreso mediano formal [SMMLV/mes]. \\
+\texttt{firms.size\_pareto\_shape} & 1.6 & Desigualdad del tamaño de las empresas. \\
+\texttt{calendar.biweekly\_frac} & 0.4 & Empresas con nómina quincenal. \\
+\texttt{calendar.informal\_omega\_cv} & 0.25 & Dispersión del ritmo de los informales. \\
+\texttt{layers.T.mean\_out\_degree} & 2.0 & Transferencias por persona. \\
+\texttt{truth.target\_pd} & 0.03 / 0.05 & PD media de empresas y personas. \\
+\bottomrule
+\end{longtable}
+
+\section{Ejemplo: probar un desfase más intenso}
+\begin{enumerate}
+\item Copie el archivo para no perder la configuración original:
+\begin{terminal}
+cp configs/credit.yaml configs/credit_gamma1.yaml
+\end{terminal}
+\item En la copia, cambie \texttt{gamma: 0.5} por \texttt{gamma: 1.0}.
+\item Corra el experimento con otra carpeta de salida:
+\begin{terminal}
+uv run pulso credit configs/credit_gamma1.yaml --out data/credit_gamma1 --models models/credit_gamma1
+\end{terminal}
+\item Compare \texttt{mejoras.csv} de las dos carpetas.
+\end{enumerate}
+
+\begin{aviso}
+La aplicación lee siempre \texttt{data/credit/} y \texttt{models/credit/}. Si corre un
+experimento con otra carpeta de salida, la aplicación sigue mostrando el original.
+\end{aviso}
+
+\section{Variables de entorno}
+Permiten usar carpetas distintas sin cambiar el código. La imagen de Docker las usa.
+\begin{center}
+\begin{tabular}{lp{0.6\textwidth}}
+\toprule
+\textbf{Variable} & \textbf{Carpeta que reemplaza} \\
+\midrule
+\texttt{PULSO\_CONFIG\_DIR} & \ruta{configs/} \\
+\texttt{PULSO\_DATA\_DIR} & \ruta{data/} \\
+\texttt{PULSO\_MODELS\_DIR} & \ruta{models/} \\
+\bottomrule
+\end{tabular}
+\end{center}

@@ -19,6 +19,8 @@ ciclos de pago se sincronizan, y una pregunta medible:
 
 ![Mapa de riesgo](figures/app_mapa_riesgo.png)
 
+**Manual de usuario:** [`docs/Presentaciones/MANUAL_DE_USUARIO.pdf`](docs/Presentaciones/MANUAL_DE_USUARIO.pdf).
+
 **Documentación** ([`docs/Presentaciones/`](docs/Presentaciones/)):
 - v1: [guía completa desde cero](docs/Presentaciones/v1/pulso_guia_completa.pdf) (53 pp.)
   y [presentación completa](docs/Presentaciones/v1/pulso_presentacion.pdf) (56 diapositivas).

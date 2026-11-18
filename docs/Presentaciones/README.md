@@ -11,6 +11,10 @@
 | v3 | [`pulso_guion_v3.pdf`](v3/pulso_guion_v3.pdf) | Guion cronometrado (unos 27 minutos): texto por diapositiva con transiciones, definición de cada variable y sigla, puntos de control de tiempo, recortes si hay atraso, guía de las diapositivas de respaldo y preguntas probables. |
 | v3 | [`pulso_guion_v3_15min.pdf`](v3/pulso_guion_v3_15min.pdf) | Guion corto (unos 13 minutos) para las mismas diapositivas v3: lo esencial de cada una, plan de tiempos, puntos de control y definiciones mínimas. |
 
+**Manual de usuario:** [`MANUAL_DE_USUARIO.pdf`](MANUAL_DE_USUARIO.pdf) (48 pp.): instalación,
+organización de carpetas y archivos, aplicación web página por página, línea de comandos,
+configuración, datos y modelos, uso como biblioteca, pruebas y solución de problemas.
+
 **Plan de estudio:** [`ESTUDIO.pdf`](ESTUDIO.pdf) (9 pp.): los 12 bloques de temas del proyecto
 (tomando como guía la v1), cómo estudiarlos, referencias, dónde practicar en el código,
 tiempo estimado (~70 h para defender, ~190 h para dominar) y calendario.

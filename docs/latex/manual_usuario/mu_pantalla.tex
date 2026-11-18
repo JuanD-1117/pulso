@@ -1,0 +1,50 @@
+\section{Elementos de la pantalla}
+\label{sec:pantalla}
+\begin{description}
+\item[Barra lateral.] A la izquierda. Tiene la lista de páginas y, debajo, un resumen de
+la red activa o de la cartera activa. Se oculta con la flecha \texttt{<<}.
+\item[Deslizador.] Barra con un punto que se arrastra para elegir un número. El valor
+actual aparece encima.
+\item[Formulario.] Recuadro con varios controles y un botón azul (\boton{Construir},
+\boton{Simular}, \boton{Simular cartera}). Los cambios no se aplican hasta presionar el
+botón.
+\item[Métrica.] Número grande con su nombre encima. El símbolo \textbf{?} muestra una
+explicación al pasar el cursor. Debajo puede aparecer la diferencia frente a un caso de
+referencia.
+\item[Gráfica interactiva.] Muestra información al pasar el cursor. Se amplía
+arrastrando un rectángulo; doble clic restablece la vista. Los botones de la esquina
+permiten descargar la imagen. Un clic en la leyenda oculta o muestra una serie.
+\item[Tabla.] Un clic en el nombre de una columna la ordena.
+\item[Desplegable.] Línea con una flecha \texttt{>} que muestra contenido adicional.
+\item[Indicador de ejecución.] Aparece arriba a la derecha mientras la aplicación calcula.
+\end{description}
+
+\subsection{Estado compartido y límites}
+\begin{itemize}
+\item La red construida en \emph{Construir red} y los parámetros elegidos en
+\emph{Diagnóstico}, \emph{Ritmo de pagos} y \emph{Simulador de choques} se comparten entre
+las páginas 1 a 7. La cartera de \emph{Cartera multicapa} se comparte con la página 9.
+\item El estado dura mientras la pestaña del navegador esté abierta. Al recargarla, todo
+vuelve a los valores iniciales.
+\item Con más de 300 entidades se desactivan las simulaciones en vivo; el \emph{Mapa de
+riesgo} sigue funcionando porque predice sin simular. El límite está en
+\texttt{configs/default.yaml} (\texttt{app.max\_live\_entities}).
+\end{itemize}
+
+\subsection{Conceptos mínimos}
+\label{sec:conceptos}
+\begin{description}
+\item[Entidad o nodo.] Participante de la red: un banco, una empresa o una persona.
+\item[Arista.] Pago recurrente de una entidad a otra. Su peso es el pago medio por ciclo.
+\item[Ciclo.] Unidad de tiempo de las páginas 1 a 7 (un día hábil). En las páginas 8 y 9
+la unidad es el mes.
+\item[Déficit.] Liquidez que le falta a una entidad.
+\item[Colchón.] Déficit máximo que soporta antes de dejar de pagar.
+\item[Impago y cascada.] Una entidad deja de pagar; si eso lleva a otras a dejar de pagar,
+se produce una cascada.
+\item[Fase y sincronía.] Momento del ciclo de pagos en que está una entidad, y qué tan
+alineados están los ciclos de todas.
+\item[PD.] Probabilidad de impago de un cliente en los próximos doce meses.
+\item[Semilla.] Número que fija el azar: con la misma semilla se obtiene el mismo
+resultado.
+\end{description}
