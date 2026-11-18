@@ -1,0 +1,241 @@
+% ===================================================================
+\section{Apertura y planteamiento}
+
+\diapo{0}{Portada}{30 s}
+\begin{decir}
+Buenos días. Presento PULSO, sigla de Pagos, Umbrales, Liquidez y Sincronización
+Operativa. Es el proyecto del Semillero de Modelamiento de Sistemas Complejos y Física
+Computacional, dirigido por el profesor Jhon Hernán Díaz Forero.
+
+El proyecto estudia cómo los problemas de liquidez se propagan en una red de pagos
+digitales. También estudia si el ritmo con que llegan los pagos, y no solo su monto,
+permite anticipar el impago de un crédito.
+\end{decir}
+\begin{terminos}
+\begin{description}
+\item[Liquidez.] Disponibilidad de dinero en el momento en que hay que pagar. Se
+distingue de la \emph{solvencia}, que compara el total de activos con el total de
+deudas. Una entidad solvente puede quedarse sin liquidez si el dinero le llega tarde.
+\item[Umbral.] Nivel de déficit que una entidad puede absorber antes de dejar de pagar.
+En el modelo representa el colchón de liquidez.
+\item[Sincronización operativa.] Grado en que los ciclos de pago de las entidades
+coinciden en el tiempo.
+\end{description}
+\end{terminos}
+
+\diapo{1}{Contenido}{20 s}
+\begin{decir}
+La exposición sigue el orden en que se construyó el proyecto. Primero planteo el
+problema y la pregunta. Luego presento el modelo y las cinco tareas de la propuesta del
+semillero, que van de la red de pagos a la predicción con aprendizaje automático.
+Después presento la tarea 6, que aplica todo al riesgo crediticio de un banco. Termino
+con los resultados, la implementación y las conclusiones.
+\end{decir}
+
+\diapo{2}{Contexto}{1 min}
+\begin{decir}
+Hoy casi todos los pagos de una economía pasan por sistemas digitales: salarios,
+facturas entre empresas, arriendos y cuotas de crédito. En Colombia el Banco de la
+República puso en marcha Bre-B, un sistema de pagos inmediatos que conecta a todas las
+entidades financieras.
+
+Cada persona o empresa paga con el dinero que recibe de otras. Por eso los pagos forman
+una red. En la red, cada nodo es un agente y cada flecha es un pago de un agente a otro.
+La flecha tiene un peso, que es el monto, y una dirección, que va de quien paga a quien
+recibe.
+
+En el diagrama, A tiene un problema y deja de pagar. B y C pierden parte de su ingreso.
+Si no tienen reservas suficientes, tampoco pueden pagar a D. El problema de A llega a D
+aunque D no tenga ninguna relación directa con A.
+
+La inmediatez es una ventaja para los usuarios, pero también hace que un problema de
+liquidez se transmita más rápido. Este proyecto modela esa transmisión.
+\end{decir}
+\begin{terminos}
+\begin{description}
+\item[Sistema de pagos.] Infraestructura que transfiere dinero entre cuentas de
+distintas entidades y liquida las obligaciones.
+\item[Bre-B.] Sistema de pagos inmediatos de bajo valor del Banco de la República de
+Colombia, interoperable entre bancos y billeteras. En el proyecto aparece solo como
+escenario de referencia. Los parámetros no están calibrados con sus datos.
+\item[Red dirigida y ponderada.] Conjunto de nodos unidos por flechas con dirección y
+peso. Se representa con una matriz $W$, donde $W_{ij}$ es el monto que $j$ paga a $i$.
+\item[Impago.] Incumplimiento de una obligación de pago.
+\end{description}
+\end{terminos}
+\begin{preguntas}
+\pr{¿El proyecto usa datos de Bre-B?}{No. Todos los datos son simulados. Bre-B sirve
+como motivación y como escenario ilustrativo de la aplicación (una red núcleo-periferia
+de 245 entidades), con parámetros que no están calibrados.}
+\end{preguntas}
+
+\diapo{3}{Ciclos de pago y desfase}{1 min}
+\begin{decir}
+Los pagos no llegan de manera continua: siguen ciclos. La nómina llega cada quince o
+treinta días, las facturas tienen plazos y las cuotas tienen fechas fijas.
+
+Lo importante es la coordinación. Si el salario llega el día 30 y la cuota vence el día
+5, el cliente tiene el dinero a tiempo. Si la nómina se corre al día 10, el monto es el
+mismo pero el cliente necesita un colchón para cubrir esos días. A ese desfase lo llamamos
+desincronización.
+
+La gráfica de la izquierda muestra el mismo cliente con el mismo ruido, con y sin costo
+por desfase. Con desfase, el déficit es mayor en todo momento. La gráfica de la derecha
+muestra un empleado cuyo ritmo natural es 8~\% más rápido que el de su nómina. Con un
+acoplamiento fuerte, el empleado ajusta su ritmo y se sincroniza; con un acoplamiento
+débil, se desfasa cada vez más.
+
+La idea central del proyecto es que el ingreso desfasado genera estrés financiero aunque
+el monto no cambie.
+\end{decir}
+\begin{terminos}
+\begin{description}
+\item[Ciclo de pagos.] Periodo que se repite entre dos pagos del mismo tipo, por ejemplo
+un mes de nómina.
+\item[Fase.] Posición dentro del ciclo, medida como un ángulo entre $0$ y $2\pi$. La
+fase $0$ es el inicio del ciclo y $2\pi$ es su final.
+\item[Desfase.] Diferencia entre la fase de quien paga y la de quien recibe.
+\item[Déficit.] Faltante de liquidez en un momento dado. En el modelo es la variable
+$x_i$.
+\item[Colchón.] Reserva que permite cubrir un déficit temporal sin dejar de pagar.
+\item[Acoplamiento.] Intensidad con que un agente ajusta su ritmo al de quienes le
+pagan.
+\end{description}
+\end{terminos}
+
+\diapo{4}{Limitación del score clásico y pregunta de investigación}{1 min}
+\begin{decir}
+Los bancos deciden a quién prestar con un score crediticio. El score es un modelo
+estadístico que estima la probabilidad de impago con variables del propio cliente:
+ingreso, endeudamiento, historial de mora, antigüedad y tipo de empleo.
+
+El score evalúa a cada cliente de forma aislada. No ve tres cosas: si quienes le pagan
+al cliente están en problemas, si todo su ingreso depende de un solo pagador, y si sus
+ingresos llegan desfasados de sus obligaciones.
+
+Esa información existe en los registros de transacciones del banco, pero el score
+clásico no la usa.
+
+La pregunta del proyecto es esta: la sincronización de los ciclos de pago, estimada
+únicamente con las transacciones, ¿aporta información sobre el impago que no esté ya en
+el score clásico ni en la estructura estática de la red? La comparación con la red
+estática es la parte exigente: ya existen trabajos que usan la red de un cliente para
+mejorar el score. Lo nuevo es la dinámica.
+\end{decir}
+\begin{terminos}
+\begin{description}
+\item[Score crediticio.] Modelo estadístico que asigna a cada cliente una probabilidad
+de impago, normalmente con regresión logística sobre variables individuales.
+\item[PD.] Probabilidad de incumplimiento (\emph{probability of default}): probabilidad
+de que el cliente deje de pagar su crédito en un horizonte, aquí doce meses.
+\item[Red estática.] Variables que describen quién le paga a quién y cuánto, sin
+considerar el momento de los pagos: concentración del ingreso, número de pagadores,
+centralidad.
+\item[Red dinámica.] Variables que describen el ritmo: sincronización, desfase,
+regularidad de los ciclos.
+\end{description}
+\end{terminos}
+\begin{preguntas}
+\pr{¿No es esto lo que ya hacen los bancos con el historial crediticio?}{El historial
+describe al cliente por sí solo. Las variables de red estática describen sus relaciones
+y ya aparecen en la literatura (por ejemplo, Óskarsdóttir y Bravo, 2021). La
+sincronización de los ciclos de pago no aparece en esos trabajos, y por eso el
+experimento la compara contra ambos niveles.}
+\end{preguntas}
+
+\diapo{5}{Hipótesis y objetivos}{1 min}
+\begin{decir}
+La hipótesis es falsable, es decir, puede resultar falsa. Si el ingreso desfasado
+genera déficit, las variables de sincronización deben mejorar la predicción del impago.
+Si ese mecanismo no existe, no deben mejorarla. Por eso el experimento incluye un
+control nulo: un mundo idéntico donde la red no genera déficit. Si las variables
+mejoraran la predicción también ahí, el resultado sería un artefacto del método.
+
+El objetivo general es construir, paso a paso, un modelo físico-matemático de la red de
+pagos y aplicarlo al riesgo crediticio. La tabla muestra las seis tareas. Las cinco
+primeras vienen de la propuesta del semillero: déficit en la red, difusión,
+sincronización, impagos en cascada y aprendizaje automático. La sexta es la aplicación a
+la cartera de un banco.
+\end{decir}
+\begin{terminos}
+\begin{description}
+\item[Hipótesis falsable.] Afirmación que predice un resultado observable que podría no
+ocurrir; si no ocurre, la hipótesis se rechaza.
+\item[Control nulo.] Experimento idéntico al principal en el que se apaga el mecanismo
+estudiado. Mide cuánto ``efecto'' produce el método por sí solo.
+\item[Kuramoto.] Modelo de osciladores acoplados propuesto por Yoshiki Kuramoto (1975)
+para estudiar la sincronización. Se explica en la diapositiva 9.
+\end{description}
+\end{terminos}
+
+% ===================================================================
+\section{Modelo unificado}
+
+\diapo{6}{Un modelo, seis tareas}{2 min}
+\begin{decir}
+Esta es la ecuación central del proyecto. Cada entidad $i$ tiene dos variables: su
+déficit $x_i$ y la fase de su ciclo de pagos $\theta_i$.
+
+La primera ecuación dice cómo cambia el déficit en el tiempo. Tiene cinco términos.
+Primero, $-\alpha x_i$: cada entidad corrige su déficit por sí misma, por ejemplo con
+ahorro o crédito de corto plazo. Segundo, $\beta\sum_j W_{ij}x_j$: si quienes le pagan
+están en déficit, le pagan menos y su déficit aumenta; este es el contagio. Tercero,
+$-D_0(Lx)_i$: la redistribución de liquidez entre entidades, que traslada déficit sin
+crearlo. Cuarto, $\gamma k_i(1-r_i)$: el ingreso que llega desfasado se vuelve déficit.
+Quinto, $\eta_i(t)$: los choques externos.
+
+La segunda ecuación describe el ritmo de pagos. Cada entidad tiene su ritmo natural
+$\omega_i$ y lo ajusta según el ritmo de quienes le pagan, con intensidad $K$.
+
+Finalmente, si el déficit supera el umbral $x_i^{(c)}$, la entidad entra en impago y deja
+de pagar.
+
+Las etiquetas T1 a T4 indican en qué tarea entra cada término. El criterio de diseño es
+que, si se apagan los términos nuevos, el modelo coincide exactamente con el de la tarea
+anterior. Eso se verificó con pruebas automáticas. Así, cada resultado se puede
+comparar con el anterior.
+\end{decir}
+\begin{terminos}
+\begin{description}
+\item[$x_i(t)$.] Déficit de liquidez de la entidad $i$ en el instante $t$. En las
+tareas 1–5 se mide en ``pagos medios por ciclo''.
+\item[$t$.] Tiempo. En las tareas 1–5, una unidad es un ciclo de pagos (un día hábil);
+en la tarea 6, un mes.
+\item[$dx_i/dt$.] Tasa de cambio del déficit: cuánto crece o decrece por unidad de
+tiempo.
+\item[$\alpha$.] Tasa de autocorrección [1/ciclo]. Con solo este término el déficit
+decae como $e^{-\alpha t}$; $1/\alpha$ es el tiempo típico de corrección.
+\item[$\beta$.] Intensidad del contagio [1/(ciclo·pago)]: déficit que genera en $i$
+cada unidad de déficit de un pagador, por unidad de pago.
+\item[$W_{ij}$.] Pago medio de $j$ hacia $i$ por ciclo. Las filas de $W$ son ingresos
+y las columnas son egresos.
+\item[$\sum_j W_{ij}x_j$.] Suma del déficit de todos los pagadores de $i$, ponderada
+por cuánto le paga cada uno.
+\item[$D_0$.] Coeficiente de redistribución [1/(ciclo·pago)].
+\item[$L$.] Laplaciano de flujo, $L=D_\text{out}-W$ (diapositiva 8).
+\item[$(Lx)_i$.] Componente $i$ del vector $Lx$.
+\item[$\gamma$.] Peso del desfase en el déficit [1/ciclo].
+\item[$k_i$.] Ingreso por la red: $k_i=\sum_jW_{ij}$.
+\item[$r_i$.] Coherencia local: entre $-1$ (ingreso en contrafase) y $1$ (ingreso en
+fase).
+\item[$\eta_i(t)$.] Forzamiento externo: choques de liquidez en las tareas 1–5 y ruido
+aleatorio en la tarea 6.
+\item[$\theta_i$.] Fase del ciclo de pagos de $i$, en radianes.
+\item[$\omega_i$.] Frecuencia natural [rad/ciclo]: ritmo de $i$ si no tuviera pagadores.
+\item[$K$.] Intensidad del acoplamiento de fase [rad/ciclo].
+\item[$\langle k\rangle$.] Ingreso medio por entidad. Normaliza $K$ (diapositiva 9).
+\item[$\sin(\theta_j-\theta_i)$.] Positivo si el pagador $j$ va adelantado: acelera a
+$i$. Negativo si va atrasado: lo frena.
+\item[$x_i^{(c)}$.] Umbral de impago (colchón).
+\item[Criterio de anidamiento.] Con $D_0=\gamma=K=0$ y sin umbral se recupera la
+tarea 1; con $\gamma=K=0$, la tarea 2; y así sucesivamente.
+\end{description}
+\end{terminos}
+\begin{preguntas}
+\pr{¿Por qué un modelo lineal en $x$?}{Es la aproximación más simple que conserva el
+contagio y permite resultados analíticos: el umbral de estabilidad $R=1$, la
+conservación bajo difusión y la tasa de recuperación. La no linealidad entra por el
+umbral y por las fases. Es una limitación declarada.}
+\pr{¿El déficit puede afectar el ritmo de pagos?}{En esta versión no: el acople va del
+ritmo al déficit. La retroalimentación inversa aparece en el trabajo futuro.}
+\end{preguntas}

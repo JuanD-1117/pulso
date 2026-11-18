@@ -1,0 +1,104 @@
+% Manual de la aplicación web de PULSO, para usuarios sin experiencia previa.
+% Compilar desde docs/latex/manual_app:
+%   latexmk -lualatex manual_app.tex
+\documentclass[11pt,a4paper,oneside]{article}
+
+\usepackage{fontspec}
+\usepackage[spanish,es-noshorthands,es-tabla,es-nodecimaldot]{babel}
+\usepackage{amsmath,amssymb}
+\setmainfont{TeX Gyre Pagella}
+\setsansfont{TeX Gyre Heros}
+\setmonofont{DejaVu Sans Mono}[Scale=0.82]
+\usepackage[margin=2.3cm,headheight=14pt]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs,longtable,array}
+\usepackage{xcolor}
+\usepackage[most]{tcolorbox}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{caption}
+\usepackage{needspace}
+\usepackage[hidelinks]{hyperref}
+
+\graphicspath{{../figuras/manual/}{../figuras/}}
+
+\definecolor{azul}{HTML}{2563A8}
+\definecolor{rojo}{HTML}{C2362B}
+\definecolor{verde}{HTML}{2F7D5B}
+\definecolor{ambar}{HTML}{E0A100}
+\definecolor{gris}{HTML}{5F6B77}
+
+\titleformat{\section}{\sffamily\bfseries\Large\color{azul}}{\thesection}{0.7em}{}
+\titleformat{\subsection}{\sffamily\bfseries\large}{\thesubsection}{0.7em}{}
+\titleformat{\subsubsection}{\sffamily\bfseries\normalsize}{}{0em}{}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\sffamily\color{gris}PULSO · manual de la aplicación}
+\fancyhead[R]{\small\sffamily\color{gris}\nouppercase{\leftmark}}
+\fancyfoot[C]{\small\thepage}
+\renewcommand{\headrulewidth}{0.3pt}
+
+\setlength{\parskip}{0.5em}
+\setlength{\parindent}{0pt}
+\setlist{itemsep=0.15em,topsep=0.25em}
+\setlist[description]{font=\normalfont\bfseries,leftmargin=1.2em,labelindent=0em}
+\captionsetup{font=small,labelfont=bf}
+
+\newtcolorbox{pruebe}{colback=verde!6,colframe=verde,boxrule=0.5pt,arc=2pt,
+  left=6pt,right=6pt,title={\sffamily\small Pruebe esto},fonttitle=\color{black},
+  colbacktitle=verde!15,breakable,before upper={\setlength{\parskip}{0.4em}}}
+\newtcolorbox{representa}{colback=azul!6,colframe=azul,boxrule=0.5pt,arc=2pt,
+  left=6pt,right=6pt,title={\sffamily\small Qué representa},fonttitle=\color{black},
+  colbacktitle=azul!15,breakable,before upper={\setlength{\parskip}{0.4em}}}
+\newtcolorbox{aviso}{colback=ambar!8,colframe=ambar!80!black,boxrule=0.5pt,arc=2pt,
+  left=6pt,right=6pt,title={\sffamily\small Tenga en cuenta},fonttitle=\color{black},
+  colbacktitle=ambar!20,breakable,before upper={\setlength{\parskip}{0.4em}}}
+
+% Tabla de controles: control, rango y valor inicial, qué representa
+\newenvironment{controles}{%
+  \small\setlength{\LTpre}{0.3em}\setlength{\LTpost}{0.3em}
+  \begin{longtable}{p{0.2\textwidth}p{0.17\textwidth}p{0.55\textwidth}}
+  \toprule
+  \textbf{Control} & \textbf{Rango (inicial)} & \textbf{Qué representa y qué pasa al
+  cambiarlo} \\
+  \midrule
+  \endhead}{\bottomrule\end{longtable}}
+
+\newcommand{\captura}[2][0.92]{%
+  \begin{center}\fcolorbox{gris!40}{white}{\includegraphics[width=#1\textwidth]{#2}}\end{center}}
+\newcommand{\boton}[1]{\fcolorbox{azul}{azul!10}{\sffamily\small #1}}
+
+\hypersetup{pdftitle={PULSO: manual de la aplicación},pdfauthor={Juan Diego Martínez Ayala}}
+
+\begin{document}
+
+\begin{titlepage}
+\centering
+\vspace*{2.5cm}
+{\sffamily\bfseries\Huge\color{azul} PULSO\par}
+\vspace{0.2cm}
+{\sffamily\large\color{gris} Pagos, Umbrales, Liquidez y Sincronización Operativa\par}
+\vspace{0.9cm}
+{\sffamily\LARGE Manual de la aplicación\par}
+\vspace{0.4cm}
+{\large Guía página por página para quien la usa por primera vez:\\
+qué hace cada control y qué representa cada resultado\par}
+\vspace{1.2cm}
+\fcolorbox{gris!40}{white}{\includegraphics[width=0.7\textwidth]{inicio_1.png}}\par
+\vfill
+{\large Juan Diego Martínez Ayala\par}
+{\normalsize Semillero de Modelamiento de Sistemas Complejos y Física Computacional\par}
+\vspace{0.4cm}
+{\normalsize Noviembre de 2026 · software v3.1.0\par}
+\end{titlepage}
+
+\tableofcontents
+\clearpage
+
+\input{manual_general}
+\input{manual_paginas}
+\input{manual_cierre}
+
+\end{document}

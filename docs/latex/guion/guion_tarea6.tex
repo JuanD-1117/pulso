@@ -1,0 +1,258 @@
+% ===================================================================
+\section{Tarea 6: riesgo crediticio multicapa}
+
+\diapo{13}{De entidades a clientes de un banco}{1 min}
+\begin{decir}
+Hasta aquí las entidades eran abstractas. La tarea 6 lleva el modelo a la cartera de un
+banco: los nodos son personas y empresas clientes del banco.
+
+No existen datos públicos con la red de pagos de los clientes de un banco. Por eso
+generamos una cartera sintética con un mecanismo conocido y verificamos que el método lo
+encuentra. Es el mismo principio con que se valida un instrumento de medida: primero se
+mide algo cuyo valor se conoce.
+
+La cartera se construye para producir exactamente lo que un banco tendría: los atributos
+de cada cliente y el registro de sus transacciones. El banco no ve el modelo interno; solo
+ve los pagos.
+
+Las relaciones están en tres capas. Nómina: la empresa paga a su empleado cada quince o
+treinta días; es la dependencia más fuerte. Proveedores: una empresa paga a otra según
+sus facturas. Transferencias: pagos entre personas, irregulares y de menor monto.
+\end{decir}
+\begin{terminos}
+\begin{description}
+\item[Cartera.] Conjunto de clientes con crédito en un banco.
+\item[Datos sintéticos.] Datos generados por simulación con reglas conocidas.
+\item[Red multicapa.] Red con varios tipos de relación entre los mismos nodos; cada tipo
+es una capa con su propia matriz $W^\ell$ (Boccaletti et al., 2014).
+\item[F y P.] Firma (empresa) y persona.
+\item[Capa N, S, T.] Nómina, proveedores (\emph{suppliers}) y transferencias. En el
+registro aparece además la capa C: cuotas de crédito pagadas al banco.
+\end{description}
+\end{terminos}
+\begin{preguntas}
+\pr{¿Qué valor tiene un resultado con datos sintéticos?}{Demuestra que, si el mecanismo
+existe, el método lo detecta con la información que un banco tiene, y que no detecta
+nada cuando el mecanismo no existe. No demuestra que el mecanismo exista en una cartera
+real; eso requiere datos reales y es el siguiente paso.}
+\pr{¿Hay trabajos similares?}{Letizia y Lillo (2019) usan redes de pagos entre empresas
+para calificación crediticia; Tobback et al.\ (2017) y Óskarsdóttir y Bravo (2021) usan
+redes relacionales y multicapa para predecir impago. Ninguno usa la sincronización de los
+ciclos de pago.}
+\end{preguntas}
+
+\diapo{14}{Cartera sintética}{1.5 min}
+\begin{decir}
+La cartera de referencia tiene 2000 personas y 100 empresas. El 55~\% de las personas
+son informales: no reciben nómina de una empresa del banco. La cifra es del orden de la
+informalidad laboral reportada por el DANE.
+
+El tamaño de las empresas sigue una distribución de Pareto: pocas empresas grandes y
+muchas pequeñas. Cada empresa paga nómina mensual o quincenal. Los empleados formales
+heredan el ritmo de su empleador con una variación del 8~\%; los informales tienen
+ritmos más dispersos, con una variación del 25~\%.
+
+La figura es un ejemplo reducido para ver las capas: los cuadrados son empresas y los
+puntos son personas.
+
+Cada cliente tiene una probabilidad de impago verdadera. Se calcula con una función
+logística de sus variables clásicas más un componente oculto que el banco no ve. Ese
+componente se revela en parte a través del historial de mora, como en la realidad. Las
+columnas con la verdad del modelo empiezan por \texttt{truth\_} y el código impide que
+cualquier modelo las use: si alguien lo intenta, el programa se detiene con un error.
+\end{decir}
+\begin{terminos}
+\begin{description}
+\item[Informalidad.] Trabajo sin vínculo laboral formal. En el modelo: persona sin
+empleador dentro de la red del banco.
+\item[DANE.] Departamento Administrativo Nacional de Estadística de Colombia.
+\item[Distribución de Pareto.] Distribución de cola pesada, $P(X>x)\propto x^{-a}$. Aquí
+$a=1.6$ para el tamaño de las empresas.
+\item[Coeficiente de variación.] Desviación estándar dividida por la media. 8~\% y
+25~\% son los coeficientes de variación de la frecuencia de pago.
+\item[PD verdadera.] $\mathrm{logit}(\mathrm{PD}_i)=b_\text{tipo}+\sum_kc_kz_k(i)+
+\sigma_uu_i$.
+\item[$\mathrm{logit}(p)$.] $\ln\frac{p}{1-p}$, el logaritmo de la razón de
+probabilidades.
+\item[$z_k(i)$.] Variables clásicas estandarizadas (media 0, desviación 1) dentro de cada
+tipo de cliente.
+\item[$c_k$.] Pesos: endeudamiento $+0.7$, ingreso $-0.5$, antigüedad $-0.3$, edad
+$-0.2$, formalidad $-0.5$.
+\item[$u_i$, $\sigma_u$.] Componente latente $u_i\sim N(0,1)$ y su escala.
+\item[Mora observada.] Número de moras en 12 meses $\sim\mathrm{Poisson}(m\,e^{au_i})$:
+quien tiene $u_i$ alto tiende a tener más moras.
+\item[$b_\text{tipo}$.] Intercepto calibrado por bisección para que la PD media sea 5~\%
+en personas y 3~\% en empresas.
+\item[Bisección.] Método numérico que encuentra la raíz de una función partiendo un
+intervalo por la mitad repetidamente.
+\item[SMMLV.] Salario mínimo mensual legal vigente. Unidad de los ingresos y montos.
+\end{description}
+\end{terminos}
+
+\diapo{15}{Modelo dinámico multicapa}{1.5 min}
+\begin{decir}
+Esta es la versión del modelo para la cartera. Tiene la misma estructura que la ecuación
+general con tres cambios.
+
+Primero, el tiempo se mide en meses y el déficit como fracción del ingreso total del
+cliente. Un déficit de 0.5 significa medio mes de ingreso. El ingreso total incluye lo que
+llega de fuera de la red del banco.
+
+Segundo, el contagio y el acople de fase tienen un valor por capa. La nómina transmite
+más que las transferencias. Además, cada cliente ajusta su ritmo según la participación
+de cada pagador en su ingreso: el empleador pesa mucho más que un amigo que le transfiere
+dinero de vez en cuando.
+
+Tercero, hay ruido aleatorio que representa choques individuales de liquidez, y hay
+impagos idiosincráticos: cada cliente puede caer por razones propias, con una tasa que
+corresponde a su probabilidad de impago.
+
+El colchón depende del riesgo: un cliente con PD alta tiene un colchón más pequeño.
+
+Con una sola capa y sin ruido, este modelo coincide con el de las tareas 1 a 4. Lo
+verificamos numéricamente.
+\end{decir}
+\begin{terminos}
+\begin{description}
+\item[$\ell$.] Índice de capa: N, S o T.
+\item[$W^\ell_{ij}$.] Flujo mensual de $j$ a $i$ en la capa $\ell$ [SMMLV/mes].
+\item[$s_i$.] Ingreso total de $i$, incluido el externo a la red [SMMLV/mes].
+\item[$k_i$.] Ingreso que llega por la red, $\sum_\ell\sum_jW^\ell_{ij}$.
+\item[$\beta_\ell$.] Contagio por capa [1/mes]: N 0.5, S 0.4, T 0.3.
+\item[$K_\ell$.] Acople de fase por capa [rad/mes]: N 0.8, S 1.0, T 0.3.
+\item[$W^\ell_{ij}/k_i$.] Participación del pagador $j$ en el ingreso de red de $i$
+(normalización por fila).
+\item[$\gamma\frac{k_i}{s_i}(1-r_i)$.] Déficit por desfase, proporcional a la fracción del
+ingreso que llega por la red. $\gamma=0.5$/mes.
+\item[$\sigma\xi_i(t)$.] Ruido blanco de intensidad $\sigma=0.3$. Se integra con el
+método de Euler–Maruyama.
+\item[Euler–Maruyama.] Integrador de ecuaciones estocásticas:
+$x_{n+1}=x_n+f(x_n)\Delta t+\sigma\sqrt{\Delta t}\,N(0,1)$.
+\item[Colchón $x_i^{(c)}$.] $c\,(\mathrm{PD}_\text{ref}/\mathrm{PD}_i)^\kappa\varepsilon_i$
+con $c=1.1$, $\mathrm{PD}_\text{ref}=0.04$, $\kappa=0.35$ y $\varepsilon_i$ lognormal.
+\item[Impago idiosincrático.] Instante $\tau_i\sim\mathrm{Exp}(\lambda_i)$ con
+$\lambda_i=-\ln(1-\mathrm{PD}_i)/12$ por mes, de modo que $P(\tau_i<12)=\mathrm{PD}_i$.
+\item[Pérdida $\lambda=1$.] Perder un pagador que aporta todo el ingreso suma un mes de
+ingreso al déficit.
+\item[Matrices dispersas.] Almacenan solo las entradas distintas de cero; permiten
+carteras grandes.
+\end{description}
+\end{terminos}
+\begin{preguntas}
+\pr{¿De dónde salen los valores de los parámetros?}{Son ilustrativos, no calibrados. Se
+eligieron para que la tasa de impago y $R$ estén en rangos plausibles (impago cercano al
+10~\%, $R$ entre 0.09 y 0.17). La diapositiva 22 muestra cómo cambia el resultado con
+$\gamma$.}
+\end{preguntas}
+
+\diapo{16}{Del modelo a lo que observa el banco}{1 min}
+\begin{decir}
+Ahora el paso clave: pasar del modelo a lo que el banco realmente ve.
+
+Cada vez que la fase de un pagador completa un ciclo, el pagador ejecuta sus pagos: a
+sus empleados, a sus proveedores, y su cuota al banco. Agregamos ruido en la fecha y en el
+monto. Quien cae en impago deja de pagar. El resultado es una tabla con fecha, pagador,
+receptor, capa y monto: la misma estructura de un registro bancario.
+
+Dividimos el tiempo en dos ventanas. De 0 a 6 meses, observamos: solo esas transacciones
+alimentan las variables. De 6 a 18 meses, medimos si el cliente cae en impago; esa es la
+etiqueta. Quien cae durante la observación se excluye.
+
+Con las transacciones estimamos tres cosas: la red $\hat W$, la fase de cada cliente
+$\hat\theta$ y su coherencia con los pagadores $\hat r$. La fase se estima por eventos:
+entre dos pagos consecutivos, la fase avanza de manera lineal una vuelta completa.
+
+La figura compara la fase real con la estimada para un empleado formal y un informal. La
+estimación es buena: el error mediano en la red es menor al 5~\% y la correlación entre la
+coherencia estimada y la real supera 0.8.
+\end{decir}
+\begin{terminos}
+\begin{description}
+\item[Registro de transacciones.] Tabla \texttt{(t, src, dst, layer, amount)}: instante,
+pagador, receptor, capa y monto.
+\item[Pago por ciclo.] El pagador $j$ paga a $i$ un monto $W_{ij}\cdot2\pi/\omega_j$ por
+ciclo, de modo que el flujo mensual medio es $W_{ij}$.
+\item[Ciclo observado.] Conjunto de pagos de una misma entidad separados por menos de
+medio día; incluye la cuota al banco.
+\item[Ruido de fecha.] $\pm1$ día, compartido por todos los pagos del mismo ciclo.
+\item[Ventana de observación.] Meses $[0,6)$.
+\item[Ventana de predicción.] Meses 6 a 18. Etiqueta $y=1$ si el cliente cae en ese
+periodo.
+\item[$\hat W_{ij}$.] Monto total pagado por $j$ a $i$ en la observación, dividido por
+el periodo activo de $j$: $\min(t_\text{obs},\ \text{último ciclo}+\text{periodo medio})$.
+Así, si $j$ dejó de pagar a mitad de la ventana, $\hat W_{ij}$ refleja lo que $i$ recibía
+mientras $j$ pagaba, que es lo que perdió.
+\item[Fase por eventos.] Pikovsky, Rosenblum y Kurths (2001):
+$\hat\theta(t)=2\pi\bigl(k+\frac{t-t_k}{t_{k+1}-t_k}\bigr)$, donde $t_k$ es el instante del
+$k$-ésimo ciclo de pagos.
+\item[$\hat r_i(t)$.] $\frac1{\hat k_i}\sum_j\hat W_{ij}\cos(\hat\theta_j-\hat\theta_i)$,
+calculada en una malla de 0.05 meses.
+\item[Fuga de información.] Uso, al entrenar, de información que no estaría disponible al
+predecir. El código rechaza transacciones posteriores a la observación.
+\end{description}
+\end{terminos}
+\begin{preguntas}
+\pr{¿Cómo se estima la fase de alguien que recibe pero casi no paga?}{Su fase se estima
+con sus propios ciclos de pago, incluida la cuota al banco. Si no tiene ingreso por la
+red, no hay desincronización medible y se le asigna $\hat r=1$.}
+\end{preguntas}
+
+\diapo{17}{Variables en tres niveles y protocolo}{1 min}
+\begin{decir}
+Con lo observado construimos variables en tres niveles, cada uno contiene al anterior.
+
+El nivel 1 es el score clásico: ingreso, endeudamiento, edad, antigüedad, productos,
+moras y formalidad.
+
+El nivel 2 agrega la red estática: cuánto del ingreso llega por la red y por cuál capa,
+qué tan concentrado está en pocos pagadores, la centralidad del cliente, y la salud de su
+empleador y de sus pagadores. Esto corresponde a lo que ya explora la literatura.
+
+El nivel 3 agrega la dinámica, que es el aporte del proyecto: la coherencia media y su
+variabilidad, el tiempo que el cliente pasa desincronizado, el desfase con sus pagadores,
+la diferencia de ritmo, la irregularidad de los ciclos y el ingreso de pagadores que
+dejaron de pagar.
+
+El protocolo tiene dos regímenes. Con red, los acoples están encendidos. En el régimen
+nulo, apagamos el contagio, el desfase y la pérdida, pero mantenemos los mismos clientes,
+la misma red y los mismos números aleatorios. Generamos 20 carteras por régimen y
+validamos con GroupKFold por cartera. Comparamos los niveles por pares dentro de cada
+partición y reportamos intervalos de confianza del 95~\%.
+\end{decir}
+\begin{terminos}
+\begin{description}
+\item[Concentración (HHI).] Índice de Herfindahl–Hirschman del ingreso,
+$\sum_j(\hat W_{ij}/\hat k_i)^2$: vale 1 si todo viene de un pagador.
+\item[PageRank.] Centralidad que asigna más importancia a quien recibe de entidades
+importantes; factor de amortiguación 0.85. Se reescala para que la media sea 1.
+\item[Salud del empleador y de los pagadores.] Tamaño, endeudamiento y moras del
+empleador; moras y endeudamiento medios de los pagadores, ponderados por lo que pagan.
+\item[$\hat r$ medio y desviación.] Promedio y desviación estándar de $\hat r_i(t)$ en la
+observación.
+\item[Tiempo desincronizado.] Fracción del tiempo con $\hat r_i<0.5$.
+\item[Desfase.] Media en el tiempo de $|\arg\sum_j\hat W_{ij}e^{i(\hat\theta_j-
+\hat\theta_i)}|$: el ángulo del desfase promedio con los pagadores, ponderado por lo que
+paga cada uno, entre $0$ y $\pi$.
+\item[Desajuste de ritmo.] $|\hat\omega_i-\bar\omega_\text{pagadores}|/2\pi$, en ciclos
+por mes.
+\item[Irregularidad de ciclos.] Coeficiente de variación de los intervalos entre ciclos,
+propio y de los pagadores.
+\item[Ingreso perdido.] Fracción del ingreso de red que venía de pagadores que dejaron de
+pagar durante la observación.
+\item[Régimen nulo.] $\beta_\ell=\gamma=\lambda=0$. Las fases y los pagos existen, pero no
+crean déficit.
+\item[Mismos sorteos.] La semilla de cada cartera genera cuatro flujos aleatorios
+independientes (umbrales, impagos idiosincráticos, ruido y transacciones) con
+\texttt{SeedSequence}. Los dos regímenes usan exactamente los mismos.
+\item[Diferencia pareada.] Diferencia de métricas entre dos niveles evaluados en la misma
+partición. Elimina la variación debida a qué carteras quedaron en cada partición.
+\item[Intervalo de confianza 95~\%.] $\bar d\pm t_{0.975,4}\,s_d/\sqrt5$, con $\bar d$ la
+media y $s_d$ la desviación de las 5 diferencias, y $t_{0.975,4}=2.78$ el cuantil de la
+distribución $t$ de Student con 4 grados de libertad.
+\end{description}
+\end{terminos}
+\begin{preguntas}
+\pr{¿Por qué comparar contra la red estática y no solo contra el score?}{Porque superar
+al score con información de red ya está documentado. La pregunta es si la dinámica añade
+algo que la estructura no tiene.}
+\end{preguntas}

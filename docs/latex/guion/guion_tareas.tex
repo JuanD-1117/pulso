@@ -1,0 +1,320 @@
+% ===================================================================
+\section{Tareas 1 a 4: de la red a las cascadas}
+
+\diapo{7}{Tarea 1: red de pagos e índice de amplificación}{1.5 min}
+\begin{decir}
+La primera tarea construye la red y estudia solo dos términos: la autocorrección y el
+contagio.
+
+Generamos redes con tres formas. En la de Erdős–Rényi, cada par de entidades se conecta
+al azar con la misma probabilidad; sirve de referencia. En la de Barabási–Albert, las
+entidades nuevas prefieren conectarse con las que ya tienen muchas conexiones; aparecen
+unos pocos nodos muy conectados. En la núcleo-periferia, un grupo pequeño de grandes
+entidades está muy conectado entre sí y las demás se conectan con ese núcleo; es la
+forma que se observa en los sistemas de pagos reales. Los montos siguen una distribución
+lognormal: muchos pagos pequeños y pocos muy grandes.
+
+Con solo estos dos términos, la ecuación es lineal: $\dot x=(-\alpha I+\beta W)x$. Como
+todos los pagos son positivos, el teorema de Perron–Frobenius garantiza que el valor
+propio dominante de $W$ es real y positivo; lo llamamos radio espectral $\rho(W)$. El
+sistema es estable, es decir, el déficit se extingue después de un choque, si y solo si
+$R=\beta\rho(W)/\alpha$ es menor que 1.
+
+$R$ funciona como el número reproductivo de una epidemia: compara cuánto déficit genera
+la red con cuánto corrige cada entidad. Si $R<1$, la red amortigua. Si $R>1$, la red
+amplifica cualquier choque.
+
+La figura muestra la tasa de crecimiento del déficit en el plano $\alpha$–$\beta$ para
+las tres topologías. Azul es estable, rojo inestable. La línea negra es la frontera
+teórica $\beta=\alpha/\rho(W)$ y coincide con el cambio de color. Las redes más
+concentradas tienen $\rho$ mayor y pierden la estabilidad con menos contagio.
+
+Además, los vectores propios dominantes ordenan a las entidades: el izquierdo mide
+cuánto déficit propaga cada una (importancia) y el derecho cuánto acumula
+(vulnerabilidad).
+\end{decir}
+\begin{terminos}
+\begin{description}
+\item[Erdős–Rényi (ER).] Red aleatoria en la que cada arista existe con probabilidad
+$p$, independiente de las demás. El número de conexiones por nodo es similar para
+todos.
+\item[Barabási–Albert (BA).] Red que crece por conexión preferencial: un nodo nuevo se
+une a los existentes con probabilidad proporcional a su número de conexiones. Produce
+nodos concentradores (\emph{hubs}).
+\item[Núcleo-periferia.] Red con un núcleo denso y una periferia que se conecta casi
+solo al núcleo.
+\item[Distribución lognormal.] Distribución de una variable cuyo logaritmo es normal.
+Montos $W_{ij}=\sqrt{s_is_j}\,\varepsilon_{ij}$, con tamaños $s$ y ruido $\varepsilon$
+lognormales; luego se normaliza a peso medio 1.
+\item[$I$.] Matriz identidad.
+\item[Valor propio y vector propio.] $\lambda$ y $v\neq0$ tales que $Wv=\lambda v$. Los
+valores propios de $-\alpha I+\beta W$ son $-\alpha+\beta\lambda_k(W)$.
+\item[Teorema de Perron–Frobenius.] Una matriz con entradas no negativas tiene un valor
+propio real igual a su radio espectral, con un vector propio de entradas no negativas.
+\item[$\rho(W)$.] Radio espectral: el mayor módulo de los valores propios de $W$.
+\item[$R$.] Índice de amplificación $\beta\rho(W)/\alpha$. Adimensional.
+\item[Número reproductivo ($R_0$).] En epidemiología, número medio de contagios que
+produce un infectado. La analogía es exacta en forma: umbral en 1.
+\item[Importancia y vulnerabilidad.] Componentes de los vectores propios izquierdo
+($u^\top W=\rho u^\top$) y derecho ($Wv=\rho v$).
+\end{description}
+\end{terminos}
+\begin{preguntas}
+\pr{¿Cómo se verificó?}{Se comparó la integración numérica con la solución exacta
+$x(t)=e^{Mt}x_0$; el error relativo es menor que $10^{-6}$. Con $R=0.9$ el déficit se
+extingue y con $R=1.1$ crece, como predice la teoría.}
+\end{preguntas}
+
+\diapo{8}{Tarea 2: redistribución y estabilidad}{1.5 min}
+\begin{decir}
+La segunda tarea agrega la redistribución de liquidez. Usamos el Laplaciano de flujo
+$L=D_\text{out}-W$, donde $D_\text{out}$ es una matriz diagonal con lo que paga cada
+entidad. El término $-D_0Lx$ traslada déficit de una entidad a otra a lo largo de los
+pagos.
+
+Las columnas de $L$ suman cero. Eso implica que la suma de todos los déficits no cambia
+por este término: el déficit se mueve, pero no se crea ni se destruye. Lo verificamos
+numéricamente: la suma cambia menos de $10^{-10}$.
+
+Con los tres términos, la matriz del sistema es $M=-\alpha I-D_0L+\beta W$. Su valor
+propio con mayor parte real, $\sigma$, decide la estabilidad: si $\sigma<0$ la red se
+recupera, y el tiempo de recuperación es $\tau_\text{rec}=-1/\sigma$.
+
+La figura de la izquierda muestra que las redes con mayor conectividad algebraica
+$\lambda_2$ se recuperan más rápido. En redes simétricas la tasa de recuperación es
+exactamente $\alpha+D_0\lambda_2$, y la simulación coincide con un error del 1~\%.
+
+La figura de la derecha muestra comunidades: grupos de entidades que se pagan mucho
+entre sí y poco con el resto. Las obtenemos con el vector de Fiedler del Laplaciano
+normalizado.
+\end{decir}
+\begin{terminos}
+\begin{description}
+\item[$D_\text{out}$.] Matriz diagonal con $\mathrm{out}_j=\sum_iW_{ij}$, el pago total
+de $j$ por ciclo.
+\item[Laplaciano de flujo $L$.] $L=D_\text{out}-W$. Como $\sum_iL_{ij}=\mathrm{out}_j-
+\sum_iW_{ij}=0$, se cumple $\mathbf 1^\top L=0$ y $\frac{d}{dt}\sum_ix_i=0$ bajo este
+término.
+\item[$D_0$.] Velocidad de la redistribución.
+\item[$M$.] Matriz del sistema lineal completo.
+\item[$\sigma$.] Máxima parte real de los valores propios de $M$. Negativa: estable.
+\item[$\tau_\text{rec}$.] Tiempo de recuperación $-1/\sigma$, en ciclos: tiempo en que
+una perturbación se reduce en un factor $e$.
+\item[$\lambda_2$ (conectividad algebraica).] Segundo valor propio más pequeño del
+Laplaciano de la red simetrizada $S=(W+W^\top)/2$. Vale 0 si la red está partida en
+dos y crece con la conectividad.
+\item[Vector de Fiedler.] Vector propio asociado a $\lambda_2$. El signo de sus
+componentes divide la red en dos grupos poco conectados.
+\item[Laplaciano normalizado.] $I-D^{-1/2}SD^{-1/2}$, con $D$ la matriz de grados de
+$S$. Implementa el corte normalizado de Shi y Malik (2000), que evita separar solo
+nodos periféricos.
+\item[Bisección recursiva.] Se divide en dos la comunidad más grande hasta obtener el
+número pedido de comunidades.
+\end{description}
+\end{terminos}
+\begin{preguntas}
+\pr{¿Qué representa la redistribución en la práctica?}{Mecanismos que trasladan presión
+de liquidez sin crearla: líneas de crédito interbancario, compensación de pagos. Es una
+idealización.}
+\end{preguntas}
+
+\diapo{9}{Tarea 3: sincronización de los ciclos de pago}{1.5 min}
+\begin{decir}
+La tercera tarea modela el ritmo de los pagos con el modelo de Kuramoto, el modelo
+estándar de sincronización en física. Cada entidad es un oscilador con una fase
+$\theta_i$ y un ritmo natural $\omega_i$. Si el acoplamiento $K$ es grande, las fases se
+alinean, como cuando un público que aplaude termina aplaudiendo al unísono.
+
+Medimos la sincronización con el parámetro de orden $r$, que vale 0 si las fases están
+dispersas y 1 si todas coinciden. Para cada entidad definimos la coherencia local
+$r_i$: el promedio del coseno del desfase con sus pagadores, ponderado por lo que le paga
+cada uno.
+
+Este término se conecta con el déficit mediante $\gamma k_i(1-r_i)$. Si el ingreso
+llega en fase, $r_i=1$ y el término vale cero. Si llega en contrafase, $r_i=-1$ y el
+término es máximo. Así la sincronización deja de ser descriptiva y afecta la liquidez.
+
+Para validar, usamos un resultado exacto: en una red completa con frecuencias de
+Lorentz, $r=\sqrt{1-2\Delta/K}$. Con $K=2$ el valor teórico es 0.7071 y el simulado
+0.7076. La figura muestra que las redes dispersas se sincronizan de forma más gradual
+que la red completa.
+
+Una decisión técnica: normalizamos el acoplamiento por el ingreso medio y no por el
+número de entidades. En redes dispersas, dividir por $N$ anula el acoplamiento cuando la
+red crece.
+\end{decir}
+\begin{terminos}
+\begin{description}
+\item[Modelo de Kuramoto.] $\dot\theta_i=\omega_i+\frac{K}{\langle k\rangle}\sum_jW_{ij}
+\sin(\theta_j-\theta_i)$. Cada oscilador acelera o frena según la diferencia de fase con
+quienes lo influyen.
+\item[$\omega_i$ y distribución de Lorentz.] Frecuencias naturales sorteadas de una
+distribución de Lorentz (o de Cauchy) con centro $\bar\omega=2\pi$ (un ciclo por día) y
+semiancho $\Delta$.
+\item[$\Delta$.] Dispersión de los ritmos naturales. Mayor $\Delta$, más difícil
+sincronizar.
+\item[$r$.] Parámetro de orden global $r=\bigl|\frac1N\sum_je^{i\theta_j}\bigr|\in[0,1]$.
+Aquí $i$ dentro del exponente es la unidad imaginaria.
+\item[$r_i$.] Coherencia local $\frac1{k_i}\sum_jW_{ij}\cos(\theta_j-\theta_i)\in[-1,1]$.
+\item[$\gamma k_i(1-r_i)$.] Ingreso desfasado convertido en déficit; es igual a
+$\gamma\sum_jW_{ij}(1-\cos(\theta_j-\theta_i))$. Unidades de dinero por ciclo, como
+los demás términos.
+\item[$K_c=2\Delta$.] Acoplamiento crítico en la red completa con Lorentz: por debajo,
+$r\approx0$.
+\item[Normalización por $\langle k\rangle$.] Rodrigues et al.\ (2016). En la red
+completa coincide con el $K/N$ clásico.
+\end{description}
+\end{terminos}
+\begin{preguntas}
+\pr{¿Por qué Kuramoto y no otro modelo?}{Es el modelo mínimo con una transición de
+sincronización conocida analíticamente. Permite validar el código contra un resultado
+exacto y tiene una interpretación directa: cada entidad ajusta su ciclo al de quienes le
+pagan.}
+\end{preguntas}
+
+\diapo{10}{Tarea 4: impagos y cascadas}{1.5 min}
+\begin{decir}
+La cuarta tarea introduce el impago. Cada entidad tiene un colchón proporcional a lo que
+paga, con algo de variación aleatoria. Si su déficit supera el colchón, la entidad deja
+de pagar. Sus receptores pierden ese ingreso, su déficit salta, y algunos pueden cruzar
+su propio umbral. Repetimos el proceso en el mismo instante hasta que no hay impagos
+nuevos: eso es una cascada.
+
+Simulamos dos choques. El retiro de liquidez es un salto en el déficit de una entidad.
+La caída operativa es una entidad que recibe pero no paga durante un tiempo.
+
+Comparamos con tres modelos clásicos de contagio financiero: Eisenberg–Noe, DebtRank y
+Watts.
+
+La figura muestra la ventana de contagio. Con pocas conexiones, el choque no tiene por
+dónde propagarse. Con muchas conexiones, cada entidad recibe de muchos pagadores y la
+pérdida de uno se diluye. Las cascadas son máximas con conectividad intermedia. Nuestra
+dinámica produce esa ventana y difiere de DebtRank y de Watts, que no tienen dinámica
+temporal ni recuperación.
+\end{decir}
+\begin{terminos}
+\begin{description}
+\item[$x_i^{(c)}=c\,\mathrm{out}_i\,\varepsilon_i$.] Umbral: $c$ es el colchón medido en
+ciclos de pagos salientes, $\mathrm{out}_i$ lo que paga $i$ por ciclo y $\varepsilon_i$
+un factor lognormal de media 1.
+\item[$W_{\cdot i}\leftarrow0$.] La columna $i$ de $W$ se hace cero: $i$ deja de pagar
+a todos.
+\item[$x_k\mathrel{+}=\lambda\,\mathrm{out}_k W_{ki}/k_k$.] Salto en el déficit de cada
+receptor $k$: fracción de su ingreso que perdió ($W_{ki}/k_k$) por su escala de pagos
+($\mathrm{out}_k$) por $\lambda$, el parámetro de pérdida.
+\item[Cascada instantánea.] Repetición de la regla de impago en el mismo instante hasta
+que no hay impagos nuevos.
+\item[Orden en cada paso.] Eventos programados, paso de integración, detección de
+impagos y cascada.
+\item[Eisenberg–Noe (2001).] Modelo de liquidación: cada entidad paga el mínimo entre lo
+que debe y lo que tiene, $p=\min(\bar p,e+\Pi^\top p)$. $\bar p$ son las obligaciones,
+$e$ los activos externos y $\Pi$ la matriz de proporciones de deuda.
+\item[DebtRank.] Battiston et al.\ (2012). Propaga estrés de acreedor a deudor y cada
+nodo transmite una sola vez, sin reverberación.
+\item[Modelo de Watts (2002).] Un nodo falla cuando la fracción de vecinos caídos supera
+un umbral $\phi$.
+\item[Colapso global.] Impago de al menos el 30~\% de las entidades.
+\end{description}
+\end{terminos}
+
+% ===================================================================
+\section{Tarea 5: predicción sobre simulaciones}
+
+\diapo{11}{Diseño del experimento numérico}{1 min}
+\begin{decir}
+Una simulación es precisa pero lenta para responder en tiempo real. La quinta tarea
+entrena modelos de aprendizaje automático sobre miles de simulaciones para predecir el
+resultado en milisegundos.
+
+Generamos 300 redes y 20\,000 escenarios. Cada escenario combina una red con valores de
+13 parámetros, entre ellos los de la tabla, el tamaño y el tipo de choque. Los valores se
+eligen con un hipercubo latino, que cubre el espacio de parámetros de manera uniforme.
+Además, concentramos más escenarios cerca de $R=1$, donde el comportamiento cambia y
+predecir es más difícil.
+
+Construimos dos tablas: una por escenario, con la etiqueta de colapso global, y una por
+entidad, con el tamaño de la cascada que produce un choque en esa entidad.
+
+Para evaluar, usamos GroupKFold por red: ninguna red aparece a la vez en entrenamiento y
+en prueba. Si no se hiciera así, el modelo podría memorizar la red y el resultado sería
+optimista.
+\end{decir}
+\begin{terminos}
+\begin{description}
+\item[Hipercubo latino.] Muestreo en el que el rango de cada parámetro se divide en $N$
+intervalos y cada intervalo se usa exactamente una vez. Cubre mejor el espacio que un
+muestreo aleatorio simple.
+\item[Muestreo cerca de $R=1$.] $R=1+0.6\,\mathrm{sign}(u)|u|^2$, con $u$ uniforme en
+$[-1,1]$.
+\item[Los 13 parámetros.] $\alpha$, $R$, $D_0$, $K$, $\gamma$, $\Delta$, colchón $c$,
+pérdida $\lambda$, tamaño del choque, duración, tipo de choque, entidad chocada y red.
+\item[GroupKFold.] Validación cruzada en $k$ particiones (aquí 5) en la que todas las
+filas de un mismo grupo (una red) quedan en la misma partición.
+\item[Validación cruzada.] Se entrena con $k-1$ particiones y se evalúa en la restante,
+rotando; cada predicción se hace sobre datos que el modelo no vio.
+\item[Semilla por fila.] Cada escenario tiene su propia semilla derivada con
+\texttt{SeedSequence}: el conjunto de datos se regenera idéntico con cualquier número de
+procesos.
+\end{description}
+\end{terminos}
+
+\diapo{12}{Tarea 5: resultados}{1.5 min}
+\begin{decir}
+Probamos cuatro modelos. La regresión logística es la referencia interpretable. XGBoost
+combina cientos de árboles de decisión. La GCN es una red neuronal que trabaja sobre el
+grafo. La PINN es una red neuronal que respeta las ecuaciones del modelo.
+
+Para el colapso global, XGBoost alcanza un AUC de 0.98. Para el tamaño de la cascada
+por entidad, la GCN explica el 60~\% de la variación. La figura muestra el AUC del
+colapso por tramos de $R$ y por topología. XGBoost se mantiene entre 0.97 y 0.99 en todos
+los grupos. La regresión logística baja a 0.92 en la zona más inestable, $R>1.2$, porque
+allí la relación entre las variables y el colapso deja de ser lineal.
+
+Una simulación tarda 0.08 segundos; una predicción, 0.2 milisegundos. Eso permite el
+mapa de riesgo instantáneo de la aplicación.
+
+La PINN resuelve el problema inverso: a partir de trayectorias observadas, estima los
+parámetros. Recupera $\gamma$ y $K$ con error menor al 1~\%. El parámetro $\beta$ tiene
+más error, 23~\%, porque su efecto se confunde con el de $\alpha$.
+
+Una limitación: dentro de una misma red, el orden de las entidades por riesgo se predice
+solo de forma moderada, con una correlación de Spearman de 0.3. Por eso la aplicación
+permite verificar cualquier predicción con una simulación.
+\end{decir}
+\begin{terminos}
+\begin{description}
+\item[Regresión logística.] Modelo $P(y=1)=1/(1+e^{-(b_0+\sum_kb_kz_k)})$. Cada
+coeficiente indica cuánto cambia el logaritmo de la razón de probabilidades por unidad
+de la variable.
+\item[XGBoost.] \emph{Extreme Gradient Boosting}. Suma de árboles de decisión entrenados
+en secuencia; cada árbol corrige los errores de los anteriores (\emph{gradient
+boosting}).
+\item[Árbol de decisión.] Modelo que divide los datos con preguntas del tipo ``¿$R>1$?''
+hasta llegar a una predicción.
+\item[GCN.] \emph{Graph Convolutional Network} (Kipf y Welling, 2017). Cada capa promedia
+las variables de los vecinos de cada nodo y aplica una transformación aprendida. Se
+usan 3 capas con una conexión residual que lleva las variables propias del nodo hasta
+la salida.
+\item[PINN.] \emph{Physics-Informed Neural Network} (Raissi et al., 2019). Red neuronal
+entrenada para ajustar los datos y, a la vez, cumplir las ecuaciones del modelo. Los
+parámetros físicos son incógnitas del entrenamiento.
+\item[Problema inverso.] Estimar parámetros a partir de observaciones de la solución.
+\item[AUC.] Área bajo la curva ROC. Probabilidad de que el modelo asigne más riesgo a un
+caso positivo elegido al azar que a uno negativo. 0.5 es azar; 1 es perfecto.
+\item[Curva ROC.] Tasa de verdaderos positivos contra tasa de falsos positivos para todos
+los umbrales de decisión.
+\item[PR-AUC.] Área bajo la curva precisión-exhaustividad. Más informativa cuando los
+positivos son pocos.
+\item[$R^2$.] Coeficiente de determinación: fracción de la varianza de la variable
+objetivo que explica el modelo.
+\item[Spearman ($\rho_s$).] Correlación entre los órdenes (rangos) de dos variables.
+\end{description}
+\end{terminos}
+\begin{preguntas}
+\pr{¿Para qué predecir si se puede simular?}{Para explorar en tiempo real: la predicción
+es unas 400 veces más rápida por escenario y unas 20\,000 veces más rápida para la red
+completa de entidades. La simulación queda como verificación.}
+\pr{¿Por qué $\beta$ tiene más error en la PINN?}{En la parte lineal, $\alpha$ y $\beta$
+entran combinadas en $M$: varias parejas producen trayectorias casi iguales. Es un
+problema de identificabilidad, no del código.}
+\end{preguntas}

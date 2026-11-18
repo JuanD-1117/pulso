@@ -1,0 +1,139 @@
+% ===================================================================
+\section{Qué es la aplicación}
+
+La aplicación de PULSO es un laboratorio interactivo. Permite construir una red de
+pagos, aplicarle un choque y ver cómo se propaga, sin escribir código. También muestra
+los resultados del proyecto sobre riesgo de crédito.
+
+Tiene diez páginas en dos bloques:
+
+\begin{center}
+\small
+\begin{tabular}{p{0.32\textwidth}p{0.6\textwidth}}
+\toprule
+\textbf{Páginas} & \textbf{Para qué sirven} \\
+\midrule
+Inicio & Presentación y carga del escenario de ejemplo. \\
+1 Construir red & Crear la red de pagos con la que trabajan las páginas 2 a 7. \\
+2 Diagnóstico & Saber si la red amortigua o amplifica un choque. \\
+3 Ritmo de pagos & Ver cómo se sincronizan los ciclos de pago. \\
+4 Simulador de choques & Aplicar un choque y ver la cascada de impagos. \\
+5 Explorar escenarios & Consultar 20\,000 simulaciones ya hechas. \\
+6 Mapa de riesgo & Predicción instantánea del riesgo de cada entidad. \\
+7 Acerca del modelo & Ecuaciones, supuestos y límites. \\
+\midrule
+8 Cartera multicapa & Clientes de un banco en tres capas de pagos (tarea 6). \\
+9 Riesgo crediticio híbrido & Comparar el score clásico con el modelo que usa la red
+(tarea 6). \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Las páginas 1 a 7 trabajan con una \textbf{red de entidades}: bancos, empresas o
+participantes de un sistema de pagos, sin distinguir su tipo. Las páginas 8 y 9 trabajan
+con una \textbf{cartera de clientes} de un banco: personas y empresas.
+
+\begin{aviso}
+Todos los datos son simulados y los parámetros son ilustrativos. La aplicación sirve
+para entender mecanismos, no para medir el riesgo de una institución real.
+\end{aviso}
+
+% ===================================================================
+\section{Cómo abrir la aplicación}
+
+\subsection{En el computador, con uv}
+En una terminal, dentro de la carpeta del proyecto:
+\begin{verbatim}
+uv sync                              # solo la primera vez: instala todo
+uv run streamlit run app/Inicio.py   # abre la aplicación
+\end{verbatim}
+El navegador se abre en \texttt{http://localhost:8501}. Si ese puerto está ocupado,
+use otro puerto y abra \texttt{http://localhost:8502}:
+\begin{verbatim}
+uv run streamlit run app/Inicio.py --server.port=8502
+\end{verbatim}
+
+\subsection{Con Docker}
+\begin{verbatim}
+docker build -t pulso .
+docker run -p 8501:8501 pulso
+\end{verbatim}
+y abra \texttt{http://localhost:8501}. La imagen ya trae los datos y los modelos
+entrenados.
+
+\subsection{Para cerrarla}
+Cierre la pestaña del navegador y, en la terminal, presione \texttt{Ctrl+C}.
+
+% ===================================================================
+\section{Elementos de la pantalla}
+
+\begin{description}
+\item[Barra lateral.] A la izquierda. Tiene la lista de páginas y, debajo, un resumen de
+la red activa (topología, número de entidades y aristas) o de la cartera activa
+(personas, firmas, informalidad y semilla). Se oculta con la flecha \texttt{<<}.
+\item[Deslizador.] Barra con un punto que se arrastra para elegir un número. El valor
+actual aparece encima. Con el teclado, las flechas lo mueven paso a paso.
+\item[Formulario.] Recuadro con varios controles y un botón azul (\boton{Construir},
+\boton{Simular}, \boton{Simular cartera}). Los cambios dentro del recuadro no tienen
+efecto hasta presionar el botón. Así se pueden cambiar varios valores a la vez sin
+esperar una simulación por cada uno.
+\item[Control fuera de formulario.] Se aplica al soltarlo: la página se recalcula de
+inmediato.
+\item[Métrica.] Número grande con su nombre encima. Algunas tienen un símbolo
+\textbf{?}: al pasar el cursor muestra una explicación. Debajo puede aparecer una
+flecha con la diferencia respecto a un caso de referencia.
+\item[Gráfica interactiva.] Al pasar el cursor sobre un punto se ve su información. Con
+el ratón se puede hacer zoom arrastrando un rectángulo; doble clic restablece la vista.
+En la esquina superior derecha hay botones para descargar la imagen, mover, ampliar y
+ver en pantalla completa. Al hacer clic en un elemento de la leyenda se oculta o se
+muestra esa serie.
+\item[Tabla.] Al hacer clic en el nombre de una columna se ordena por ella.
+\item[Desplegable (\emph{expander}).] Línea con una flecha \texttt{>} que se abre al
+hacer clic y muestra contenido adicional.
+\item[Indicador de ejecución.] Mientras la aplicación calcula, en la esquina superior
+derecha aparece un aviso de ejecución. Espere a que desaparezca antes de leer los
+resultados.
+\end{description}
+
+\subsection{Estado compartido entre páginas}
+La red que se construye en \emph{Construir red} y los parámetros que se ajustan en
+\emph{Diagnóstico}, \emph{Ritmo de pagos} y \emph{Simulador de choques} se comparten.
+Por ejemplo, el valor de $\alpha$ elegido en \emph{Diagnóstico} se usa también en el
+simulador. Lo mismo ocurre con la cartera de la página 8, que usa la página 9.
+
+El estado dura mientras la pestaña esté abierta. Si se recarga la página del navegador,
+todo vuelve a los valores iniciales.
+
+\subsection{Límite de tamaño}
+Con más de 300 entidades, las páginas que simulan en vivo (\emph{Diagnóstico}, en su
+choque de prueba; \emph{Ritmo de pagos}; \emph{Simulador de choques}; y la verificación
+del \emph{Mapa de riesgo}) se desactivan y muestran un aviso. La barra lateral también lo
+indica. El \emph{Mapa de riesgo} sigue funcionando porque predice sin simular.
+
+% ===================================================================
+\section{Conceptos mínimos}
+
+Estos términos aparecen en todas las páginas.
+
+\begin{description}
+\item[Entidad o nodo.] Un participante de la red. Se dibuja como un círculo.
+\item[Arista.] Una flecha de pago de una entidad a otra. Su peso es el pago medio por
+ciclo.
+\item[Ciclo.] Unidad de tiempo de las páginas 1 a 7: un ciclo de pagos, equivalente a un
+día hábil. En las páginas 8 y 9 la unidad es el mes.
+\item[Pago medio.] Unidad de dinero de las páginas 1 a 7. Los montos están escalados para
+que la arista promedio valga 1.
+\item[Déficit ($x$).] Faltante de liquidez de una entidad. Cero significa sin problemas.
+\item[Colchón (umbral).] Déficit máximo que una entidad soporta. Si lo supera, entra en
+impago.
+\item[Impago.] La entidad deja de pagar a todos sus receptores.
+\item[Cascada.] Impagos en cadena: el impago de una entidad lleva a otras a superar su
+colchón.
+\item[Fase ($\theta$).] Momento del ciclo de pagos en que está una entidad, como la
+posición de la manecilla de un reloj.
+\item[Sincronía ($r$).] Qué tan alineados están los ciclos. $r=1$: todos pagan al mismo
+tiempo. $r=0$: cada uno a su ritmo.
+\item[Semilla.] Número que fija el azar. Con la misma semilla se obtiene exactamente el
+mismo resultado.
+\item[PD.] Probabilidad de impago de un cliente en los próximos doce meses.
+\end{description}
