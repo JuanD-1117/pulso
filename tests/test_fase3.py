@@ -5,11 +5,11 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from finnet.integrate import simulate
-from finnet.metrics import local_coherence, order_parameter
-from finnet.model import Dynamics, Params, lorentz_frequencies
-from finnet.networks import complete_graph
-from finnet.spectral import perron_root
+from pulso.integrate import simulate
+from pulso.metrics import local_coherence, order_parameter
+from pulso.model import Dynamics, Params, lorentz_frequencies
+from pulso.networks import complete_graph
+from pulso.spectral import perron_root
 
 DELTA = 0.5
 N_KURAMOTO = 2000

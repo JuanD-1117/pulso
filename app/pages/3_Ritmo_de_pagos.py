@@ -6,9 +6,9 @@ import common
 import numpy as np
 import streamlit as st
 
-from finnet import service, viz
+from pulso import service, viz
 
-st.set_page_config(page_title="Ritmo de pagos · finnet", layout="wide")
+st.set_page_config(page_title="Ritmo de pagos · PULSO", layout="wide")
 st.title("Ritmo de pagos")
 common.sidebar_status()
 if not common.live_allowed():

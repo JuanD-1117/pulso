@@ -6,9 +6,9 @@ import common
 import numpy as np
 import streamlit as st
 
-from finnet import service, viz
+from pulso import service, viz
 
-st.set_page_config(page_title="Diagnóstico · finnet", layout="wide")
+st.set_page_config(page_title="Diagnóstico · PULSO", layout="wide")
 st.title("Diagnóstico")
 common.sidebar_status()
 

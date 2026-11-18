@@ -7,13 +7,13 @@ import json
 import numpy as np
 import pytest
 
-from finnet.config import load_config
-from finnet.experiments import NODE_FEATURES, run_sweep, sample_network_pool
-from finnet.ml.predict import explain, make_context, predict_risk, verify
-from finnet.ml.registry import load_model
-from finnet.ml.train import train_all
-from finnet.model import Params, make_thresholds
-from finnet.networks import generate
+from pulso.config import load_config
+from pulso.experiments import NODE_FEATURES, run_sweep, sample_network_pool
+from pulso.ml.predict import explain, make_context, predict_risk, verify
+from pulso.ml.registry import load_model
+from pulso.ml.train import train_all
+from pulso.model import Params, make_thresholds
+from pulso.networks import generate
 
 
 @pytest.fixture(scope="module")
@@ -100,7 +100,7 @@ def test_saved_models_predict_on_fixed_network(trained, sweep_cfg):
 
 @pytest.mark.slow
 def test_pinn_recovers_known_parameters_within_tolerance():
-    from finnet.ml.pinn import run_from_config
+    from pulso.ml.pinn import run_from_config
 
     cfg = load_config("pinn.yaml")
     res = run_from_config(cfg)

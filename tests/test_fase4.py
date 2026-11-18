@@ -5,11 +5,11 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from finnet.cascades import debtrank, eisenberg_noe, payment_obligations, watts
-from finnet.integrate import Shock, simulate
-from finnet.metrics import risk_summary, systemic_importance
-from finnet.model import Params, make_thresholds
-from finnet.spectral import perron_root
+from pulso.cascades import debtrank, eisenberg_noe, payment_obligations, watts
+from pulso.integrate import Shock, simulate
+from pulso.metrics import risk_summary, systemic_importance
+from pulso.model import Params, make_thresholds
+from pulso.spectral import perron_root
 
 
 def test_eisenberg_noe_three_entities_hand_solved():

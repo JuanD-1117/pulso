@@ -1,4 +1,4 @@
-# Imagen de la app finnet (Streamlit). Torch se instala en su variante CPU (ver pyproject).
+# Imagen de la app pulso (Streamlit). Torch se instala en su variante CPU (ver pyproject).
 FROM python:3.12-slim AS base
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -27,12 +27,12 @@ COPY data ./data
 COPY models ./models
 RUN uv sync --locked --no-dev
 
-RUN useradd --create-home finnet && chown -R finnet /app
-USER finnet
+RUN useradd --create-home pulso && chown -R pulso /app
+USER pulso
 
-ENV FINNET_CONFIG_DIR=/app/configs \
-    FINNET_DATA_DIR=/app/data \
-    FINNET_MODELS_DIR=/app/models
+ENV PULSO_CONFIG_DIR=/app/configs \
+    PULSO_DATA_DIR=/app/data \
+    PULSO_MODELS_DIR=/app/models
 
 EXPOSE 8501
 HEALTHCHECK CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8501/_stcore/health')"

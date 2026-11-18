@@ -5,7 +5,7 @@ Uso (desde la raíz del repositorio):
     PYTHONPATH=src uv run python docs/latex/figuras.py
 
 Escribe PNG en ``docs/latex/figuras/``. Lee los resultados del experimento de
-``data/credit/`` (``uv run finnet credit configs/credit.yaml``).
+``data/credit/`` (``uv run pulso credit configs/credit.yaml``).
 """
 
 from __future__ import annotations
@@ -20,9 +20,9 @@ import networkx as nx
 import numpy as np
 import pandas as pd
 
-from finnet.config import load_config
-from finnet.credit import CreditParams, run_credit
-from finnet.credit.estimate import (
+from pulso.config import load_config
+from pulso.credit import CreditParams, run_credit
+from pulso.credit.estimate import (
     edges_matrix,
     estimate_edges,
     event_phase,
@@ -30,10 +30,10 @@ from finnet.credit.estimate import (
     payment_cycles,
     phase_matrix,
 )
-from finnet.credit.pipeline import process_world
-from finnet.integrate import Shock
-from finnet.model import Dynamics, Params
-from finnet.world import generate_world, scaled_config
+from pulso.credit.pipeline import process_world
+from pulso.integrate import Shock
+from pulso.model import Dynamics, Params
+from pulso.world import generate_world, scaled_config
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = Path(__file__).resolve().parent / "figuras"

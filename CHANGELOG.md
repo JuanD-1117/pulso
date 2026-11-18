@@ -3,6 +3,16 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es/1.1.0/); versionado
 semántico.
 
+## [3.0.0] · 2026-11-18 · PULSO
+
+### Cambiado (incompatible)
+- El proyecto pasa a llamarse **PULSO** (Pagos, Umbrales, Liquidez y Sincronización
+  Operativa). Paquete `finnet` → `pulso` (`import pulso`), comando `uv run finnet` →
+  `uv run pulso`, variables `FINNET_*` → `PULSO_*`, imagen Docker `pulso`.
+- Presentación reescrita en registro formal; títulos de la guía revisados.
+- Documentos: `docs/pulso_guia_completa.pdf` y `docs/pulso_presentacion.pdf`, con
+  capturas de la app actualizadas.
+
 ## [2.0.1] · 2026-11-18 · Documentación
 
 ### Agregado

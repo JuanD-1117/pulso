@@ -1,4 +1,4 @@
-# Riesgo crediticio híbrido en una red multicapa de clientes (finnet v2.0)
+# Riesgo crediticio híbrido en una red multicapa de clientes (pulso v2.0)
 
 Fecha: 2026-11-18 · Estado: aprobado por el usuario en conversación.
 
@@ -12,7 +12,7 @@ Las tareas 1–5 de la propuesta del semillero se conservan (motor físico, espe
 Kuramoto, cascadas, predicción). Esta extensión es la **Tarea 6**: aplicar el motor a
 la cartera de un banco y medir, con un control nulo, cuánto aporta la dinámica.
 
-## Mundo sintético (subproyecto 1, `finnet.world`)
+## Mundo sintético (subproyecto 1, `pulso.world`)
 
 - Entidades: personas (P, 2000) y firmas (F, 100), clientes de un mismo banco.
 - Columnas comunes observables: `income` (SMMLV/mes; ventas para firmas),
@@ -65,7 +65,7 @@ $$\dot\theta_i = \omega_i + \sum_\ell K_\ell \sum_j \frac{W^\ell_{ij}}{k_i}
   emite un pago a cada receptor (monto = `W_ij · 2π/ω_j` con ruido lognormal) y la
   cuota al banco (`dst = -1`, capa `C`). Jitter de ±días compartido por cruce. Los
   impagados dejan de emitir.
-- `finnet.credit.estimate`: desde el registro de la ventana de observación estima
+- `pulso.credit.estimate`: desde el registro de la ventana de observación estima
   `Ŵ^ℓ`, la fase por eventos θ̂_i(t) = 2π(k + (t − t_k)/(t_{k+1} − t_k)) (Pikovsky et
   al., 2001), `r̂_i(t)`, desajuste de frecuencia con los pagadores, regularidad de
   períodos e ingreso perdido por pagadores que dejaron de pagar.

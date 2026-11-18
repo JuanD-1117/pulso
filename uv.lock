@@ -764,67 +764,6 @@ wheels = [
 ]
 
 [[package]]
-name = "finnet"
-version = "2.0.1"
-source = { editable = "." }
-dependencies = [
-    { name = "joblib" },
-    { name = "matplotlib" },
-    { name = "networkx" },
-    { name = "numba" },
-    { name = "numpy" },
-    { name = "pandas" },
-    { name = "plotly" },
-    { name = "pyarrow" },
-    { name = "pyyaml" },
-    { name = "scikit-learn" },
-    { name = "scipy" },
-    { name = "shap" },
-    { name = "streamlit" },
-    { name = "torch", version = "2.15.0", source = { registry = "https://pypi.org/simple" }, marker = "sys_platform != 'linux'" },
-    { name = "torch", version = "2.15.0+cpu", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "sys_platform == 'linux'" },
-    { name = "torch-geometric" },
-    { name = "xgboost" },
-]
-
-[package.dev-dependencies]
-dev = [
-    { name = "jupyter" },
-    { name = "nbconvert" },
-    { name = "pytest" },
-    { name = "ruff" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "joblib", specifier = ">=1.6.0" },
-    { name = "matplotlib", specifier = ">=3.11.2" },
-    { name = "networkx", specifier = ">=3.7" },
-    { name = "numba", specifier = ">=0.68.1" },
-    { name = "numpy", specifier = ">=2.5.5" },
-    { name = "pandas", specifier = ">=3.1.1" },
-    { name = "plotly", specifier = ">=7.1.0" },
-    { name = "pyarrow", specifier = ">=26.0.1" },
-    { name = "pyyaml", specifier = ">=6.0.3" },
-    { name = "scikit-learn", specifier = ">=1.9.1" },
-    { name = "scipy", specifier = ">=1.18.1" },
-    { name = "shap", specifier = ">=0.54.1" },
-    { name = "streamlit", specifier = ">=1.67.0" },
-    { name = "torch", marker = "sys_platform != 'linux'", specifier = ">=2.15.0" },
-    { name = "torch", marker = "sys_platform == 'linux'", specifier = ">=2.15.0", index = "https://download.pytorch.org/whl/cpu" },
-    { name = "torch-geometric", specifier = ">=2.8.1" },
-    { name = "xgboost", specifier = ">=3.4.1" },
-]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "jupyter", specifier = ">=1.1.1" },
-    { name = "nbconvert", specifier = ">=7.17.2" },
-    { name = "pytest", specifier = ">=9.2.0" },
-    { name = "ruff", specifier = ">=0.17.5" },
-]
-
-[[package]]
 name = "fonttools"
 version = "4.68.0"
 source = { registry = "https://pypi.org/simple" }
@@ -2562,6 +2501,67 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/20/e5/16ff212c1e452235a90aeb09066144d0c5a6a8c0834397e03f5224495c4e/ptyprocess-0.7.0.tar.gz", hash = "sha256:5c5d0a3b48ceee0b48485e0c26037c0acd7d29765ca3fbb5cb3831d347423220", size = 70762, upload-time = "2020-12-28T15:15:30.155Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/22/a6/858897256d0deac81a172289110f31629fc4cee19b6f01283303e18c8db3/ptyprocess-0.7.0-py2.py3-none-any.whl", hash = "sha256:4b41f3967fce3af57cc7e94b888626c18bf37a083e3651ca8feeb66d492fef35", size = 13993, upload-time = "2020-12-28T15:15:28.35Z" },
+]
+
+[[package]]
+name = "pulso"
+version = "3.0.0"
+source = { editable = "." }
+dependencies = [
+    { name = "joblib" },
+    { name = "matplotlib" },
+    { name = "networkx" },
+    { name = "numba" },
+    { name = "numpy" },
+    { name = "pandas" },
+    { name = "plotly" },
+    { name = "pyarrow" },
+    { name = "pyyaml" },
+    { name = "scikit-learn" },
+    { name = "scipy" },
+    { name = "shap" },
+    { name = "streamlit" },
+    { name = "torch", version = "2.15.0", source = { registry = "https://pypi.org/simple" }, marker = "sys_platform != 'linux'" },
+    { name = "torch", version = "2.15.0+cpu", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "sys_platform == 'linux'" },
+    { name = "torch-geometric" },
+    { name = "xgboost" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "jupyter" },
+    { name = "nbconvert" },
+    { name = "pytest" },
+    { name = "ruff" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "joblib", specifier = ">=1.6.0" },
+    { name = "matplotlib", specifier = ">=3.11.2" },
+    { name = "networkx", specifier = ">=3.7" },
+    { name = "numba", specifier = ">=0.68.1" },
+    { name = "numpy", specifier = ">=2.5.5" },
+    { name = "pandas", specifier = ">=3.1.1" },
+    { name = "plotly", specifier = ">=7.1.0" },
+    { name = "pyarrow", specifier = ">=26.0.1" },
+    { name = "pyyaml", specifier = ">=6.0.3" },
+    { name = "scikit-learn", specifier = ">=1.9.1" },
+    { name = "scipy", specifier = ">=1.18.1" },
+    { name = "shap", specifier = ">=0.54.1" },
+    { name = "streamlit", specifier = ">=1.67.0" },
+    { name = "torch", marker = "sys_platform != 'linux'", specifier = ">=2.15.0" },
+    { name = "torch", marker = "sys_platform == 'linux'", specifier = ">=2.15.0", index = "https://download.pytorch.org/whl/cpu" },
+    { name = "torch-geometric", specifier = ">=2.8.1" },
+    { name = "xgboost", specifier = ">=3.4.1" },
+]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "jupyter", specifier = ">=1.1.1" },
+    { name = "nbconvert", specifier = ">=7.17.2" },
+    { name = "pytest", specifier = ">=9.2.0" },
+    { name = "ruff", specifier = ">=0.17.5" },
 ]
 
 [[package]]

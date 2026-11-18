@@ -1,4 +1,4 @@
-% Presentación de finnet. Compilar desde docs/latex/presentacion:
+% Presentación de PULSO. Compilar desde docs/latex/presentacion:
 %   latexmk -lualatex presentacion.tex
 \documentclass[aspectratio=169,11pt]{beamer}
 \usetheme[progressbar=frametitle,numbering=fraction,block=fill]{metropolis}
@@ -20,43 +20,47 @@
 \setbeamercolor{block title}{bg=azul!15,fg=black}
 \setbeamercolor{block body}{bg=azul!5}
 
-\title{finnet}
-\subtitle{Redes complejas, sincronización y riesgo en sistemas de pagos digitales}
+\title{PULSO}
+\subtitle{Pagos, Umbrales, Liquidez y Sincronización Operativa\\[2pt]
+\footnotesize Redes complejas, sincronización y riesgo en sistemas de pagos digitales}
 \author{Juan Diego Martínez Ayala \\ \small Dirección: Jhon Hernán Díaz Forero}
 \institute{\small Semillero de Modelamiento de Sistemas Complejos y Física Computacional}
-\date{Noviembre de 2026 · software v2.0.0}
+\date{Noviembre de 2026 · software v3.0.0}
 
-\tikzset{c/.style={draw=#1,fill=#1!7,rounded corners=3pt,align=center,
-  minimum width=11.5cm,minimum height=0.9cm,font=\small}}
-\newcommand{\paso}[2]{\node[draw=azul,fill=azul!6,rounded corners=3pt,align=center,
-  minimum width=2.7cm,minimum height=1.1cm,font=\small] (#1) {#2};}
+\tikzset{
+  c/.style={draw=#1,fill=#1!7,rounded corners=3pt,align=center,
+    minimum width=11.5cm,minimum height=0.9cm,font=\small},
+  etapa/.style={draw=#1,fill=#1!6,rounded corners=3pt,align=center,
+    minimum width=2.7cm,minimum height=1.1cm,font=\small},
+  f/.style={-{Stealth[length=2.5mm]},thick,gris}}
 
 \begin{document}
 \maketitle
 
-\begin{frame}{Agenda}
+\begin{frame}{Contenido}
 \begin{enumerate}
-\item \textbf{La idea}: el problema, la intuición física y el impacto
-\item \textbf{La base}: las seis tareas, del modelo al código
+\item \textbf{Planteamiento}: problema, fundamento físico y aporte
+\item \textbf{Modelo y desarrollo}: las seis tareas de la propuesta
 \item \textbf{Resultados}: validación, riesgo sistémico y riesgo crediticio
-\item \textbf{El software}: arquitectura, app y cómo correrlo
+\item \textbf{Implementación}: arquitectura, aplicación y ejecución
 \end{enumerate}
 \end{frame}
 
 % ===================================================================
-\section{La idea}
+\section{Planteamiento}
 
-\begin{frame}{Nadie paga solo}
+\begin{frame}{Interdependencia en los sistemas de pagos}
 \begin{columns}[T]
 \column{0.55\textwidth}
 \begin{itemize}
-\item Sueldos, arriendos, facturas y cuotas viajan por \textbf{sistemas de pagos
-digitales} (en Colombia, p.\ ej.\ \textbf{Bre-B}).
-\item Lo que puedo pagar depende de lo que me pagaron: los pagos forman una
-\alert{red}.
-\item \textbf{Liquidez}: tener dinero \emph{ahora}. Si falta, hay \textbf{déficit}; si
-el déficit es muy grande, \textbf{impago}.
-\item Un impago le quita ingreso a otros: \alert{efecto dominó} = riesgo sistémico.
+\item Salarios, arriendos, facturas y cuotas se liquidan en \textbf{sistemas de pagos
+digitales}; en Colombia, por ejemplo, \textbf{Bre-B}.
+\item La capacidad de pago de cada agente depende de los ingresos que recibe: los
+pagos conforman una \alert{red}.
+\item \textbf{Liquidez}: disponibilidad inmediata de recursos. Su insuficiencia es un
+\textbf{déficit}; un déficit excesivo conduce al \textbf{impago}.
+\item Un impago reduce el ingreso de otros agentes y puede propagarse:
+\alert{riesgo sistémico}.
 \end{itemize}
 \column{0.42\textwidth}
 \centering
@@ -67,59 +71,61 @@ el déficit es muy grande, \textbf{impago}.
 \node[n] (c) at (1.8,-0.8) {C};
 \node[n] (d) at (3.6,0) {D};
 \draw[e] (a)--(b); \draw[e] (a)--(c); \draw[e] (b)--(d); \draw[e] (c)--(d);
-\node[font=\scriptsize,align=center] at (1.8,-1.7) {A no paga $\Rightarrow$ B y C reciben menos\\$\Rightarrow$ D también puede caer};
+\node[font=\scriptsize,align=center] at (1.8,-1.7) {El impago de A reduce el ingreso de B y C\\y compromete la liquidez de D};
 \end{tikzpicture}
 \end{columns}
 \end{frame}
 
-\begin{frame}{El ritmo de los pagos importa}
+\begin{frame}{Ciclos de pago y desfase}
 \begin{columns}[c]
 \column{0.42\textwidth}
 \begin{itemize}
-\item Los pagos llegan en \textbf{ciclos}: nómina quincenal o mensual, facturas,
-cuotas.
-\item Si me pagan el 30 y pago el 15, vivo apretado: necesito más colchón.
-\item Ingreso \alert{desfasado} = estrés, aunque el monto sea el mismo.
+\item Los pagos ocurren en \textbf{ciclos}: nómina quincenal o mensual, plazos de
+facturación, fechas de cuota.
+\item Un desfase entre la fecha de ingreso y la de las obligaciones exige un mayor
+colchón de liquidez.
+\item Un ingreso \alert{desfasado} genera estrés financiero aunque su monto no cambie.
 \end{itemize}
 \column{0.56\textwidth}
 \includegraphics[width=\textwidth]{concepto_deficit_y_ritmo.png}
 \end{columns}
 \end{frame}
 
-\begin{frame}{La pregunta}
+\begin{frame}{Pregunta de investigación}
 \begin{block}{Riesgo sistémico (tareas 1–5)}
-Un modelo físico de la red de pagos: el déficit se propaga, los ritmos se sincronizan,
-las entidades caen al cruzar un umbral. Y modelos que predicen el colapso en
-milisegundos.
+Modelo físico-matemático de una red de pagos en el que el déficit se propaga, los
+ciclos de pago se sincronizan y las entidades incurren en impago al superar un umbral;
+modelos de aprendizaje automático que anticipan el colapso.
 \end{block}
 \begin{alertblock}{Riesgo crediticio (tarea 6)}
-¿La \textbf{dinámica} de la red de pagos de los clientes de un banco (sincronía de sus
-ciclos) aporta información de impago que ni el \textbf{score clásico} ni la
-\textbf{red estática} capturan?
+¿La \textbf{dinámica} de la red de pagos de los clientes de un banco, medida como la
+sincronización de sus ciclos de pago, aporta información sobre el impago adicional a
+la del \textbf{score clásico} y a la de la \textbf{estructura estática} de la red?
 \end{alertblock}
 \end{frame}
 
-\begin{frame}{La idea física}
+\begin{frame}{Fundamento físico}
 \begin{columns}[T]
 \column{0.5\textwidth}
-\textbf{Tres ingredientes}
+\textbf{Componentes del modelo}
 \begin{enumerate}
-\item \textbf{Red}: $W_{ij}$ = lo que $j$ le paga a $i$
-\item \textbf{Estado}: déficit $x_i$ y fase del ciclo $\theta_i$
-\item \textbf{Reglas}: contagio, sincronización (Kuramoto), umbral de impago
+\item \textbf{Red}: $W_{ij}$, pago de $j$ hacia $i$ por ciclo.
+\item \textbf{Variables de estado}: déficit $x_i$ y fase del ciclo de pagos $\theta_i$.
+\item \textbf{Dinámica}: contagio del déficit, sincronización de Kuramoto y umbral de
+impago.
 \end{enumerate}
 \column{0.48\textwidth}
-\small
+\footnotesize
 \begin{tabular}{ll}
 \toprule
-Física & Finanzas \\
+Concepto físico & Concepto financiero \\
 \midrule
 Nodo & Entidad o cliente \\
 Arista $W_{ij}$ & Pago de $j$ a $i$ \\
-Relajación & Corregir el déficit \\
-Acople & Contagio \\
+Relajación & Corrección del déficit \\
+Acoplamiento & Contagio \\
 Fase $\theta$ & Momento del ciclo \\
-Orden $r$ & Sincronía de pagos \\
+Parámetro de orden $r$ & Sincronización de pagos \\
 Umbral & Colchón de liquidez \\
 Avalancha & Cascada de impagos \\
 \bottomrule
@@ -127,55 +133,54 @@ Avalancha & Cascada de impagos \\
 \end{columns}
 \end{frame}
 
-\begin{frame}{Impacto y novedad}
+\begin{frame}{Aplicaciones y aporte}
+\small
 \begin{columns}[T]
 \column{0.5\textwidth}
-\textbf{Para quién}
+\textbf{Aplicaciones}
 \begin{itemize}
-\item \textbf{Supervisores}: entidades sistémicas, simulación de choques, alerta
-temprana (sincronía global).
-\item \textbf{Bancos}: \alert{riesgo oculto} de la cartera; quiebra de un empleador.
-\item \textbf{Investigación}: puente física–finanzas falsable.
+\item \textbf{Supervisión}: identificación de entidades sistémicas, simulación de
+choques e indicadores de alerta temprana basados en la sincronización global.
+\item \textbf{Gestión de cartera}: riesgo no capturado por el score y escenarios de
+quiebra de empleadores.
+\item \textbf{Investigación}: hipótesis falsable entre física estadística y finanzas.
 \end{itemize}
 \column{0.48\textwidth}
-\textbf{Qué es nuevo}
+\textbf{Aporte respecto a la literatura}
 \begin{itemize}
-\item Red en crédito: \emph{ya existe}, casi siempre \textbf{estática} (Letizia y
-Lillo 2019; Tobback et al.\ 2017).
-\item Aporte: la \textbf{dinámica} (sincronía de ciclos medida desde transacciones) y
-un \textbf{control nulo}.
-\item Parámetros \alert{ilustrativos}: prueba el mecanismo, no su existencia real.
+\item El uso de redes en riesgo crediticio está documentado, casi siempre con
+variables \textbf{estáticas} (Letizia y Lillo, 2019; Tobback et al., 2017).
+\item Aporte: variables \textbf{dinámicas} de sincronización estimadas desde
+transacciones, evaluadas frente a un \textbf{control nulo}.
+\item Parámetros \alert{ilustrativos}: se valida el mecanismo, no su magnitud real.
 \end{itemize}
 \end{columns}
 \end{frame}
 
 % ===================================================================
-\section{La base: seis tareas}
+\section{Modelo y desarrollo}
 
-\begin{frame}{Seis tareas, un solo modelo}
+\begin{frame}{Estructura del proyecto}
 \centering
-\begin{tikzpicture}[f/.style={-{Stealth[length=2.5mm]},thick,gris}]
-\paso{a}{1. Red\\y déficit}
-\node[right=0.5cm of a] {};
-\begin{scope}[node distance=0.55cm]
-\node[draw=azul,fill=azul!6,rounded corners=3pt,align=center,minimum width=2.7cm,minimum height=1.1cm,font=\small,right=of a] (b) {2. Difusión\\y estabilidad};
-\node[draw=azul,fill=azul!6,rounded corners=3pt,align=center,minimum width=2.7cm,minimum height=1.1cm,font=\small,right=of b] (c) {3. Sincronización\\(Kuramoto)};
-\node[draw=azul,fill=azul!6,rounded corners=3pt,align=center,minimum width=2.7cm,minimum height=1.1cm,font=\small,below=0.8cm of c] (d) {4. Impagos\\y cascadas};
-\node[draw=azul,fill=azul!6,rounded corners=3pt,align=center,minimum width=2.7cm,minimum height=1.1cm,font=\small,left=of d] (e) {5. Experimentos\\+ ML};
-\node[draw=rojo,fill=rojo!6,rounded corners=3pt,align=center,minimum width=2.7cm,minimum height=1.1cm,font=\small,left=of e] (g) {6. Riesgo\\crediticio};
-\end{scope}
+\begin{tikzpicture}[node distance=0.55cm]
+\node[etapa=azul] (a) {1. Red y\\déficit};
+\node[etapa=azul,right=of a] (b) {2. Difusión y\\estabilidad};
+\node[etapa=azul,right=of b] (c) {3. Sincronización\\(Kuramoto)};
+\node[etapa=azul,below=0.8cm of c] (d) {4. Impagos y\\cascadas};
+\node[etapa=azul,left=of d] (e) {5. Experimentos y\\predicción};
+\node[etapa=rojo,left=of e] (g) {6. Riesgo\\crediticio};
 \draw[f] (a)--(b); \draw[f] (b)--(c); \draw[f] (c)--(d); \draw[f] (d)--(e); \draw[f] (e)--(g);
 \end{tikzpicture}
 
 \vspace{0.4cm}
-\small Regla de diseño: con los términos nuevos en cero, el modelo vuelve
-\textbf{exactamente} al de la tarea anterior (y hay pruebas que lo verifican).
+\small Criterio de diseño: al anular los términos nuevos, el modelo coincide
+\textbf{exactamente} con el de la tarea anterior; las pruebas automáticas lo verifican.
 \end{frame}
 
-\begin{frame}{El modelo completo (tareas 1–4)}
-\small
+\begin{frame}{Formulación del modelo (tareas 1–4)}
+\footnotesize
 \[
-\frac{dx_i}{dt} = \underbrace{-\alpha x_i}_{\text{se corrige}}
+\frac{dx_i}{dt} = \underbrace{-\alpha x_i}_{\text{corrección}}
 + \underbrace{\beta\sum_j W_{ij}x_j}_{\text{contagio}}
 \underbrace{- D_0(Lx)_i}_{\text{redistribución}}
 + \underbrace{\gamma\,k_i(1-r_i)}_{\text{ingreso desfasado}} + \eta_i(t)
@@ -185,68 +190,70 @@ un \textbf{control nulo}.
 \qquad x_i > x_i^{(c)} \Rightarrow \text{impago}
 \]
 \begin{itemize}
-\item \textbf{Tarea 1}: $R=\beta\rho(W)/\alpha$. Si $R<1$ la red amortigua; si $R>1$
-amplifica (Perron–Frobenius).
-\item \textbf{Tarea 2}: $L=D_\text{out}-W$ conserva el total; $\sigma=\max\mathrm{Re}\,\lambda$,
-$\tau_\text{rec}=-1/\sigma$, $\lambda_2$, comunidades.
-\item \textbf{Tarea 3}: $r=|\langle e^{i\theta}\rangle|$, coherencia local $r_i$.
-\item \textbf{Tarea 4}: colchones, choques, cascada instantánea; Eisenberg–Noe,
-DebtRank, Watts.
+\item \textbf{Tarea 1}: índice de amplificación $R=\beta\rho(W)/\alpha$; la red es
+estable si $R<1$ (Perron–Frobenius).
+\item \textbf{Tarea 2}: Laplaciano $L=D_\text{out}-W$ conservativo; estabilidad
+$\sigma=\max\mathrm{Re}\,\lambda$, recuperación $\tau_\text{rec}=-1/\sigma$, $\lambda_2$.
+\item \textbf{Tarea 3}: parámetro de orden $r=|\langle e^{i\theta}\rangle|$ y coherencia
+local $r_i$.
+\item \textbf{Tarea 4}: colchones, choques y cascada; comparación con Eisenberg–Noe,
+DebtRank y Watts.
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Tarea 1 y 2: amortiguar o amplificar}
+\begin{frame}{Tareas 1 y 2: estabilidad de la red}
 \begin{columns}[c]
 \column{0.6\textwidth}
 \includegraphics[width=\textwidth]{fase1_diagrama_alpha_beta.png}
 \column{0.38\textwidth}
 \footnotesize
 \begin{itemize}
-\item Línea punteada: $R=1$.
-\item Redes más concentradas ($\rho$ alto) se vuelven inestables antes.
-\item La redistribución $D_0$ estabiliza: tolera $R>1$.
+\item La línea punteada corresponde a $R=1$.
+\item Las redes más concentradas (mayor $\rho$) pierden estabilidad antes.
+\item La redistribución $D_0$ amplía la región estable más allá de $R=1$.
 \end{itemize}
 \includegraphics[width=0.85\textwidth]{fase2_D0_umbral.png}
 \end{columns}
 \end{frame}
 
-\begin{frame}{Tarea 3 y 4: sincronía y cascadas}
+\begin{frame}{Tareas 3 y 4: sincronización y cascadas de impago}
 \begin{columns}[c]
 \column{0.49\textwidth}
 \includegraphics[width=\textwidth]{fase3_r_vs_K.png}
-\small Kuramoto en red completa: $r=\sqrt{1-2\Delta/K}$ (simulado 0.7076 vs.\ 0.7071).
+\small Red completa: $r=\sqrt{1-2\Delta/K}$ (simulado 0.7076; teórico 0.7071).
 \column{0.49\textwidth}
 \includegraphics[width=\textwidth]{fase4_ventana_contagio.png}
-\small Ventana de contagio: con conectividad intermedia las cascadas son máximas.
+\small Ventana de contagio: las cascadas son máximas con conectividad intermedia.
 \end{columns}
 \end{frame}
 
-\begin{frame}{Tarea 5: aprender de 20\,000 escenarios}
+\begin{frame}{Tarea 5: predicción a partir de 20\,000 escenarios}
 \begin{columns}[T]
 \column{0.45\textwidth}
 \begin{itemize}
-\item 300 redes, 20\,000 escenarios (hipercubo latino, densidad extra en $R\approx1$).
-\item Dataset reproducible bit a bit (Parquet).
+\item 300 redes y 20\,000 escenarios (hipercubo latino con mayor densidad cerca de
+$R=1$).
+\item Conjunto de datos reproducible bit a bit (Parquet).
 \item Validación \textbf{GroupKFold por red}.
-\item Modelos $\sim10^4$ veces más rápidos que simular.
+\item Predicción unas $10^4$ veces más rápida que la simulación.
 \end{itemize}
 \column{0.53\textwidth}
-\small
+\footnotesize
 \begin{tabular}{lll}
 \toprule
-Modelo & Tarea & Métrica \\
+Modelo & Objetivo & Métrica \\
 \midrule
 Logística & colapso & AUC 0.957 \\
 XGBoost & colapso & AUC \textbf{0.980} \\
-XGBoost & cascada/entidad & $R^2$ 0.50 \\
-GCN & cascada/entidad & $R^2$ \textbf{0.60} \\
-PINN & parámetros & $\gamma,K<1\%$ \\
+XGBoost & cascada por entidad & $R^2$ 0.50 \\
+GCN & cascada por entidad & $R^2$ \textbf{0.60} \\
+PINN & parámetros & $\gamma,K$: error $<1\%$ \\
 \bottomrule
 \end{tabular}
 \end{columns}
 \end{frame}
 
-\begin{frame}{Tarea 6: la cartera de un banco}
+\begin{frame}{Tarea 6: cartera multicapa de un banco}
 \begin{columns}[c]
 \column{0.5\textwidth}
 \includegraphics[width=\textwidth]{tarea6_red_multicapa.png}
@@ -254,16 +261,16 @@ PINN & parámetros & $\gamma,K<1\%$ \\
 \small
 \begin{itemize}
 \item 2000 personas (55~\% informales) y 100 firmas.
-\item Tres capas: \textcolor{azul}{\textbf{nómina}}, \textcolor{rojo}{\textbf{proveedores}},
-\textbf{transferencias}.
-\item Variables clásicas y una \textbf{PD verdadera} oculta (\texttt{truth\_*},
-vetada por código).
-\item Tiempo en meses; déficit como fracción del ingreso.
+\item Tres capas: \textcolor{azul}{\textbf{nómina}}, \textcolor{rojo}{\textbf{proveedores}}
+y \textbf{transferencias}.
+\item Variables clásicas y una \textbf{PD verdadera} no observable
+(\texttt{truth\_*}), excluida de los modelos por validación de esquema.
+\item Tiempo en meses; déficit expresado como fracción del ingreso.
 \end{itemize}
 \end{columns}
 \end{frame}
 
-\begin{frame}{Motor multicapa}
+\begin{frame}{Modelo dinámico multicapa}
 \[
 \dot x_i = -\alpha x_i + \sum_\ell\beta_\ell\sum_j\frac{W^\ell_{ij}}{s_i}x_j
 + \gamma\frac{k_i}{s_i}(1-r_i) + \sigma\xi_i,
@@ -271,48 +278,51 @@ vetada por código).
 \dot\theta_i = \omega_i + \sum_\ell K_\ell\sum_j\frac{W^\ell_{ij}}{k_i}\sin(\theta_j-\theta_i)
 \]
 \begin{itemize}
-\item Contagio y acople \textbf{por capa}; matrices dispersas (una cartera en $<1$~s).
+\item Contagio y acoplamiento \textbf{por capa}; matrices dispersas (una cartera se
+simula en menos de 1~s).
 \item Colchón $\propto \mathrm{PD}_i^{-\kappa}$; impagos idiosincráticos con tasa
-$-\ln(1-\mathrm{PD})/12$.
-\item Choque nuevo: \textbf{quiebra} de un empleador.
-\item Sin acoples por capa, el motor es \textbf{idéntico} al de la versión 1.
+$-\ln(1-\mathrm{PD})/12$ por mes.
+\item Choque adicional: \textbf{quiebra} de un empleador.
+\item Con una sola capa, el modelo coincide \textbf{exactamente} con la versión 1.
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Lo que ve el banco: transacciones}
+\begin{frame}{Estimación a partir de transacciones}
 \begin{columns}[c]
 \column{0.58\textwidth}
 \includegraphics[width=\textwidth]{tarea6_fase_eventos.png}
 \column{0.4\textwidth}
 \small
 \begin{itemize}
-\item Cada cruce de fase $\Rightarrow$ un ciclo de pagos con fecha.
-\item \textbf{Fase por eventos} (Pikovsky et al.\ 2001):
+\item Cada cruce de fase genera un ciclo de pagos con fecha.
+\item \textbf{Fase por eventos} (Pikovsky et al., 2001):
 \[\hat\theta = 2\pi\Big(k+\tfrac{t-t_k}{t_{k+1}-t_k}\Big)\]
-\item $\hat r_i$ estimada vs.\ real: correlación $>0.8$.
-\item Nada usa la verdad del terreno.
+\item Correlación entre $\hat r_i$ estimada y $r_i$ del modelo: $>0.8$.
+\item La estimación no utiliza la verdad del terreno.
 \end{itemize}
 \end{columns}
 \end{frame}
 
-\begin{frame}{Tres niveles y un control}
+\begin{frame}{Diseño experimental}
 \begin{columns}[T]
 \column{0.5\textwidth}
+\textbf{Conjuntos de variables}
 \begin{enumerate}
 \item \textbf{Clásico}: ingreso, endeudamiento, moras, antigüedad, formalidad.
-\item \textbf{+ Red estática}: fuentes del ingreso, concentración, PageRank, salud del
-empleador y de los pagadores.
-\item \textbf{+ Red dinámica}: $\hat r$, su variabilidad, desfase, desajuste de ritmo,
-irregularidad, pagadores que dejaron de pagar.
+\item \textbf{Red estática}: composición y concentración del ingreso, PageRank,
+condición del empleador y de los pagadores.
+\item \textbf{Red dinámica}: $\hat r$ y su variabilidad, desfase, desajuste de
+frecuencia, irregularidad de ciclos, pagadores que cesaron sus pagos.
 \end{enumerate}
 \column{0.48\textwidth}
-\begin{block}{Diseño}
+\begin{block}{Protocolo}
 \small
 \begin{itemize}
-\item 6 meses de observación, impago en los 12 siguientes.
-\item 20 mundos por régimen, GroupKFold por mundo.
-\item \alert{Mundo nulo}: mismos clientes y sorteos, la red no crea déficit.
-\item Mejoras \textbf{pareadas} por partición con IC 95~\%.
+\item Observación de 6 meses; impago en los 12 meses siguientes.
+\item 20 carteras por régimen; GroupKFold por cartera.
+\item \alert{Régimen nulo}: mismos clientes y sorteos aleatorios, sin efecto de la red
+sobre el déficit.
+\item Diferencias \textbf{pareadas} por partición con IC del 95~\%.
 \end{itemize}
 \end{block}
 \end{columns}
@@ -321,84 +331,89 @@ irregularidad, pagadores que dejaron de pagar.
 % ===================================================================
 \section{Resultados}
 
-\begin{frame}{Validación}
+\begin{frame}{Validación numérica}
 \footnotesize
 \begin{tabular}{ll}
 \toprule
-Prueba & Resultado \\
+Verificación & Resultado \\
 \midrule
-RK4 vs.\ $e^{Mt}x_0$ & error $<10^{-6}$ \\
-Conservación con difusión & $<10^{-10}$ \\
-Recuperación $\alpha+D_0\lambda_2$ & 1~\% \\
-Kuramoto, red completa & 0.7076 vs.\ 0.7071 \\
-Motor multicapa (1 capa) vs.\ v1 & idénticos \\
-Varianza Ornstein–Uhlenbeck & 10~\% \\
-$\hat W$ y ritmos desde transacciones & error mediano $<5$~\% \\
-$\hat r_i$ vs.\ $r_i$ & correlación $>0.8$ \\
+RK4 frente a $e^{Mt}x_0$ & error $<10^{-6}$ \\
+Conservación bajo difusión & $<10^{-10}$ \\
+Tasa de recuperación $\alpha+D_0\lambda_2$ & 1~\% \\
+Kuramoto en red completa & 0.7076 frente a 0.7071 \\
+Modelo multicapa (una capa) frente a versión 1 & idénticos \\
+Varianza de Ornstein–Uhlenbeck & 10~\% \\
+$\hat W$ y frecuencias estimadas desde transacciones & error mediano $<5$~\% \\
+$\hat r_i$ frente a $r_i$ & correlación $>0.8$ \\
 \bottomrule
 \end{tabular}
 
 \vspace{0.3cm}
-\textbf{127 pruebas automáticas en verde.}
+\textbf{127 pruebas automáticas superadas.}
 \end{frame}
 
 \begin{frame}{Resultado principal}
-\centering\includegraphics[width=0.86\textwidth]{tarea6_auc_niveles.png}
+\centering
+\includegraphics[width=0.78\textwidth]{tarea6_auc_niveles.png}
 \begin{alertblock}{}
-Mundo con red: dinámica vs.\ red estática $\Delta\mathrm{AUC}=+0.011$ (logística) y
-$+0.014$ (XGBoost), IC 95~\% $>0$ en 5/5 particiones. Mundo nulo: $\approx0$.
+Régimen con red: las variables dinámicas mejoran sobre la red estática en
+$\Delta\mathrm{AUC}=+0.011$ (logística) y $+0.014$ (XGBoost), con IC del 95~\% positivo
+en 5 de 5 particiones. Régimen nulo: $\Delta\mathrm{AUC}\approx0$.
 \end{alertblock}
 \end{frame}
 
-\begin{frame}{Mejoras pareadas}
+\begin{frame}{Mejoras pareadas por partición}
 \centering
 \includegraphics[height=0.78\textheight]{tarea6_mejoras.png}
 \end{frame}
 
-\begin{frame}{Sincronía, impago y quiebra}
+\begin{frame}{Sincronización, impago y quiebra de un empleador}
 \begin{columns}[c]
 \column{0.49\textwidth}
 \includegraphics[width=\textwidth]{tarea6_impago_por_r.png}
-\small Con red: 4.4~\% (sincronizados) $\to$ 11–14~\% (desincronizados).
+\small Régimen con red: la tasa de impago pasa de 4.4~\% (clientes sincronizados) a
+11–14~\% (desincronizados).
 \column{0.49\textwidth}
 \includegraphics[width=\textwidth]{tarea6_quiebra.png}
-\small Quiebra del mayor empleador: 12~\% de sus empleados caen de inmediato; en el
-mundo nulo, nada cambia.
+\small Quiebra del principal empleador: el 12~\% de sus empleados incurre en impago de
+inmediato; en el régimen nulo no se observa efecto.
 \end{columns}
 \end{frame}
 
-\begin{frame}{Qué significa y qué no}
+\begin{frame}{Alcance e interpretación}
+\small
 \begin{columns}[T]
 \column{0.48\textwidth}
-\begin{block}{Sí}
+\begin{block}{Conclusiones}
 \begin{itemize}
-\item Si el mecanismo existe, es \textbf{detectable} con las transacciones que ya
-tiene un banco.
-\item Aporta algo que la red estática no da.
-\item El control nulo separa señal de fuga.
+\item Si el mecanismo existe, es \textbf{detectable} con los registros de
+transacciones de que ya dispone un banco.
+\item Las variables dinámicas aportan información no contenida en la red estática.
+\item El control nulo descarta fugas de información.
 \end{itemize}
 \end{block}
 \column{0.48\textwidth}
-\begin{alertblock}{No}
+\begin{alertblock}{Limitaciones}
 \begin{itemize}
-\item No prueba que exista en una cartera real.
-\item El tamaño del efecto depende de parámetros ilustrativos.
-\item Falta revisión bibliográfica sistemática.
+\item No demuestra la existencia del mecanismo en una cartera real.
+\item La magnitud del efecto depende de parámetros ilustrativos.
+\item Se requiere una revisión bibliográfica sistemática.
 \end{itemize}
 \end{alertblock}
 \end{columns}
 \vspace{0.3cm}
-\centering\textbf{Siguiente paso}: el mismo pipeline sobre datos reales anonimizados.
+\centering\textbf{Trabajo futuro}: aplicación del mismo procedimiento a datos reales
+anonimizados.
 \end{frame}
 
 % ===================================================================
-\section{El software}
+\section{Implementación}
 
-\begin{frame}{Arquitectura en capas}
+\begin{frame}{Arquitectura del software}
 \centering
-\begin{tikzpicture}[f/.style={-{Stealth[length=2.5mm]},thick,gris}]
-\node[c=azul] (a) {\textbf{Interfaz} · \texttt{app/} (Streamlit, 9 páginas): solo muestra};
-\node[c=verde,below=0.35cm of a] (b) {\textbf{Servicio} · \texttt{service.py}, \texttt{credit/service.py}: tablas listas};
+\begin{tikzpicture}
+\node[c=azul] (a) {\textbf{Interfaz} · \texttt{app/} (Streamlit, 9 páginas): presentación de resultados};
+\node[c=verde,below=0.35cm of a] (b) {\textbf{Servicio} · \texttt{service.py}, \texttt{credit/service.py}: tablas para la interfaz};
 \node[c=rojo,below=0.35cm of b] (c) {\textbf{Núcleo} · \texttt{model, integrate, spectral, cascades, ml/, world/, credit/}};
 \node[c=orange,below=0.35cm of c] (d) {\textbf{Configuración y datos} · \texttt{configs/*.yaml}, \texttt{data/}, \texttt{models/}};
 \draw[f] (a)--(b); \draw[f] (b)--(c); \draw[f] (c)--(d);
@@ -409,7 +424,7 @@ tiene un banco.
 SHAP · Plotly · uv · pytest · ruff · Docker · GitHub Actions
 \end{frame}
 
-\begin{frame}{La aplicación}
+\begin{frame}{Aplicación web}
 \begin{columns}[c]
 \column{0.49\textwidth}
 \includegraphics[width=\textwidth]{app_cartera.png}
@@ -417,30 +432,31 @@ SHAP · Plotly · uv · pytest · ruff · Docker · GitHub Actions
 \includegraphics[width=\textwidth]{app_hibrido.png}
 \end{columns}
 \small Construir red · Diagnóstico · Ritmo de pagos · Simulador de choques · Explorar
-escenarios · Mapa de riesgo · Acerca · \textbf{Cartera multicapa} · \textbf{Riesgo
-crediticio híbrido}
+escenarios · Mapa de riesgo · Acerca del modelo · \textbf{Cartera multicapa} ·
+\textbf{Riesgo crediticio híbrido}
 \end{frame}
 
-\begin{frame}[fragile]{Cómo correrlo}
+\begin{frame}[fragile]{Ejecución}
 \begin{verbatim}
-uv sync                                    # instalar
+uv sync                                    # instalación
 uv run pytest                              # 127 pruebas
-uv run streamlit run app/Inicio.py         # app en localhost:8501
+uv run streamlit run app/Inicio.py         # aplicación en localhost:8501
 
-uv run finnet sweep  configs/sweep.yaml    # dataset tarea 5
-uv run finnet train  configs/train.yaml    # modelos tarea 5
-uv run finnet credit configs/credit.yaml   # experimento tarea 6 (~20 s)
+uv run pulso sweep  configs/sweep.yaml     # conjunto de datos, tarea 5
+uv run pulso train  configs/train.yaml     # modelos, tarea 5
+uv run pulso credit configs/credit.yaml    # experimento, tarea 6 (~20 s)
 
-docker build -t finnet . && docker run -p 8501:8501 finnet
+docker build -t pulso . && docker run -p 8501:8501 pulso
 \end{verbatim}
-\small Todo parámetro vive en \texttt{configs/*.yaml}; misma semilla, mismo resultado.
+\small Todos los parámetros residen en \texttt{configs/*.yaml}; la semilla explícita
+garantiza la reproducibilidad.
 \end{frame}
 
 \begin{frame}[standout]
 Gracias
 
 \vspace{0.4cm}
-\normalsize Guía completa: \texttt{docs/finnet\_guia\_completa.pdf}
+\normalsize Documento completo: \texttt{docs/pulso\_guia\_completa.pdf}
 \end{frame}
 
 \end{document}

@@ -6,8 +6,8 @@ import numpy as np
 import pytest
 import scipy.sparse as sp
 
-from finnet.config import load_config
-from finnet.credit import (
+from pulso.config import load_config
+from pulso.credit import (
     CreditParams,
     amplification_index,
     build_coupling,
@@ -15,9 +15,9 @@ from finnet.credit import (
     run_credit,
     spectral_radius,
 )
-from finnet.integrate import Shock, simulate
-from finnet.model import Coupling, Params
-from finnet.world import generate_world, scaled_config
+from pulso.integrate import Shock, simulate
+from pulso.model import Coupling, Params
+from pulso.world import generate_world, scaled_config
 
 
 @pytest.fixture(scope="module")

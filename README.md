@@ -1,4 +1,6 @@
-# finnet · redes complejas, sincronización y riesgo en sistemas de pagos digitales
+# PULSO · Pagos, Umbrales, Liquidez y Sincronización Operativa
+
+Redes complejas, sincronización y riesgo en sistemas de pagos digitales.
 
 Modelo físico-matemático y app web para estudiar propagación, sincronización
 colectiva y eventos críticos en redes de pagos digitales. Un solo sistema dinámico,
@@ -17,8 +19,8 @@ ciclos de pago se sincronizan, y una pregunta medible:
 
 ![Mapa de riesgo](figures/app_mapa_riesgo.png)
 
-**Documentación:** [guía completa desde cero](docs/finnet_guia_completa.pdf) (53 pp.) y
-[presentación](docs/finnet_presentacion.pdf) (29 diapositivas).
+**Documentación:** [guía completa desde cero](docs/pulso_guia_completa.pdf) (53 pp.) y
+[presentación](docs/pulso_presentacion.pdf) (29 diapositivas).
 
 ## El modelo (tareas 1–5)
 
@@ -50,7 +52,7 @@ mide en ciclos de pago (1 = un día hábil) y el dinero en "pagos medios por cic
 
 ## Tarea 6 · Riesgo crediticio híbrido en una red multicapa
 
-**Mundo** (`finnet.world`, `configs/world.yaml`): 2000 personas y 100 firmas
+**Mundo** (`pulso.world`, `configs/world.yaml`): 2000 personas y 100 firmas
 clientes de un mismo banco, con 55 % de informalidad. Tres capas de pagos: **nómina**
 (firma → empleado), **proveedores** (firma → firma) y **transferencias** (persona →
 persona). Cada cliente tiene variables clásicas (ingreso, endeudamiento, moras,
@@ -74,7 +76,7 @@ pagador cruza $2\pi$, paga a sus receptores y su cuota). Desde ahí se estiman $
 la fase por eventos $\hat\theta_i(t)$ y la coherencia local $\hat r_i(t)$; nada usa la
 verdad del terreno.
 
-**Experimento** (`uv run finnet credit configs/credit.yaml`, ~20 s): 20 mundos por
+**Experimento** (`uv run pulso credit configs/credit.yaml`, ~20 s): 20 mundos por
 régimen, 6 meses de observación, impago en los 12 siguientes, `GroupKFold` por mundo y
 diferencias **pareadas por partición**. El **mundo nulo** es el control: mismos
 mundos y mismos sorteos, pero la red no crea déficit.
@@ -102,7 +104,7 @@ cartera real: eso requiere datos de un banco (anonimizados, Ley 1581 de 2012).
 │ app/  (Streamlit)                         │  interfaz: solo llama a servicios
 └─────────────────────┬─────────────────────┘
 ┌─────────────────────▼─────────────────────┐
-│ finnet/service.py · finnet/credit/service │  dicts y DataFrames listos para mostrar
+│ pulso/service.py · pulso/credit/service │  dicts y DataFrames listos para mostrar
 └─────────────────────┬─────────────────────┘
 ┌─────────────────────▼─────────────────────┐
 │ núcleo: networks · model · integrate ·    │  tareas 1–5
@@ -113,9 +115,9 @@ cartera real: eso requiere datos de un banco (anonimizados, Ley 1581 de 2012).
 ```
 
 ```text
-finnet/
+pulso/
 ├── configs/   default, breb_example, sweep, train, pinn, world, credit (.yaml)
-├── src/finnet/
+├── src/pulso/
 │   ├── world/    mundo multicapa: entidades, capas, transacciones
 │   └── credit/   motor de crédito, estimación, variables, evaluación, experimento
 ├── app/       Inicio.py + pages/1..9
@@ -135,27 +137,27 @@ uv sync                                     # entorno e instalación
 uv run pytest                               # todas las pruebas (-m "not slow" para las rápidas)
 uv run streamlit run app/Inicio.py          # la app en http://localhost:8501
 
-uv run finnet sweep configs/sweep.yaml      # dataset de la Tarea 5 (~20 min en 8 núcleos)
-uv run finnet train configs/train.yaml      # modelos de la Tarea 5
-uv run finnet world configs/world.yaml      # un mundo multicapa -> data/world/demo
-uv run finnet credit configs/credit.yaml    # experimento y modelos de la Tarea 6 (~20 s)
+uv run pulso sweep configs/sweep.yaml      # dataset de la Tarea 5 (~20 min en 8 núcleos)
+uv run pulso train configs/train.yaml      # modelos de la Tarea 5
+uv run pulso world configs/world.yaml      # un mundo multicapa -> data/world/demo
+uv run pulso credit configs/credit.yaml    # experimento y modelos de la Tarea 6 (~20 s)
 ```
 
 Con Docker:
 
 ```bash
-docker build -t finnet .
-docker run -p 8501:8501 finnet
+docker build -t pulso .
+docker run -p 8501:8501 pulso
 ```
 
 ### Problemas conocidos en macOS
 
-- `ModuleNotFoundError: No module named 'finnet'` dentro de `~/Documents`: macOS marca
+- `ModuleNotFoundError: No module named 'pulso'` dentro de `~/Documents`: macOS marca
   el archivo `.pth` de la instalación editable como oculto y Python ≥ 3.12 lo ignora.
   Solución: `chflags -R nohidden .venv` (las pruebas no dependen de esto:
   `pythonpath = ["src"]` en `pyproject.toml`).
-- torch y xgboost traen cada uno su libomp; `finnet.ml` importa xgboost primero y deja
-  torch en un hilo para evitar segmentation faults (ver `src/finnet/ml/__init__.py`).
+- torch y xgboost traen cada uno su libomp; `pulso.ml` importa xgboost primero y deja
+  torch en un hilo para evitar segmentation faults (ver `src/pulso/ml/__init__.py`).
 
 ## Resultados de validación (tareas 1–5)
 

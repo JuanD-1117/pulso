@@ -8,15 +8,15 @@ import common
 import plotly.express as px
 import streamlit as st
 
-from finnet import service, viz
+from pulso import service, viz
 
-st.set_page_config(page_title="Mapa de riesgo · finnet", layout="wide")
+st.set_page_config(page_title="Mapa de riesgo · PULSO", layout="wide")
 st.title("Mapa de riesgo")
 common.sidebar_status()
 
 if not service.models_available():
     st.warning(
-        "No hay modelos entrenados. Ejecute `uv run finnet train configs/train.yaml`."
+        "No hay modelos entrenados. Ejecute `uv run pulso train configs/train.yaml`."
     )
     st.stop()
 

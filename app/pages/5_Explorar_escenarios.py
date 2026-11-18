@@ -6,14 +6,14 @@ import common
 import plotly.express as px
 import streamlit as st
 
-from finnet import service
+from pulso import service
 
-st.set_page_config(page_title="Explorar escenarios · finnet", layout="wide")
+st.set_page_config(page_title="Explorar escenarios · PULSO", layout="wide")
 st.title("Explorar escenarios")
 common.sidebar_status()
 
 if not service.dataset_available():
-    st.warning("No hay dataset. Genérelo con `uv run finnet sweep configs/sweep.yaml`.")
+    st.warning("No hay dataset. Genérelo con `uv run pulso sweep configs/sweep.yaml`.")
     st.stop()
 
 

@@ -8,8 +8,8 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from finnet.config import load_config
-from finnet.experiments import (
+from pulso.config import load_config
+from pulso.experiments import (
     NODE_SCHEMA,
     SCENARIO_SCHEMA,
     critical_R,
@@ -21,7 +21,7 @@ from finnet.experiments import (
     scenario_features,
     validate_schema,
 )
-from finnet.networks import generate
+from pulso.networks import generate
 
 
 @pytest.fixture(scope="module")

@@ -1,4 +1,4 @@
-% Guía completa de finnet. Compilar desde docs/latex/guia:
+% Guía completa de PULSO. Compilar desde docs/latex/guia:
 %   latexmk -lualatex guia.tex
 \documentclass[11pt,a4paper,oneside]{book}
 
@@ -39,7 +39,7 @@
 
 \pagestyle{fancy}
 \fancyhf{}
-\fancyhead[L]{\small\sffamily\color{gris}finnet · guía completa}
+\fancyhead[L]{\small\sffamily\color{gris}PULSO · guía completa}
 \fancyhead[R]{\small\sffamily\color{gris}\leftmark}
 \fancyfoot[C]{\small\thepage}
 \renewcommand{\headrulewidth}{0.3pt}
@@ -66,14 +66,16 @@
 \newcommand{\archivo}[1]{\texttt{\color{azul}#1}}
 \newcommand{\term}[1]{\textbf{#1}}
 
-\hypersetup{pdftitle={finnet: guía completa},pdfauthor={Juan Diego Martínez Ayala}}
+\hypersetup{pdftitle={PULSO: guía completa},pdfauthor={Juan Diego Martínez Ayala}}
 
 \begin{document}
 
 \begin{titlepage}
 \centering
 \vspace*{2.5cm}
-{\sffamily\bfseries\Huge\color{azul} finnet\par}
+{\sffamily\bfseries\Huge\color{azul} PULSO\par}
+\vspace{0.2cm}
+{\sffamily\large\color{gris} Pagos, Umbrales, Liquidez y Sincronización Operativa\par}
 \vspace{0.6cm}
 {\sffamily\LARGE Redes complejas, sincronización y riesgo\\[2pt] en sistemas de pagos digitales\par}
 \vspace{0.8cm}
@@ -85,7 +87,7 @@
 {\normalsize Dirección: Jhon Hernán Díaz Forero\par}
 {\normalsize Semillero de Modelamiento de Sistemas Complejos y Física Computacional\par}
 \vspace{0.4cm}
-{\normalsize Versión del software 2.0.0 · noviembre de 2026\par}
+{\normalsize Versión del software 3.0.0 · noviembre de 2026\par}
 \end{titlepage}
 
 \frontmatter
@@ -110,11 +112,11 @@ de las carpetas.
 \end{itemize}
 
 Convenciones visuales:
-\begin{idea}[Intuición] Explicación con una analogía antes de la matemática.\end{idea}
+\begin{idea}[Intuición] Explicación mediante una analogía, previa a la formulación matemática.\end{idea}
 \begin{nota}[Nota] Detalle técnico o decisión de diseño.\end{nota}
 \begin{clave}[Resultado clave] Hallazgo principal de una sección.\end{clave}
 \begin{limite}[Límite honesto] Lo que el resultado no demuestra.\end{limite}
-Los nombres de archivo del proyecto aparecen así: \archivo{src/finnet/model.py}. Los
+Los nombres de archivo del proyecto aparecen así: \archivo{src/pulso/model.py}. Los
 fragmentos de código son extractos reales del repositorio, a veces recortados
 (los recortes se marcan con \texttt{...}).
 
