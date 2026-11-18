@@ -44,6 +44,22 @@ def _cmd_train(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_world(args: argparse.Namespace) -> int:
+    from finnet.world import generate_world
+
+    world = generate_world(load_config(args.config), seed=args.seed)
+    out = world.save(args.out)
+    log.info(
+        "Mundo (semilla %d): %d firmas, %d personas, %d relaciones -> %s",
+        world.seed,
+        int(world.is_firm.sum()),
+        int(world.is_person.sum()),
+        len(world.edges),
+        out,
+    )
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="finnet",
@@ -85,6 +101,14 @@ def build_parser() -> argparse.ArgumentParser:
     tr.add_argument("--data", type=Path, default=Path("data"))
     tr.add_argument("--models", type=Path, default=Path("models"))
     tr.set_defaults(func=_cmd_train)
+
+    wo = sub.add_parser(
+        "world", help="Genera un mundo multicapa de clientes -> Parquet"
+    )
+    wo.add_argument("config", type=Path, help="YAML del mundo (configs/world.yaml)")
+    wo.add_argument("--out", type=Path, default=Path("data/world/demo"))
+    wo.add_argument("--seed", type=int, default=None, help="Sobrescribe la semilla")
+    wo.set_defaults(func=_cmd_world)
     return parser
 
 
