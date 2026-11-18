@@ -58,10 +58,19 @@ c1.metric(
 c2.metric(
     "Déficit total final",
     f"{res['deficit'][-1]:.2f}",
-    delta=None if res is base else f"{res['deficit'][-1] - base['deficit'][-1]:+.2f}",
+    delta=(
+        None
+        if res is base or abs(res["deficit"][-1] - base["deficit"][-1]) < 5e-3
+        else f"{res['deficit'][-1] - base['deficit'][-1]:+.2f}"
+    ),
     delta_color="inverse",
 )
 c3.metric("Coherencia local media", f"{np.mean(res['r_local']):.3f}")
+if m["gamma"] == 0:
+    st.info(
+        "Con γ = 0 el ritmo de pagos no crea déficit: las fases se sincronizan, pero "
+        "el déficit no cambia. Sube γ para ver el acople ritmo → déficit."
+    )
 
 left, right = st.columns(2)
 with left:

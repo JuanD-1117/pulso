@@ -30,11 +30,14 @@ def unpaid_liquidity(traj: Trajectory) -> float:
     return float(traj.unpaid[-1])
 
 
-def time_to_first_default(traj: Trajectory, exclude: tuple[int, ...] = ()) -> float:
-    """Primer impago (excluyendo entidades dadas, p. ej. la chocada). NaN si ninguno."""
+def time_to_first_default(
+    traj: Trajectory, exclude: tuple[int, ...] = (), after: float = -np.inf
+) -> float:
+    """Primer impago en ``t >= after``, excluyendo entidades dadas. NaN si ninguno."""
     dt = traj.default_time.copy()
     if exclude:
         dt[list(exclude)] = np.nan
+    dt[dt < after - 1e-9] = np.nan
     return float(np.nanmin(dt)) if np.isfinite(dt).any() else float("nan")
 
 
@@ -57,7 +60,12 @@ def risk_summary(
         ),
         "time_to_first_default": time_to_first_default(traj),
         "time_to_first_contagion": time_to_first_default(
-            traj, exclude=shock.targets if shock else ()
+            traj,
+            exclude=shock.targets if shock else (),
+            after=shock.t0 if shock else -np.inf,
+        ),
+        "n_defaulted_before_shock": int(
+            (traj.default_time < (shock.t0 if shock else -np.inf) - 1e-9).sum()
         ),
     }
 

@@ -200,7 +200,8 @@ def phase_circle_figure(
         ]
 
     fig = go.Figure(
-        data=data_at(frames_idx[0]),
+        # Estado final visible de entrada; ▶ reproduce desde t = 0.
+        data=data_at(frames_idx[-1]),
         frames=[go.Frame(data=data_at(k), name=f"{t[k]:.2f}") for k in frames_idx],
     )
     fig.update_layout(
@@ -210,7 +211,11 @@ def phase_circle_figure(
         xaxis={"range": [-1.15, 1.15], "visible": False},
         yaxis={"range": [-1.15, 1.15], "visible": False, "scaleanchor": "x"},
         updatemenus=[_play_button()],
-        sliders=[_slider([f"{t[k]:.2f}" for k in frames_idx], "t = ")],
+        sliders=[
+            _slider(
+                [f"{t[k]:.2f}" for k in frames_idx], "t = ", active=len(frames_idx) - 1
+            )
+        ],
     )
     return fig
 
@@ -275,29 +280,42 @@ def cascade_animation(
     status: np.ndarray,
     n_frames: int = 50,
     height: int = 560,
+    highlight: Sequence[int] = (),
 ) -> go.Figure:
-    """Cascada animada: verde = normal, ámbar = en estrés, rojo = impago."""
+    """Cascada animada: verde = normal, ámbar = en estrés, rojo = impago.
+
+    Las entidades de ``highlight`` (las chocadas) se dibujan encima y con contorno.
+    """
     colors = np.array([PALETTE["ok"], PALETTE["stress"], PALETTE["default"]])
     frames_idx = np.unique(np.linspace(0, len(t) - 1, n_frames).astype(int))
     sizes = node_sizes(W)
     edges = _edge_trace(W, pos)
 
+    hl = np.zeros(len(sizes), dtype=bool)
+    hl[list(highlight)] = True
+    order = np.concatenate(
+        [np.flatnonzero(~hl), np.flatnonzero(hl)]
+    )  # chocadas al final
+    line_w = np.where(hl[order], 3.0, 0.5)
+    line_c = np.where(hl[order], "#000", "#333")
+
     def nodes_at(k):
-        st = status[k]
+        st = status[k][order]
+        tag = np.where(hl[order], " · CHOCADA", "")
         hover = [
-            f"Entidad {i} · {['normal', 'en estrés', 'impago'][s]}"
-            for i, s in enumerate(st)
+            f"Entidad {i} · {['normal', 'en estrés', 'impago'][s]}{g}"
+            for i, s, g in zip(order, st, tag, strict=True)
         ]
         return go.Scatter(
-            x=pos[:, 0],
-            y=pos[:, 1],
+            x=pos[order, 0],
+            y=pos[order, 1],
             mode="markers",
             text=hover,
             hoverinfo="text",
             marker={
-                "size": sizes,
+                "size": sizes[order] * np.where(hl[order], 1.4, 1.0),
                 "color": colors[st].tolist(),
-                "line": {"width": 0.5, "color": "#333"},
+                "line": {"width": line_w, "color": line_c.tolist()},
             },
             showlegend=False,
         )
