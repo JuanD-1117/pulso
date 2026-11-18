@@ -31,7 +31,7 @@ calendar:
   monthly_pay_days: [30, 15, 5]
   biweekly_first_days: [15, 5]
   firm_omega_cv: 0.02          # dispersión relativa de ritmos naturales
-  formal_omega_cv: 0.04        # formales: alrededor del ritmo del empleador
+  formal_omega_cv: 0.08        # formales: alrededor del ritmo del empleador
   informal_omega_cv: 0.25      # informales: ritmos dispersos
   formal_phase_sd: 0.15        # rad; formales arrancan cerca del día de pago
 

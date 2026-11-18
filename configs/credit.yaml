@@ -1,0 +1,50 @@
+# Riesgo crediticio híbrido sobre el mundo multicapa (Tarea 6).
+# Unidades: tiempo en meses; déficit x adimensional (fracción del ingreso total).
+# Parámetros ILUSTRATIVOS, no calibrados.
+seed: 2026
+world_config: world.yaml
+
+dynamics:
+  alpha: 1.0                       # 1/mes: el déficit se corrige en ~1 mes
+  beta: {N: 0.5, S: 0.4, T: 0.3}   # 1/mes: amplificación del déficit de quien paga
+  K: {N: 0.8, S: 1.0, T: 0.3}      # rad/mes: ajuste del ritmo al de los pagadores
+  gamma: 0.5                       # 1/mes: ingreso desfasado que se vuelve déficit
+  loss: 1.0                        # perder un pagador del 100 % del ingreso = 1 mes de ingreso
+  noise: 0.3                       # 1/sqrt(mes): choques idiosincráticos de liquidez
+
+thresholds:                        # colchón x_c = buffer (pd_ref / PD)^kappa eps
+  buffer: 1.1
+  pd_ref: 0.04
+  kappa: 0.35
+  dispersion: 0.2
+
+simulation:
+  dt: 0.01                         # meses
+  t_obs: 6.0                       # ventana de observación (variables)
+  horizon: 12.0                    # ventana de predicción (etiqueta)
+  save_every: 2
+
+transactions:
+  jitter_days: 1.0
+  amount_sigma: 0.15
+  cuota_months: 24
+
+regimes:                           # "nulo": sin acople déficit-red (control)
+  nulo: {beta: {N: 0.0, S: 0.0, T: 0.0}, gamma: 0.0, loss: 0.0}
+  red: {}
+
+experiment:
+  worlds_per_regime: 10
+  n_jobs: -1
+  n_splits: 5
+  phase_grid_step: 0.05            # meses, rejilla para estimar r_i(t)
+
+models:
+  logistic: {C: 1.0, max_iter: 2000}
+  xgboost:
+    n_estimators: 300
+    max_depth: 3
+    learning_rate: 0.05
+    subsample: 0.8
+    colsample_bytree: 0.8
+    min_child_weight: 5
