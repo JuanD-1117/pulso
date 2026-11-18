@@ -25,6 +25,7 @@ from finnet.credit.engine import CreditParams
 from finnet.credit.evaluate import (
     MODELS,
     cross_validate,
+    default_by_coherence,
     fit_final,
     paired_deltas,
     summarize,
@@ -164,6 +165,8 @@ def run_experiment(
     table = build_dataset(cfg, n_worlds=n_worlds, n_jobs=n_jobs)
     paths = {"clientes": out / "clientes.parquet"}
     table.to_parquet(paths["clientes"])
+    paths["impago_por_r"] = out / "impago_por_r.csv"
+    default_by_coherence(table).to_csv(paths["impago_por_r"], index=False)
     results = evaluate_regimes(table, cfg)
     for key, name in (
         ("cv", "cv_metricas"),
@@ -191,7 +194,12 @@ def run_experiment(
 def load_results(out_dir: Path | str = Path("data/credit")) -> dict[str, pd.DataFrame]:
     """Lee las tablas del experimento (para la app y los notebooks)."""
     d = Path(out_dir)
-    files = {"summary": "resumen.csv", "deltas": "mejoras.csv", "cv": "cv_metricas.csv"}
+    files = {
+        "summary": "resumen.csv",
+        "deltas": "mejoras.csv",
+        "cv": "cv_metricas.csv",
+        "by_coherence": "impago_por_r.csv",
+    }
     missing = [f for f in files.values() if not (d / f).is_file()]
     if missing:
         raise FileNotFoundError(

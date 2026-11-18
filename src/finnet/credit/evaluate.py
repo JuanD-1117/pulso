@@ -147,6 +147,27 @@ def paired_deltas(
     return pd.DataFrame(rows)
 
 
+COHERENCE_BINS = (-1.01, 0.25, 0.5, 0.75, 0.9, 1.01)
+
+
+def default_by_coherence(table: pd.DataFrame) -> pd.DataFrame:
+    """Tasa de impago por tramo de r̂, solo clientes con ingreso por la red.
+
+    Quien no recibe nada por la red tiene r̂ = 1 por convención (no hay
+    desincronización medible); incluirlo mezclaría informales sin pagadores con
+    clientes realmente sincronizados.
+    """
+    t = table[table["n_payers"] > 0]
+    bins = pd.cut(t["r_mean"], list(COHERENCE_BINS))
+    out = (
+        t.groupby(["regime", bins], observed=True)["y"]
+        .agg(rate="mean", n="size")
+        .reset_index()
+    )
+    out["tramo"] = out["r_mean"].astype(str)
+    return out.drop(columns="r_mean")
+
+
 def fit_final(
     table: pd.DataFrame, level: str, name: str, model_cfg: dict, seed: int
 ) -> ClassifierMixin:

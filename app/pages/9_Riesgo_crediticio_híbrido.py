@@ -201,6 +201,11 @@ with c2:
         f"{100 * caught:.1f} % (híbrido)",
         delta=f"{100 * (caught - caught_c):+.1f} pp vs clásico ({100 * caught_c:.1f} %)",
     )
+    st.caption(
+        f"Una sola cartera de {len(sc)} clientes: el 10 % son ~{max(1, len(sc) // 10)} "
+        "personas y esta cifra varía mucho entre semillas. La comparación válida es la "
+        "de arriba (20 mundos, validación cruzada)."
+    )
 
 st.subheader("¿Por qué? Contribuciones SHAP del modelo híbrido")
 shap_df = common.credit_service.explain(tab[live.to_numpy()].reset_index(drop=True))
