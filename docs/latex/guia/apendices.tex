@@ -1,0 +1,101 @@
+\chapter{Glosario}
+\label{ap:glosario}
+\begin{description}[style=nextline,leftmargin=0.5cm]
+\item[AUC (ROC-AUC)] Probabilidad de que el modelo califique a un caso positivo (cae)
+por encima de uno negativo. 0.5 es azar; 1 es perfecto.
+\item[Brier] Error cuadrático medio de una probabilidad predicha. Menor es mejor.
+\item[Calibración] Que las probabilidades predichas coincidan con las frecuencias
+observadas.
+\item[Cascada] Secuencia de impagos donde cada uno provoca otros.
+\item[Choque] Evento externo que golpea a una entidad (retiro de liquidez, caída
+operativa, quiebra).
+\item[Coherencia local $r_i$] Qué tan en fase le llega el ingreso a una entidad
+respecto a su propio ciclo ($1$: en fase; $-1$: en contrafase).
+\item[Colchón (umbral)] Déficit máximo que una entidad soporta antes del impago.
+\item[Control nulo] Mismo experimento con el mecanismo apagado; si el efecto aparece
+ahí, es un artefacto.
+\item[Déficit] Liquidez que falta para cubrir los pagos del momento.
+\item[Dispersa (matriz)] Matriz que solo guarda los valores distintos de cero.
+\item[Fase $\theta$] Posición dentro del ciclo de pagos, como la aguja de un reloj.
+\item[Fuga de información] Cuando el modelo usa, sin querer, datos que no tendría en
+la realidad; infla los resultados.
+\item[GroupKFold] Validación cruzada que nunca pone el mismo grupo (red o mundo) en
+entrenamiento y prueba a la vez.
+\item[Impago] No pagar lo que se debía.
+\item[Índice de amplificación $R$] $\beta\rho(W)/\alpha$: menor que 1, la red
+amortigua; mayor que 1, amplifica.
+\item[Informalidad] Trabajo sin empleador formal; aquí, personas sin capa de nómina.
+\item[Kuramoto] Modelo de osciladores acoplados que explica la sincronización.
+\item[Laplaciano] Matriz que describe la difusión en una red; conserva el total.
+\item[Liquidez] Dinero disponible en el momento en que se necesita.
+\item[Parquet] Formato de archivo para tablas.
+\item[PD] Probabilidad de impago (\emph{probability of default}).
+\item[Radio espectral $\rho(W)$] El mayor valor propio de $W$.
+\item[RK4] Método de Runge–Kutta de orden 4 para integrar ecuaciones diferenciales.
+\item[Riesgo crediticio] Riesgo de que un deudor no pague su crédito.
+\item[Riesgo sistémico] Riesgo de que fallas locales se propaguen a todo el sistema.
+\item[Score crediticio] Modelo que estima la PD a partir de variables del cliente.
+\item[Semilla] Número que fija el azar: misma semilla, mismo resultado.
+\item[SHAP] Método que reparte una predicción entre las variables que la causan.
+\item[Solvencia] Tener más activos que deudas en total.
+\item[Verdad del terreno] Valores reales (aquí, simulados) que sirven para evaluar
+pero que ningún modelo puede ver.
+\item[XGBoost] Modelo de muchos árboles de decisión que se corrigen unos a otros.
+\item[YAML] Formato de texto para configuraciones.
+\end{description}
+
+\chapter{Referencias}
+\begin{itemize}[leftmargin=*]
+\item Acebrón, J. A., et al. (2005). The Kuramoto model. \emph{Rev. Mod. Phys.} 77, 137.
+\item Acemoglu, D., Ozdaglar, A., \& Tahbaz-Salehi, A. (2015). Systemic risk and
+stability in financial networks. \emph{American Economic Review} 105(2).
+\item Allen, F., \& Gale, D. (2000). Financial contagion. \emph{J. Political Economy} 108(1).
+\item Arenas, A., et al. (2008). Synchronization in complex networks. \emph{Physics Reports} 469.
+\item Barabási, A.-L. (2016). \emph{Network Science}. Cambridge University Press.
+\item Barabási, A.-L., \& Albert, R. (1999). Emergence of scaling in random networks.
+\emph{Science} 286.
+\item Battiston, S., et al. (2012). DebtRank: Too central to fail? \emph{Scientific Reports} 2.
+\item Battiston, S., et al. (2007). Credit chains and bankruptcy propagation in
+production networks. \emph{J. Econ. Dyn. Control} 31(6).
+\item Boccaletti, S., et al. (2006). Complex networks: structure and dynamics.
+\emph{Physics Reports} 424.
+\item Boccaletti, S., et al. (2014). The structure and dynamics of multilayer
+networks. \emph{Physics Reports} 544.
+\item Chung, F. (1997). \emph{Spectral Graph Theory}. AMS.
+\item Eisenberg, L., \& Noe, T. H. (2001). Systemic risk in financial systems.
+\emph{Management Science} 47(2).
+\item Gai, P., \& Kapadia, S. (2010). Contagion in financial networks. \emph{Proc. R. Soc. A} 466.
+\item Goodfellow, I., Bengio, Y., \& Courville, A. (2016). \emph{Deep Learning}. MIT Press.
+\item Haldane, A. G., \& May, R. M. (2011). Systemic risk in banking ecosystems.
+\emph{Nature} 469.
+\item Karniadakis, G. E., et al. (2021). Physics-informed machine learning.
+\emph{Nature Reviews Physics} 3.
+\item Kipf, T. N., \& Welling, M. (2017). Semi-supervised classification with graph
+convolutional networks. \emph{ICLR}.
+\item Letizia, E., \& Lillo, F. (2019). Corporate payments networks and credit risk
+rating. \emph{EPJ Data Science} 8, 21.
+\item Merton, R. C. (1974). On the pricing of corporate debt. \emph{J. Finance} 29(2).
+\item Newman, M. E. J. (2003). The structure and function of complex networks.
+\emph{SIAM Review} 45.
+\item Newman, M. E. J. (2010). \emph{Networks: An Introduction}. Oxford University Press.
+\item Óskarsdóttir, M., \& Bravo, C. (2021). Multilayer network analysis for improved
+credit risk prediction. \emph{Omega} 105.
+\item Pikovsky, A., Rosenblum, M., \& Kurths, J. (2001). \emph{Synchronization}.
+Cambridge University Press.
+\item Raissi, M., Perdikaris, P., \& Karniadakis, G. E. (2019). Physics-informed neural
+networks. \emph{J. Comput. Phys.} 378.
+\item Rodrigues, F. A., et al. (2016). The Kuramoto model in complex networks.
+\emph{Physics Reports} 610.
+\item Shi, J., \& Malik, J. (2000). Normalized cuts and image segmentation.
+\emph{IEEE TPAMI} 22(8).
+\item Tobback, E., et al. (2017). Bankruptcy prediction for SMEs using relational
+data. \emph{Decision Support Systems} 102.
+\item Watts, D. J. (2002). A simple model of global cascades on random networks.
+\emph{PNAS} 99(9).
+\item Banco Central do Brasil, Working Papers 551 y 584.
+\end{itemize}
+\begin{nota}
+Las referencias de Tobback et al., Óskarsdóttir y Bravo y Battiston et al.\ (2007) se
+citaron de memoria: verifique volumen y páginas antes de usarlas en un documento
+formal.
+\end{nota}

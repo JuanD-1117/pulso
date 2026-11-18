@@ -3,6 +3,16 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es/1.1.0/); versionado
 semántico.
 
+## [2.0.1] · 2026-11-18 · Documentación
+
+### Agregado
+- `docs/finnet_guia_completa.pdf`: guía desde cero (idea, base, resultados, montaje).
+- `docs/finnet_presentacion.pdf`: presentación.
+- Fuentes LaTeX y generador de figuras en `docs/latex/`; índice en `docs/README.md`.
+
+### Cambiado
+- Especificación de diseño movida a `docs/diseno/`; limpieza de temporales y cachés.
+
 ## [2.0.0] · 2026-11-18 · Tarea 6: riesgo crediticio híbrido
 
 ### Agregado
@@ -17,7 +27,7 @@ semántico.
   `GroupKFold` por mundo, diferencias pareadas con IC 95 % y control nulo.
 - CLI `finnet world` y `finnet credit`; modelos versionados en `models/credit/v1`.
 - Páginas *Cartera multicapa* y *Riesgo crediticio híbrido*.
-- `docs/bibliografia.md` y spec de diseño en `docs/diseno/`.
+- `docs/bibliografia.md` y especificación de diseño en `docs/diseno/`.
 
 ### Cambiado
 - Encuadre: "redes de pagos digitales"; Bre-B queda como escenario de ejemplo.

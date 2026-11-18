@@ -11,3 +11,16 @@ data/tmp/
 # Tabla de clientes del experimento de crédito: se regenera en segundos
 # con `uv run finnet credit configs/credit.yaml`.
 data/credit/clientes.parquet
+
+# Auxiliares de LaTeX (los PDF finales viven en docs/)
+docs/latex/**/*.aux
+docs/latex/**/*.log
+docs/latex/**/*.out
+docs/latex/**/*.toc
+docs/latex/**/*.fls
+docs/latex/**/*.fdb_latexmk
+docs/latex/**/*.nav
+docs/latex/**/*.snm
+docs/latex/**/*.vrb
+docs/latex/**/*.pdf
+docs/latex/**/build.log

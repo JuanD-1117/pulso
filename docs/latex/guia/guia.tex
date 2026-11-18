@@ -1,0 +1,135 @@
+% Guía completa de finnet. Compilar desde docs/latex/guia:
+%   latexmk -lualatex guia.tex
+\documentclass[11pt,a4paper,oneside]{book}
+
+\usepackage{fontspec}
+\usepackage[spanish,es-noshorthands,es-tabla,es-nodecimaldot]{babel}
+\usepackage{amsmath,amssymb}
+\setmainfont{TeX Gyre Pagella}
+\setsansfont{TeX Gyre Heros}
+\setmonofont{DejaVu Sans Mono}[Scale=0.82]
+\usepackage[margin=2.4cm,headheight=14pt]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs,tabularx,longtable,array}
+\usepackage{xcolor}
+\usepackage[most]{tcolorbox}
+\usepackage{fvextra}
+\usepackage{enumitem}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,fit,calc}
+\usepackage{caption}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage[hidelinks]{hyperref}
+
+\graphicspath{{../figuras/}{../../../figures/}}
+
+\definecolor{azul}{HTML}{2563A8}
+\definecolor{rojo}{HTML}{C2362B}
+\definecolor{verde}{HTML}{2F7D5B}
+\definecolor{ambar}{HTML}{E0A100}
+\definecolor{gris}{HTML}{5F6B77}
+\definecolor{fondo}{HTML}{F4F6F8}
+
+\titleformat{\chapter}[display]{\sffamily\bfseries\huge\color{azul}}
+  {\large\chaptertitlename\ \thechapter}{8pt}{}
+\titleformat{\section}{\sffamily\bfseries\Large}{\thesection}{0.8em}{}
+\titleformat{\subsection}{\sffamily\bfseries\large}{\thesubsection}{0.8em}{}
+\titlespacing*{\chapter}{0pt}{-20pt}{24pt}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\sffamily\color{gris}finnet · guía completa}
+\fancyhead[R]{\small\sffamily\color{gris}\leftmark}
+\fancyfoot[C]{\small\thepage}
+\renewcommand{\headrulewidth}{0.3pt}
+
+\setlength{\parskip}{0.45em}
+\setlength{\parindent}{0pt}
+\setlist{itemsep=0.2em,topsep=0.3em}
+\captionsetup{font=small,labelfont=bf}
+
+% Recuadros
+\newtcolorbox{idea}[1][Intuición]{colback=azul!6,colframe=azul,fonttitle=\sffamily\bfseries,
+  title=#1,boxrule=0.6pt,arc=2pt,left=6pt,right=6pt}
+\newtcolorbox{nota}[1][Nota]{colback=ambar!8,colframe=ambar!80!black,fonttitle=\sffamily\bfseries,
+  title=#1,boxrule=0.6pt,arc=2pt,left=6pt,right=6pt}
+\newtcolorbox{clave}[1][Resultado clave]{colback=verde!7,colframe=verde,fonttitle=\sffamily\bfseries,
+  title=#1,boxrule=0.6pt,arc=2pt,left=6pt,right=6pt}
+\newtcolorbox{limite}[1][Límite honesto]{colback=rojo!6,colframe=rojo,fonttitle=\sffamily\bfseries,
+  title=#1,boxrule=0.6pt,arc=2pt,left=6pt,right=6pt}
+
+% Código: bloques monoespaciados con marco y título (archivo de origen)
+\DefineVerbatimEnvironment{codigo}{Verbatim}{fontsize=\small,frame=single,
+  framerule=0.4pt,rulecolor=\color{gris!50},framesep=3mm,breaklines=true,
+  breakanywhere=true,labelposition=topline}
+\newcommand{\archivo}[1]{\texttt{\color{azul}#1}}
+\newcommand{\term}[1]{\textbf{#1}}
+
+\hypersetup{pdftitle={finnet: guía completa},pdfauthor={Juan Diego Martínez Ayala}}
+
+\begin{document}
+
+\begin{titlepage}
+\centering
+\vspace*{2.5cm}
+{\sffamily\bfseries\Huge\color{azul} finnet\par}
+\vspace{0.6cm}
+{\sffamily\LARGE Redes complejas, sincronización y riesgo\\[2pt] en sistemas de pagos digitales\par}
+\vspace{0.8cm}
+{\large Guía completa del proyecto: la idea, la base desde cero,\\ los resultados y el montaje del software\par}
+\vspace{1.6cm}
+\includegraphics[width=0.78\textwidth]{tarea6_red_multicapa.png}\par
+\vfill
+{\large Juan Diego Martínez Ayala\par}
+{\normalsize Dirección: Jhon Hernán Díaz Forero\par}
+{\normalsize Semillero de Modelamiento de Sistemas Complejos y Física Computacional\par}
+\vspace{0.4cm}
+{\normalsize Versión del software 2.0.0 · noviembre de 2026\par}
+\end{titlepage}
+
+\frontmatter
+\chapter*{Cómo leer esta guía}
+\addcontentsline{toc}{chapter}{Cómo leer esta guía}
+Esta guía está escrita para alguien que no conoce el tema: ni finanzas, ni redes,
+ni el código. Cada concepto se explica la primera vez que aparece y se resume en el
+glosario del final (apéndice~\ref{ap:glosario}).
+
+\begin{itemize}
+\item \textbf{Parte I · La idea} (capítulos 1–4). Qué problema se estudia, por qué
+importa y cómo funciona el proyecto, sin ecuaciones. Si solo tiene veinte minutos,
+lea esta parte.
+\item \textbf{Parte II · La base desde cero} (capítulos 5–12). Cada pieza del modelo,
+de la matemática mínima al código que la implementa, en el orden en que se
+construyó (las seis tareas de la propuesta del semillero) y cómo se unen.
+\item \textbf{Parte III · Resultados} (capítulos 13–15). Qué se verificó, qué se
+encontró y qué \emph{no} se puede concluir.
+\item \textbf{Parte IV · Montaje del software} (capítulos 16–19). Las herramientas,
+cómo instalar y correr todo, un recorrido por la aplicación web y la organización
+de las carpetas.
+\end{itemize}
+
+Convenciones visuales:
+\begin{idea}[Intuición] Explicación con una analogía antes de la matemática.\end{idea}
+\begin{nota}[Nota] Detalle técnico o decisión de diseño.\end{nota}
+\begin{clave}[Resultado clave] Hallazgo principal de una sección.\end{clave}
+\begin{limite}[Límite honesto] Lo que el resultado no demuestra.\end{limite}
+Los nombres de archivo del proyecto aparecen así: \archivo{src/finnet/model.py}. Los
+fragmentos de código son extractos reales del repositorio, a veces recortados
+(los recortes se marcan con \texttt{...}).
+
+\tableofcontents
+
+\mainmatter
+\part{La idea}
+\input{parte1_idea}
+\part{La base desde cero}
+\input{parte2_base}
+\part{Resultados}
+\input{parte3_resultados}
+\part{Montaje del software}
+\input{parte4_montaje}
+\appendix
+\input{apendices}
+
+\end{document}
