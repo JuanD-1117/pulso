@@ -1,0 +1,29 @@
+# Escenario de ejemplo "Bre-B estilizado". Parámetros ILUSTRATIVOS, no calibrados.
+# ~245 participantes al primer año (Banco de la República); estructura núcleo-periferia
+# con un núcleo de grandes entidades que concentra la liquidación.
+seed: 2025
+
+network:
+  topology: core_periphery
+  n: 245
+  mean_degree: 8.0
+  amount_sigma: 1.0
+  core_frac: 0.06
+  p_core: 0.9
+  periphery_share: 0.05
+
+model:
+  alpha: 1.0
+  R: 0.85                    # β se deduce: β = R α / ρ(W)
+  D0: 0.05
+  K: 3.0
+  gamma: 0.03
+  buffer: 0.5
+  buffer_dispersion: 0.3
+  loss: 1.0
+
+shock:
+  kind: liquidity
+  size: 3.0
+  t0: 1.0
+  duration: 3.0
