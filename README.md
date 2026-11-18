@@ -20,7 +20,7 @@ ciclos de pago se sincronizan, y una pregunta medible:
 ![Mapa de riesgo](figures/app_mapa_riesgo.png)
 
 **Documentación:** [guía completa desde cero](docs/pulso_guia_completa.pdf) (53 pp.) y
-[presentación](docs/pulso_presentacion.pdf) (29 diapositivas).
+[presentación](docs/pulso_presentacion.pdf) (56 diapositivas).
 
 ## El modelo (tareas 1–5)
 

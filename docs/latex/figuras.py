@@ -339,9 +339,184 @@ def intuicion() -> None:
     save(fig, "concepto_deficit_y_ritmo.png")
 
 
+def comunidades() -> None:
+    """Comunidades por bisección espectral (Laplaciano normalizado), tarea 2."""
+    from pulso.networks import NetworkConfig, generate
+    from pulso.spectral import communities
+
+    cfg = NetworkConfig("core_periphery", 120, 6.0, 0.8, 0.1, 0.8, 0.1, seed=4)
+    W = generate(cfg)
+    lab = communities(W, n_communities=3)
+    G = nx.from_numpy_array(0.5 * (W + W.T))
+    pos = nx.spring_layout(G, seed=1, iterations=100)
+    P = np.array([pos[i] for i in range(W.shape[0])])
+    fig, ax = plt.subplots(figsize=(6, 4.6))
+    for i, j in zip(*np.nonzero(np.triu(W + W.T)), strict=True):
+        ax.plot(*zip(P[i], P[j], strict=True), color="#bbb", lw=0.3, zorder=1)
+    cols = [C["azul"], C["rojo"], C["verde"]]
+    size = 15 + 120 * (W.sum(0) + W.sum(1)) / (W.sum(0) + W.sum(1)).max()
+    for k in range(3):
+        m = lab == k
+        ax.scatter(
+            *P[m].T,
+            s=size[m],
+            c=cols[k],
+            edgecolor="k",
+            lw=0.3,
+            label=f"comunidad {k + 1} ({m.sum()} nodos)",
+            zorder=2,
+        )
+    ax.set_axis_off()
+    ax.legend(fontsize=8, frameon=False, loc="lower left")
+    ax.set_title("Comunidades espectrales (Fiedler normalizado), núcleo-periferia")
+    save(fig, "fase2_comunidades_normalizado.png")
+
+
+def _clientes() -> pd.DataFrame:
+    path = ROOT / "data" / "credit" / "clientes.parquet"
+    if not path.is_file():
+        raise FileNotFoundError(
+            f"Falta {path}: ejecute uv run pulso credit configs/credit.yaml"
+        )
+    return pd.read_parquet(path)
+
+
+def sincronia_por_grupo() -> None:
+    d = _clientes()
+    d = d[(d["regime"] == "red") & (d["n_payers"] > 0)]
+    grupo = np.where(
+        d["is_person"] == 0,
+        "firmas",
+        np.where(d["formal"] == 1, "personas formales", "personas informales"),
+    )
+    fig, ax = plt.subplots(figsize=(6.5, 3.6))
+    names = ["firmas", "personas formales", "personas informales"]
+    data = [d.loc[grupo == g, "r_mean"] for g in names]
+    bp = ax.boxplot(data, tick_labels=names, showfliers=False, patch_artist=True)
+    for patch, col in zip(
+        bp["boxes"], (C["azul"], C["verde"], C["ambar"]), strict=True
+    ):
+        patch.set_facecolor(col)
+        patch.set_alpha(0.6)
+    ax.set_ylabel("coherencia local media r̂")
+    ax.set_title("Sincronización estimada por grupo (20 carteras, régimen con red)")
+    save(fig, "tarea6_sincronia_grupos.png")
+
+
+def calibracion_credito() -> None:
+    from sklearn.model_selection import GroupKFold
+
+    from pulso.credit.evaluate import make_model
+    from pulso.credit.features import LEVELS as LV
+
+    cfg = load_config("credit.yaml")
+    d = _clientes()
+    d = d[d["regime"] == "red"].reset_index(drop=True)
+    y, g = d["y"].to_numpy(), d["world_id"].to_numpy()
+    fig, ax = plt.subplots(figsize=(5.2, 4.2))
+    for lv in ("clasico", "red_dinamica"):
+        X = d[list(LV[lv])].to_numpy(float)
+        p = np.zeros(len(d))
+        for k, (tr, te) in enumerate(GroupKFold(5).split(X, y, g)):
+            m = make_model("xgboost", cfg["models"], k)
+            m.fit(X[tr], y[tr])
+            p[te] = m.predict_proba(X[te])[:, 1]
+        q = pd.qcut(p, 10, labels=False, duplicates="drop")
+        cal = pd.DataFrame({"p": p, "y": y, "q": q}).groupby("q").mean()
+        ax.plot(cal["p"], cal["y"], "o-", color=LEVELS[lv][1], label=LEVELS[lv][0])
+    lim = ax.get_xlim()[1]
+    ax.plot([0, lim], [0, lim], "k:", lw=1)
+    ax.set_xlabel("PD predicha (decil)")
+    ax.set_ylabel("tasa de impago observada")
+    ax.set_title("Calibración fuera de muestra (XGBoost)")
+    ax.legend(fontsize=8, frameon=False)
+    save(fig, "tarea6_calibracion.png")
+
+
+def shap_credito() -> None:
+    import shap
+
+    from pulso.credit.experiment import load_final_model
+    from pulso.credit.features import FEATURE_LABELS
+    from pulso.credit.features import LEVELS as LV
+
+    d = _clientes()
+    d = d[d["regime"] == "red"].sample(6000, random_state=0)
+    m = load_final_model("red_dinamica", "xgboost", ROOT / "models" / "credit")
+    cols = list(LV["red_dinamica"])
+    vals = shap.TreeExplainer(m).shap_values(d[cols].to_numpy(float))
+    imp = pd.Series(np.abs(vals).mean(0), index=cols).sort_values().tail(16)
+    static = set(LV["red_estatica"]) - set(LV["clasico"])
+    dynamic = set(LV["red_dinamica"]) - set(LV["red_estatica"])
+    colors = [
+        C["rojo"] if c in dynamic else C["azul"] if c in static else C["gris"]
+        for c in imp.index
+    ]
+    fig, ax = plt.subplots(figsize=(7, 4.8))
+    ax.barh([FEATURE_LABELS.get(c, c) for c in imp.index], imp.values, color=colors)
+    ax.set_xlabel("importancia media |SHAP| (log-odds)")
+    ax.set_title("Modelo híbrido: gris clásicas · azul red estática · rojo dinámicas")
+    save(fig, "tarea6_shap.png")
+
+
+def sensibilidad_gamma() -> None:
+    """ΔAUC (dinámica vs. estática) según la intensidad del costo de desfase γ."""
+    import copy
+
+    from pulso.credit.evaluate import cross_validate, paired_deltas
+    from pulso.credit.experiment import build_dataset
+    from pulso.credit.features import LEVELS as LV
+
+    base = load_config("credit.yaml")
+    rows = []
+    for gamma in (0.0, 0.25, 0.5, 1.0):
+        cfg = copy.deepcopy(base)
+        cfg["dynamics"]["gamma"] = gamma
+        cfg["regimes"] = {"red": {}}
+        table = build_dataset(cfg, n_worlds=10, n_jobs=-1)
+        cv = cross_validate(
+            table,
+            cfg["models"],
+            5,
+            int(cfg["seed"]),
+            levels={k: LV[k] for k in ("red_estatica", "red_dinamica")},
+            models=("logistic",),
+        )
+        dlt = paired_deltas(cv, "auc", base="red_estatica").iloc[0]
+        rows.append((gamma, dlt["delta_mean"], dlt["ci_low"], dlt["ci_high"]))
+        print("gamma", gamma, round(dlt["delta_mean"], 4))
+    r = pd.DataFrame(rows, columns=["gamma", "d", "lo", "hi"])
+    r.to_csv(OUT / "sensibilidad_gamma.csv", index=False)
+    fig, ax = plt.subplots(figsize=(5.6, 3.8))
+    ax.errorbar(
+        r["gamma"],
+        r["d"],
+        yerr=[r["d"] - r["lo"], r["hi"] - r["d"]],
+        fmt="o-",
+        color=C["rojo"],
+        capsize=4,
+    )
+    ax.axhline(0, color="k", ls=":", lw=1)
+    ax.set_xlabel("γ (déficit generado por ingreso desfasado) [1/mes]")
+    ax.set_ylabel("ΔAUC dinámica vs. red estática")
+    ax.set_title("Respuesta a la intensidad del mecanismo (logística, 10 carteras)")
+    save(fig, "tarea6_sensibilidad_gamma.png")
+
+
 if __name__ == "__main__":
-    red_multicapa()
-    fase_por_eventos()
-    resultados()
-    quiebra()
-    intuicion()
+    import sys
+
+    todas = {
+        "red_multicapa": red_multicapa,
+        "fase_por_eventos": fase_por_eventos,
+        "resultados": resultados,
+        "quiebra": quiebra,
+        "intuicion": intuicion,
+        "comunidades": comunidades,
+        "sincronia_por_grupo": sincronia_por_grupo,
+        "calibracion_credito": calibracion_credito,
+        "shap_credito": shap_credito,
+        "sensibilidad_gamma": sensibilidad_gamma,
+    }
+    for nombre in sys.argv[1:] or todas:
+        todas[nombre]()

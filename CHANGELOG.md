@@ -3,6 +3,18 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es/1.1.0/); versionado
 semántico.
 
+## [3.0.1] · 2026-11-18 · Presentación completa
+
+### Cambiado
+- Presentación ampliada a 56 diapositivas: cada tarea con formulación, método,
+  verificación y resultados; la tarea 6 paso a paso (generación de la cartera, verdad
+  del terreno, modelo multicapa, transacciones, estimación, variables y protocolo).
+
+### Agregado
+- Figuras: comunidades con Laplaciano normalizado, sincronización por grupo,
+  calibración y SHAP del modelo híbrido, y sensibilidad de ΔAUC a γ
+  (`docs/latex/figuras.py`; resultado en `docs/latex/figuras/sensibilidad_gamma.csv`).
+
 ## [3.0.0] · 2026-11-18 · PULSO
 
 ### Cambiado (incompatible)

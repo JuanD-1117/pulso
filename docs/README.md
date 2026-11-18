@@ -3,7 +3,7 @@
 | Archivo | Contenido |
 |---|---|
 | [`pulso_guia_completa.pdf`](pulso_guia_completa.pdf) | Guía desde cero (53 pp.): la idea, la base de cada tarea con su código, los resultados y el montaje del software. Para quien no conoce el tema. |
-| [`pulso_presentacion.pdf`](pulso_presentacion.pdf) | Presentación (29 diapositivas, 16:9). |
+| [`pulso_presentacion.pdf`](pulso_presentacion.pdf) | Presentación (56 diapositivas, 16:9): planteamiento, las seis tareas con formulación, método, verificación y resultados, implementación y conclusiones. |
 | [`bibliografia.md`](bibliografia.md) | Referencias por tarea. |
 | [`diseno/`](diseno/) | Especificación de diseño de la Tarea 6. |
 | [`latex/`](latex/) | Fuentes LaTeX de los dos PDF y el generador de figuras. |
