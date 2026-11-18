@@ -1,0 +1,190 @@
+% ===================================================================
+\section{Diapositivas de respaldo}
+
+Están después de la diapositiva de cierre y tienen numeración propia (1/6 a 6/6). No
+cuentan en el tiempo. Úselas solo para responder preguntas.
+
+\subsection*{Respaldo 1 · Modelo de la cartera multicapa}
+\textbf{Cuándo:} si preguntan cómo es exactamente el modelo de la tarea 6 o de dónde
+salen los parámetros.
+
+\textbf{Qué decir:} el modelo es el mismo de la diapositiva 5 con tres cambios. El tiempo
+está en meses y el déficit es una fracción del ingreso total del cliente. El contagio y
+el acople tienen un valor por capa: la nómina transmite más que las transferencias. Y
+hay ruido aleatorio e impagos propios de cada cliente según su probabilidad de impago.
+El colchón es más pequeño para los clientes más riesgosos. Los valores son ilustrativos y
+están en el archivo \texttt{configs/credit.yaml}.
+
+\begin{terminos}
+\begin{description}
+\item[$\ell$.] Capa: N (nómina), S (proveedores), T (transferencias).
+\item[$W^\ell_{ij}$.] Flujo mensual de $j$ a $i$ en la capa $\ell$, en salarios mínimos.
+\item[$s_i$.] Ingreso total del cliente, incluido el que llega de fuera del banco.
+\item[$k_i$.] Ingreso que llega por la red del banco.
+\item[$\beta_\ell$, $K_\ell$.] Contagio y acople de fase de cada capa.
+\item[$\sigma\xi_i(t)$.] Ruido aleatorio con intensidad $\sigma$. Se integra con el método
+de Euler–Maruyama.
+\item[$x_i^{(c)}$.] Colchón $c\,(\mathrm{PD}_\text{ref}/\mathrm{PD}_i)^\kappa\varepsilon_i$:
+más pequeño cuanto mayor es la probabilidad de impago $\mathrm{PD}_i$.
+\item[$\lambda$.] Déficit que genera perder a un pagador que aporta todo el ingreso: un
+mes de ingreso.
+\item[Impago propio.] Cada cliente tiene una fecha de impago aleatoria con tasa
+$-\ln(1-\mathrm{PD}_i)/12$ por mes, de modo que cae en el año con probabilidad
+$\mathrm{PD}_i$.
+\end{description}
+\end{terminos}
+
+\subsection*{Respaldo 2 · Métricas completas}
+\textbf{Cuándo:} si preguntan por otras métricas o por el mundo nulo.
+
+\textbf{Qué decir:} todas las métricas mejoran en la misma dirección. La PR-AUC, que es
+la más exigente cuando los impagos son pocos, pasa de 0.277 a 0.323. En el mundo nulo los
+niveles son iguales. El impago a doce meses es de 9.6~\% con red y de 5.9~\% en el nulo.
+
+\begin{terminos}
+\begin{description}
+\item[PR-AUC.] Área bajo la curva de precisión contra exhaustividad. Un modelo al azar
+obtiene la tasa de impago, cerca de 0.1.
+\item[KS.] Estadístico de Kolmogorov–Smirnov: máxima separación entre las distribuciones
+del score de los que caen y de los que no. Muy usado en banca.
+\item[Brier.] Error cuadrático medio de la probabilidad predicha. Menor es mejor.
+\end{description}
+\end{terminos}
+
+\subsection*{Respaldo 3 · Calibración y relación sincronía–impago}
+\textbf{Cuándo:} si preguntan si las probabilidades son confiables, o si basta con mirar
+la coherencia.
+
+\textbf{Qué decir:} a la izquierda, ambos modelos siguen la diagonal: cuando predicen
+10~\%, cae cerca del 10~\%. El híbrido separa mejor a los más riesgosos: en su decil más
+alto cae el 35~\%, frente al 30~\% del clásico. A la derecha, con red, el impago pasa de
+4.4~\% en los bien sincronizados a entre 11 y 14~\% en los desincronizados. En el nulo
+también hay diferencia, pero menor, porque los informales son más riesgosos y están menos
+sincronizados. Por eso la prueba es la comparación de modelos y no esta gráfica.
+
+\begin{terminos}
+\begin{description}
+\item[Calibración.] Coincidencia entre la probabilidad predicha y la frecuencia
+observada.
+\item[Decil.] Cada décima parte de los clientes, ordenados por riesgo.
+\item[Variable de confusión.] Variable que influye a la vez en la causa aparente y en el
+efecto; aquí, la informalidad.
+\end{description}
+\end{terminos}
+
+\subsection*{Respaldo 4 · Redistribución y recuperación (tarea 2)}
+\textbf{Cuándo:} si preguntan por la tarea 2, que la exposición solo menciona.
+
+\textbf{Qué decir:} el Laplaciano traslada déficit sin crearlo; lo verificamos con
+precisión de $10^{-10}$. La estabilidad la da $\sigma$, el mayor valor propio del sistema
+completo, y el tiempo de recuperación es $-1/\sigma$. A la izquierda, las redes mejor
+conectadas se recuperan más rápido. A la derecha, comunidades encontradas con el vector de
+Fiedler.
+
+\begin{terminos}
+\begin{description}
+\item[$\sigma$.] Mayor parte real de los valores propios de $M=-\alpha I-D_0L+\beta W$.
+Negativa: la red se recupera.
+\item[$\tau_\text{rec}$.] Tiempo de recuperación, $-1/\sigma$.
+\item[$\lambda_2$.] Conectividad algebraica: segundo valor propio más pequeño del
+Laplaciano de la red simetrizada; vale cero si la red está partida.
+\item[Vector de Fiedler.] Vector propio asociado a $\lambda_2$; su signo divide la red en
+dos grupos poco conectados.
+\end{description}
+\end{terminos}
+
+\subsection*{Respaldo 5 · Tarea 5 en detalle}
+\textbf{Cuándo:} si preguntan por redes neuronales o por cómo se generaron los datos.
+
+\textbf{Qué decir:} las simulaciones cubren 13 parámetros con un hipercubo latino, con
+más puntos cerca de $R=1$, donde el comportamiento cambia. Para la cascada de cada
+entidad, una red neuronal sobre grafos explica el 60~\% de la variación. La PINN estima
+los parámetros del modelo a partir de trayectorias: recupera $\gamma$ y $K$ con menos de
+1~\% de error; $\beta$ tiene 23~\% porque su efecto se confunde con el de $\alpha$.
+
+\begin{terminos}
+\begin{description}
+\item[Hipercubo latino.] Muestreo que divide el rango de cada parámetro en intervalos y
+usa cada intervalo una sola vez.
+\item[GCN.] \emph{Graph Convolutional Network}: red neuronal que combina la información
+de cada nodo con la de sus vecinos (Kipf y Welling, 2017).
+\item[PINN.] \emph{Physics-Informed Neural Network}: red neuronal entrenada para ajustar
+los datos y cumplir las ecuaciones del modelo (Raissi et al., 2019).
+\item[$R^2$.] Fracción de la variación explicada por el modelo.
+\item[$\rho_s$.] Correlación de Spearman: compara órdenes, no valores.
+\end{description}
+\end{terminos}
+
+\subsection*{Respaldo 6 · Referencias principales}
+\textbf{Cuándo:} si piden las fuentes. La bibliografía completa está en
+\texttt{docs/bibliografia.md}.
+
+% ===================================================================
+\section{Preguntas generales}
+
+\begin{preguntas}
+\pr{¿Cuál es el aporte original?}{Mostrar con un experimento controlado que la
+sincronización de los ciclos de pago, estimada solo con transacciones, contiene
+información sobre el impago que no está ni en el score ni en la red estática. Incluye el
+método para estimarla y un control que descarta artefactos.}
+\pr{¿Por qué un enfoque desde la física?}{Porque las herramientas son de la física:
+sistemas dinámicos, valores propios, osciladores acoplados, transiciones y avalanchas.
+Permiten responder cuándo la red amplifica y cómo se sincroniza.}
+\pr{¿El resultado es causal?}{En la simulación sabemos la causa porque la pusimos, y el
+experimento de $\gamma$ muestra que la señal depende de ella. Con datos reales el método
+sería predictivo; probar causalidad requeriría otro diseño.}
+\pr{¿Cómo se evitó la fuga de información?}{Las variables solo usan pagos de los primeros
+seis meses, y el código rechaza pagos posteriores. La probabilidad verdadera está
+prohibida para los modelos. Las carteras de prueba nunca se usan para entrenar. Y el
+mundo nulo da mejora cero.}
+\pr{¿Qué pasa con otros parámetros?}{El tamaño de la mejora cambia: crece con $\gamma$ y
+desaparece sin él. El patrón se mantiene. El experimento completo se repite en unos 20
+segundos.}
+\pr{¿Y si el banco no ve toda la red?}{No se probó. Es trabajo futuro: un banco ve solo a
+sus clientes, mientras que el operador de Bre-B vería todos los pagos.}
+\pr{¿Por qué Kuramoto?}{Es el modelo mínimo de sincronización con resultados exactos
+conocidos, lo que permite validar el código, y su interpretación es directa: cada
+entidad ajusta su ciclo al de quienes le pagan.}
+\end{preguntas}
+
+% ===================================================================
+\section{Glosario}
+
+\begin{longtable}{p{0.22\textwidth}p{0.72\textwidth}}
+\toprule
+\textbf{Término} & \textbf{Significado} \\
+\midrule
+\endhead
+AUC & Probabilidad de que el modelo asigne más riesgo a quien cae que a quien no cae.
+0.5 es azar; 1 es perfecto. \\
+Bre-B & Sistema de pagos inmediatos del Banco de la República de Colombia. \\
+Cascada & Impagos en cadena. \\
+Coherencia ($r_i$) & Qué tan a tiempo llega el ingreso de cada entidad respecto a su
+propio ciclo; de $-1$ a $1$. \\
+Colchón & Déficit máximo que una entidad soporta antes de dejar de pagar. \\
+Control nulo & Mundo idéntico sin el mecanismo; mide los artefactos del método. \\
+DANE & Departamento Administrativo Nacional de Estadística. \\
+DebtRank & Medida de propagación de estrés financiero. \\
+Déficit ($x_i$) & Liquidez que le falta a una entidad. \\
+Desfase & Diferencia entre la llegada del ingreso y el vencimiento de las
+obligaciones. \\
+Fase ($\theta_i$) & Punto del ciclo de pagos en que está una entidad. \\
+GCN & Red neuronal sobre grafos. \\
+Gini & $2\,\mathrm{AUC}-1$; métrica habitual en banca. \\
+GroupKFold & Validación cruzada que mantiene cada grupo (red o cartera) en una sola
+partición. \\
+Intervalo de confianza & Rango que contiene el valor verdadero con la confianza
+indicada (aquí 95~\%). \\
+Kuramoto & Modelo de osciladores acoplados para estudiar la sincronización. \\
+Laplaciano & Matriz que describe flujos que se conservan en una red. \\
+ML & Aprendizaje automático (\emph{machine learning}). \\
+PD & Probabilidad de impago a un año. \\
+PINN & Red neuronal informada por la física. \\
+$R$ & Índice de amplificación $\beta\rho(W)/\alpha$; menor que 1, la red amortigua. \\
+Radio espectral & Mayor valor propio de una matriz en módulo. \\
+Score crediticio & Modelo que estima la probabilidad de impago de un cliente. \\
+SHAP & Método que explica cuánto aporta cada variable a una predicción. \\
+SMMLV & Salario mínimo mensual legal vigente. \\
+XGBoost & Conjunto de árboles de decisión entrenados en secuencia. \\
+\bottomrule
+\end{longtable}

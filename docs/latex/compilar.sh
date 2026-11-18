@@ -15,6 +15,8 @@ documentos=(
   "presentacion_v2/presentacion_v2.tex:v2/pulso_presentacion_v2.pdf"
   "guion/guion.tex:v2/pulso_guion_v2.pdf"
   "manual_app/manual_app.tex:v2/pulso_manual_app.pdf"
+  "presentacion_v3/presentacion_v3.tex:v3/pulso_presentacion_v3.pdf"
+  "guion_v3/guion_v3.tex:v3/pulso_guion_v3.pdf"
 )
 
 compilar() {

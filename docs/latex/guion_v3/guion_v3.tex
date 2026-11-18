@@ -1,0 +1,98 @@
+% Guion de la presentación v3 de PULSO (exposición de 30 minutos).
+% Compilar desde docs/latex/guion_v3:
+%   latexmk -lualatex guion_v3.tex
+\documentclass[11pt,a4paper,oneside]{article}
+
+\usepackage{fontspec}
+\usepackage[spanish,es-noshorthands,es-tabla,es-nodecimaldot]{babel}
+\usepackage{amsmath,amssymb}
+\setmainfont{TeX Gyre Pagella}
+\setsansfont{TeX Gyre Heros}
+\setmonofont{DejaVu Sans Mono}[Scale=0.82]
+\usepackage[margin=2.3cm,headheight=14pt]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs,longtable,array}
+\usepackage{xcolor}
+\usepackage[most]{tcolorbox}
+\usepackage{enumitem}
+\usepackage{needspace}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage[hidelinks]{hyperref}
+
+\definecolor{azul}{HTML}{2563A8}
+\definecolor{rojo}{HTML}{C2362B}
+\definecolor{verde}{HTML}{2F7D5B}
+\definecolor{ambar}{HTML}{E0A100}
+\definecolor{gris}{HTML}{5F6B77}
+
+\titleformat{\section}{\sffamily\bfseries\Large\color{azul}}{}{0em}{}
+\titleformat{\subsection}{\sffamily\bfseries\large}{}{0em}{}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\sffamily\color{gris}PULSO · guion de 30 minutos (v3)}
+\fancyhead[R]{\small\sffamily\color{gris}\nouppercase{\leftmark}}
+\fancyfoot[C]{\small\thepage}
+\renewcommand{\headrulewidth}{0.3pt}
+
+\setlength{\parskip}{0.5em}
+\setlength{\parindent}{0pt}
+\setlist{itemsep=0.15em,topsep=0.25em}
+\setlist[description]{font=\normalfont\bfseries,leftmargin=1.2em,labelindent=0em}
+
+% \diapo{número}{título}{duración}{reloj al terminar}{mensaje clave}
+\newcommand{\diapo}[5]{%
+  \par\needspace{14\baselineskip}\vspace{0.9em}%
+  \begin{tcolorbox}[colback=azul!8,colframe=azul,boxrule=0.6pt,arc=2pt,
+    left=6pt,right=6pt,top=3pt,bottom=3pt,fontupper=\sffamily]
+  \textbf{#1}\quad #2\hfill{\small\color{gris}#3 · termina en \textbf{#4}}\\[2pt]
+  {\small\color{azul!70!black}\textbf{Mensaje:} #5}
+  \end{tcolorbox}\nopagebreak}
+\newtcolorbox{decir}{colback=white,colframe=gris!40,boxrule=0.4pt,arc=2pt,
+  left=7pt,right=7pt,title={\sffamily\small Qué decir},coltitle=black,
+  colbacktitle=gris!12,breakable,before upper={\setlength{\parskip}{0.6em}}}
+\newtcolorbox{terminos}{colback=verde!5,colframe=verde,boxrule=0.5pt,arc=2pt,
+  left=6pt,right=6pt,title={\sffamily\small Variables y términos},coltitle=black,
+  colbacktitle=verde!15,breakable}
+\newtcolorbox{preguntas}{colback=ambar!7,colframe=ambar!80!black,boxrule=0.5pt,
+  arc=2pt,left=6pt,right=6pt,title={\sffamily\small Si preguntan},coltitle=black,
+  colbacktitle=ambar!20,breakable}
+\newcommand{\pr}[2]{\textbf{P.} \emph{#1}\par\textbf{R.} #2\par\smallskip}
+% Frase de transición hacia la diapositiva siguiente (se dice en voz alta).
+\newcommand{\transicion}[1]{\par{\color{azul!70!black}$\rightarrow$\ \emph{#1}}}
+
+\hypersetup{pdftitle={PULSO: guion de 30 minutos},pdfauthor={Juan Diego Martínez Ayala}}
+
+\begin{document}
+
+\begin{titlepage}
+\centering
+\vspace*{3cm}
+{\sffamily\bfseries\Huge\color{azul} PULSO\par}
+\vspace{0.2cm}
+{\sffamily\large\color{gris} Pagos, Umbrales, Liquidez y Sincronización Operativa\par}
+\vspace{0.9cm}
+{\sffamily\LARGE Guion de la exposición de 30 minutos\par}
+\vspace{0.3cm}
+{\large Versión 3\par}
+\vspace{0.6cm}
+{\normalsize Texto cronometrado para cada diapositiva, definición de cada variable,\\
+modelo, método y sigla, y respuestas a las preguntas probables\par}
+\vfill
+{\large Juan Diego Martínez Ayala\par}
+{\normalsize Dirección: Jhon Hernán Díaz Forero\par}
+{\normalsize Semillero de Modelamiento de Sistemas Complejos y Física Computacional\par}
+\vspace{0.4cm}
+{\normalsize Noviembre de 2026\par}
+\end{titlepage}
+
+\tableofcontents
+\clearpage
+
+\input{guion_v3_plan}
+\clearpage
+\input{guion_v3_cuerpo}
+\input{guion_v3_final}
+
+\end{document}
