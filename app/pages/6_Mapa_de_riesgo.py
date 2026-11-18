@@ -73,7 +73,7 @@ with left:
             hover=hover,
             title="Riesgo predicho por entidad",
         ),
-        use_container_width=True,
+        width="stretch",
     )
 with right:
     top = risk.sort_values(model_col, ascending=False).head(12)
@@ -87,7 +87,7 @@ with right:
             }
         ),
         hide_index=True,
-        use_container_width=True,
+        width="stretch",
     )
 
 st.subheader("¿Por qué es riesgosa esta entidad?")
@@ -114,7 +114,7 @@ fig = px.bar(
     title=f"Contribuciones SHAP (XGBoost de nodos) · base {ex.attrs['base_value']:.3f}",
 )
 fig.update_layout(height=380, legend_title_text="riesgo")
-st.plotly_chart(fig, use_container_width=True)
+st.plotly_chart(fig, width="stretch")
 
 if not common.live_allowed():
     st.info("Red demasiado grande para verificar con simulación en vivo.")
@@ -141,4 +141,4 @@ elif st.button("Verificar con simulación", type="primary"):
 rep = service.model_report()
 if rep is not None:
     with st.expander("Métricas de validación (GroupKFold por red)"):
-        st.dataframe(rep, hide_index=True, use_container_width=True)
+        st.dataframe(rep, hide_index=True, width="stretch")

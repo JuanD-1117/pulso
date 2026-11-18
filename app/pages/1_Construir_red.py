@@ -86,7 +86,7 @@ st.plotly_chart(
         hover=hover,
         title="Red de pagos (tamaño ∝ volumen; rojo = núcleo)",
     ),
-    use_container_width=True,
+    width="stretch",
 )
 st.caption(
     "Montos en unidades de “pago medio por ciclo”: el peso medio de las aristas es 1."

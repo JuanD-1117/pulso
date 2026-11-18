@@ -3,6 +3,33 @@
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es/1.1.0/); versionado
 semántico.
 
+## [2.0.0] · 2026-11-18 · Tarea 6: riesgo crediticio híbrido
+
+### Agregado
+- `finnet.world`: mundo sintético multicapa (personas, firmas; nómina, proveedores,
+  transferencias), verdad del terreno separada (`truth_*`, vetada por esquema) y
+  registro de transacciones generado por los cruces de fase.
+- Motor multicapa: `Coupling` (acoples por capa de déficit y de fase, déficit
+  adimensional), matrices `scipy.sparse`, impagos idiosincráticos programados, ruido
+  de Euler–Maruyama con semilla y choque `kind="default"` (quiebra de un empleador).
+- `finnet.credit`: estimación desde transacciones (Ŵ, fase por eventos, r̂_i),
+  variables de tres niveles (clásico, red estática, red dinámica), evaluación con
+  `GroupKFold` por mundo, diferencias pareadas con IC 95 % y control nulo.
+- CLI `finnet world` y `finnet credit`; modelos versionados en `models/credit/v1`.
+- Páginas *Cartera multicapa* y *Riesgo crediticio híbrido*.
+- `docs/bibliografia.md` y spec de diseño en `docs/diseno/`.
+
+### Cambiado
+- Encuadre: "redes de pagos digitales"; Bre-B queda como escenario de ejemplo.
+- `validate_schema` pasa a `finnet.schema` (se reexporta desde `finnet.experiments`).
+- Sin choque, los impagos por umbral se etiquetan `umbral` (antes
+  `previo_al_choque`).
+- `use_container_width` reemplazado por `width="stretch"` (Streamlit lo retira).
+
+### Resultado
+- Mundo con red: la dinámica mejora sobre la red estática ΔAUC +0.011 (logística) y
+  +0.014 (XGBoost), IC 95 % por encima de 0; mundo nulo: ΔAUC ≈ 0.
+
 ## [1.0.1] · 2026-11-18
 
 ### Corregido

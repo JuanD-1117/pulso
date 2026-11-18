@@ -93,14 +93,14 @@ st.plotly_chart(
     viz.cascade_animation(
         W, common.positions(), traj.t, res["status"], highlight=[target]
     ),
-    use_container_width=True,
+    width="stretch",
 )
 left, right = st.columns(2)
 with left:
     if res["events"].empty:
         st.info("Sin eventos: el choque se absorbió.")
     else:
-        st.plotly_chart(viz.events_timeline(res["events"]), use_container_width=True)
+        st.plotly_chart(viz.events_timeline(res["events"]), width="stretch")
 with right:
     st.plotly_chart(
         viz.line_figure(
@@ -109,7 +109,7 @@ with right:
             "Liquidez no pagada acumulada",
             "pagos medios",
         ),
-        use_container_width=True,
+        width="stretch",
     )
 
 csv = service.metrics_csv(met, res["events"])
