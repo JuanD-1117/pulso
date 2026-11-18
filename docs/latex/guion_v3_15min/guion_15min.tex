@@ -1,0 +1,161 @@
+% Guion de 15 minutos para la presentación v3 de PULSO.
+% Compilar desde docs/latex/guion_v3_15min:
+%   latexmk -lualatex guion_15min.tex
+\documentclass[11pt,a4paper,oneside]{article}
+
+\usepackage{fontspec}
+\usepackage[spanish,es-noshorthands,es-tabla,es-nodecimaldot]{babel}
+\usepackage{amsmath,amssymb}
+\setmainfont{TeX Gyre Pagella}
+\setsansfont{TeX Gyre Heros}
+\setmonofont{DejaVu Sans Mono}[Scale=0.82]
+\usepackage[margin=2.3cm,headheight=14pt]{geometry}
+\usepackage{booktabs,longtable,array}
+\usepackage{xcolor}
+\usepackage[most]{tcolorbox}
+\usepackage{enumitem}
+\usepackage{needspace}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage[hidelinks]{hyperref}
+
+\definecolor{azul}{HTML}{2563A8}
+\definecolor{rojo}{HTML}{C2362B}
+\definecolor{verde}{HTML}{2F7D5B}
+\definecolor{gris}{HTML}{5F6B77}
+
+\titleformat{\section}{\sffamily\bfseries\Large\color{azul}}{}{0em}{}
+\titleformat{\subsection}{\sffamily\bfseries\large}{}{0em}{}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\sffamily\color{gris}PULSO · guion de 15 minutos (v3)}
+\fancyhead[R]{\small\sffamily\color{gris}\nouppercase{\leftmark}}
+\fancyfoot[C]{\small\thepage}
+\renewcommand{\headrulewidth}{0.3pt}
+
+\setlength{\parskip}{0.5em}
+\setlength{\parindent}{0pt}
+\setlist{itemsep=0.15em,topsep=0.25em}
+\setlist[description]{font=\normalfont\bfseries,leftmargin=1.2em,labelindent=0em}
+
+% \diapo{número}{título}{duración}{reloj al terminar}{mensaje clave}
+\newcommand{\diapo}[5]{%
+  \par\needspace{9\baselineskip}\vspace{0.7em}%
+  \begin{tcolorbox}[colback=azul!8,colframe=azul,boxrule=0.6pt,arc=2pt,
+    left=6pt,right=6pt,top=3pt,bottom=3pt,fontupper=\sffamily]
+  \textbf{#1}\quad #2\hfill{\small\color{gris}#3 · termina en \textbf{#4}}\\[2pt]
+  {\small\color{azul!70!black}\textbf{Mensaje:} #5}
+  \end{tcolorbox}\nopagebreak}
+\newtcolorbox{decir}{colback=white,colframe=gris!40,boxrule=0.4pt,arc=2pt,
+  left=7pt,right=7pt,top=4pt,bottom=4pt,breakable,
+  before upper={\setlength{\parskip}{0.6em}}}
+
+\hypersetup{pdftitle={PULSO: guion de 15 minutos},pdfauthor={Juan Diego Martínez Ayala}}
+
+\begin{document}
+
+\begin{center}
+{\sffamily\bfseries\huge\color{azul} PULSO · guion de 15 minutos\par}
+\vspace{0.2cm}
+{\sffamily\color{gris} Presentación v3 (\texttt{pulso\_presentacion\_v3.pdf}) ·
+Juan Diego Martínez Ayala · noviembre de 2026\par}
+\end{center}
+
+\section{Cómo usar este guion}
+
+Es la versión corta del guion v3. Usa las mismas 23 diapositivas, pero dice solo lo
+esencial de cada una. El texto está pensado para leerse o parafrasearse en voz alta.
+
+\begin{itemize}
+\item \textbf{Duración}: unos 13 minutos a 125 palabras por minuto, con 3 segundos por
+cambio de diapositiva. Quedan casi 2 minutos de margen.
+\item \textbf{Prioridad}: el tiempo se concentra en la idea (diapositiva 2), el modelo
+(5 y 6), cómo se mide desde las transacciones (12), el diseño del experimento (14) y el
+resultado (15 a 17).
+\item \textbf{Pasos rápidos}: en las diapositivas 8, 9, 10, 18, 21 y 23 basta con una o
+dos frases. Si se atrasa, en ellas diga solo el mensaje de la barra azul.
+\item \textbf{Preguntas}: las respuestas preparadas, la definición de cada variable y las
+diapositivas de respaldo están en el guion completo, \texttt{pulso\_guion\_v3.pdf}.
+\end{itemize}
+
+\subsection{Plan de tiempos}
+\begin{center}
+\small
+\begin{longtable}{lp{0.64\textwidth}cc}
+\toprule
+\textbf{N.º} & \textbf{Diapositiva} & \textbf{Dura} & \textbf{Termina} \\
+\midrule
+\endhead
+Portada & PULSO & 0:25 & 0:25 \\
+1 & Los pagos forman una red y los problemas viajan por ella & 0:35 & 1:00 \\
+2 & No solo importa cuánto se recibe, también cuándo & 0:50 & 1:50 \\
+3 & Pregunta de investigación & 0:50 & 2:40 \\
+4 & Seis tareas, un solo modelo & 0:30 & 3:10 \\
+5 & La ecuación del déficit & 0:55 & 4:05 \\
+6 & La ecuación del ritmo de pagos & 0:55 & 5:00 \\
+7 & La red amortigua los choques solo si $R<1$ & 0:35 & 5:35 \\
+8 & Los ciclos de pago se sincronizan como predice la teoría & 0:15 & 5:50 \\
+9 & Las cascadas son máximas con conectividad intermedia & 0:20 & 6:10 \\
+10 & El aprendizaje automático predice el colapso en milisegundos & 0:20 & 6:30 \\
+11 & Una cartera bancaria en tres capas & 0:35 & 7:05 \\
+12 & El banco solo ve transacciones; el ritmo se estima desde ellas & 0:45 & 7:50 \\
+13 & Tres niveles de información & 0:30 & 8:20 \\
+14 & El experimento compara dos mundos idénticos & 0:40 & 9:00 \\
+15 & Cada nivel de información mejora la predicción & 0:40 & 9:40 \\
+16 & La mejora es real: aparece con red y desaparece en el control & 0:35 & 10:15 \\
+17 & La mejora crece con la intensidad del desfase & 0:25 & 10:40 \\
+18 & El score clásico sigue siendo la base & 0:20 & 11:00 \\
+19 & Uso práctico: la quiebra de un empleador & 0:30 & 11:30 \\
+20 & Qué demuestra y qué no & 0:30 & 12:00 \\
+21 & Software reproducible y aplicación web & 0:15 & 12:15 \\
+22 & Conclusiones & 0:40 & 12:55 \\
+23 & Trabajo futuro & 0:15 & 13:10 \\
+Cierre & Gracias & 0:05 & 13:15 \\
+\bottomrule
+\end{longtable}
+\end{center}
+
+\subsection{Puntos de control}
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+Al terminar & Debería ir en & Si va atrasado \\
+\midrule
+Diapositiva 6 & 5:00 & En 7 a 10 diga solo el mensaje de cada barra azul \\
+Diapositiva 14 & 9:00 & En 18 diga solo el mensaje \\
+Diapositiva 20 & 12:00 & Omita la 21 y la 23 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\input{guion_15min_cuerpo}
+
+\section{Definiciones mínimas}
+
+Para tener a mano durante la exposición. El detalle está en el guion completo.
+
+\begin{description}
+\item[Déficit ($x_i$).] Liquidez que le falta a una entidad.
+\item[Colchón.] Déficit máximo que una entidad soporta antes de dejar de pagar.
+\item[$W_{ij}$.] Cuánto le paga $j$ a $i$ en cada ciclo.
+\item[$\alpha$, $\beta$, $\gamma$.] Velocidad de corrección, intensidad del contagio y
+fuerza del desfase.
+\item[$R=\beta\rho(W)/\alpha$.] Contagio sobre corrección; $\rho(W)$ es el valor propio
+dominante de la red. Menor que 1: la red amortigua.
+\item[Fase ($\theta_i$) y ritmo ($\omega_i$).] Punto del ciclo de pagos y velocidad
+propia del ciclo.
+\item[Kuramoto.] Modelo de osciladores que ajustan su ritmo al de sus vecinos.
+\item[Coherencia ($r_i$).] De $-1$ a $1$: qué tan a tiempo llega el ingreso respecto al
+ciclo propio.
+\item[Score clásico.] Modelo de probabilidad de impago con datos del cliente.
+\item[Red estática.] Quién le paga al cliente y cuánto, sin mirar el momento.
+\item[Red dinámica.] Coherencia, desfase y regularidad de los pagos.
+\item[AUC.] Probabilidad de que el modelo ponga a quien cae por encima de quien no cae.
+\item[Intervalo de confianza 95~\%.] Rango que contiene la mejora verdadera con 95~\% de
+confianza; si no toca el cero, la mejora es significativa.
+\item[Mundo nulo.] Mundo idéntico donde los pagos no generan déficit; sirve de control.
+\item[XGBoost.] Modelo de árboles de decisión entrenados en secuencia.
+\end{description}
+
+\end{document}
