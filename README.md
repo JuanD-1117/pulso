@@ -17,6 +17,9 @@ ciclos de pago se sincronizan, y una pregunta medible:
 
 ![Mapa de riesgo](figures/app_mapa_riesgo.png)
 
+**Documentación:** [guía completa desde cero](docs/finnet_guia_completa.pdf) (53 pp.) y
+[presentación](docs/finnet_presentacion.pdf) (29 diapositivas).
+
 ## El modelo (tareas 1–5)
 
 $$
@@ -120,7 +123,7 @@ finnet/
 ├── notebooks/ 01..06
 ├── data/      dataset de las tareas 5 y 6 (data/credit/*.csv)
 ├── models/    modelos versionados (models/credit/v1 para la Tarea 6)
-└── docs/      bibliografía y especificaciones de diseño
+└── docs/      guía completa y presentación (PDF), bibliografía, diseño, fuentes LaTeX
 ```
 
 ## Uso local
