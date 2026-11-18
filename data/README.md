@@ -1,6 +1,6 @@
 # Ficha del dataset
 
-Generado con `uv run finnet sweep configs/sweep.yaml` (semilla global `20261117`).
+Generado con `uv run pulso sweep configs/sweep.yaml` (semilla global `20261117`).
 Todos los rangos y semillas están en [`configs/sweep.yaml`](../configs/sweep.yaml).
 Es un dataset **sintético**: ninguna fila proviene de datos reales de pagos.
 

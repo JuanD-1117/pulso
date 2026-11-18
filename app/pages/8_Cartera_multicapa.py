@@ -8,10 +8,10 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
-from finnet import viz
-from finnet.world import KIND_NAMES, LAYER_NAMES
+from pulso import viz
+from pulso.world import KIND_NAMES, LAYER_NAMES
 
-st.set_page_config(page_title="Cartera multicapa · finnet", layout="wide")
+st.set_page_config(page_title="Cartera multicapa · PULSO", layout="wide")
 st.title("Cartera multicapa")
 st.markdown(
     "Clientes de un banco (**personas** ● y **firmas** ■) unidos por tres capas de "
@@ -216,7 +216,7 @@ with g2:
         st.plotly_chart(fig, width="stretch")
     else:
         st.info(
-            "Ejecute `uv run finnet credit configs/credit.yaml` para ver esta gráfica."
+            "Ejecute `uv run pulso credit configs/credit.yaml` para ver esta gráfica."
         )
 st.caption(
     "Solo clientes con ingreso por la red. En el mundo **con red** el impago crece "

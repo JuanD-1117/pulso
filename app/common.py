@@ -1,6 +1,6 @@
 """Estado compartido y cachés de la app.
 
-Solo llama a ``finnet.service`` (tareas 1–5) y ``finnet.credit.service`` (Tarea 6).
+Solo llama a ``pulso.service`` (tareas 1–5) y ``pulso.credit.service`` (Tarea 6).
 """
 
 from __future__ import annotations
@@ -10,8 +10,8 @@ import copy
 import numpy as np
 import streamlit as st
 
-from finnet import service
-from finnet.credit import service as credit_service
+from pulso import service
+from pulso.credit import service as credit_service
 
 LIGHT_EMOJI = {"verde": "🟢", "amarillo": "🟡", "rojo": "🔴"}
 
@@ -88,7 +88,7 @@ def sidebar_status() -> None:
 
 def beta_slider(W: np.ndarray, key: str = "beta") -> float:
     """Slider de β con rango relativo a ρ(W) para que R recorra [0, 2]."""
-    from finnet.spectral import perron_root
+    from pulso.spectral import perron_root
 
     c = cfg()
     rho = perron_root(W)
@@ -161,7 +161,7 @@ def cached_portfolio(
     overrides: tuple[tuple[str, float], ...] = (),
     employer_shock: int | None = None,
 ):
-    from finnet.integrate import Shock
+    from pulso.integrate import Shock
 
     shock = (
         None

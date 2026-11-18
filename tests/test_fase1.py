@@ -6,10 +6,10 @@ import numpy as np
 import pytest
 from scipy.linalg import expm
 
-from finnet.integrate import linear_operator, simulate, simulate_scipy
-from finnet.model import Params
-from finnet.networks import TOPOLOGIES, NetworkConfig, generate, paid, received
-from finnet.spectral import amplification_index, entity_ranking, perron_root
+from pulso.integrate import linear_operator, simulate, simulate_scipy
+from pulso.model import Params
+from pulso.networks import TOPOLOGIES, NetworkConfig, generate, paid, received
+from pulso.spectral import amplification_index, entity_ranking, perron_root
 
 
 def test_generate_all_topologies_valid_weights_mean_one():

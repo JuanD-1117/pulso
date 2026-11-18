@@ -1,4 +1,4 @@
-# Entrenamiento de modelos predictivos (Fase 6). `uv run finnet train configs/train.yaml`
+# Entrenamiento de modelos predictivos (Fase 6). `uv run pulso train configs/train.yaml`
 seed: 7
 version: "1.0.0"
 n_splits: 5                 # GroupKFold por red: ninguna red en train y test a la vez

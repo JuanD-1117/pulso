@@ -5,9 +5,9 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from finnet.integrate import linear_operator, simulate
-from finnet.model import Params
-from finnet.spectral import (
+from pulso.integrate import linear_operator, simulate
+from pulso.model import Params
+from pulso.spectral import (
     algebraic_connectivity,
     communities,
     fiedler_vector,
@@ -89,7 +89,7 @@ def test_communities_split_two_disconnected_blocks():
 
 
 def test_normalized_communities_balanced_on_core_periphery():
-    from finnet.networks import NetworkConfig, generate
+    from pulso.networks import NetworkConfig, generate
 
     W = generate(
         NetworkConfig("core_periphery", 200, 8.0, 1.0, 0.06, 0.9, 0.05, seed=1)

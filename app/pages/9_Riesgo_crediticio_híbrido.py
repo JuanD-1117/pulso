@@ -8,11 +8,11 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
-from finnet import viz
-from finnet.credit.features import FEATURE_LABELS, LEVEL_LABELS, LEVELS
-from finnet.world import KIND_NAMES
+from pulso import viz
+from pulso.credit.features import FEATURE_LABELS, LEVEL_LABELS, LEVELS
+from pulso.world import KIND_NAMES
 
-st.set_page_config(page_title="Riesgo crediticio híbrido · finnet", layout="wide")
+st.set_page_config(page_title="Riesgo crediticio híbrido · PULSO", layout="wide")
 st.title("Riesgo crediticio híbrido")
 common.credit_sidebar_status()
 st.markdown(
@@ -37,7 +37,7 @@ Si la dinámica "mejorara" ahí, sería una fuga de información.
 if not common.credit_service.results_available():
     st.warning(
         "No hay resultados del experimento. Ejecute "
-        "`uv run finnet credit configs/credit.yaml` (tarda menos de un minuto)."
+        "`uv run pulso credit configs/credit.yaml` (tarda menos de un minuto)."
     )
     st.stop()
 

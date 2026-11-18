@@ -1,6 +1,6 @@
 [project]
-name = "finnet"
-version = "2.0.1"
+name = "pulso"
+version = "3.0.0"
 description = "Redes complejas, sincronización y riesgo sistémico y crediticio en sistemas de pagos digitales: del modelo físico a la aplicación."
 readme = "README.md"
 authors = [
@@ -27,7 +27,7 @@ dependencies = [
 ]
 
 [project.scripts]
-finnet = "finnet.cli:main"
+pulso = "pulso.cli:main"
 
 [build-system]
 requires = ["uv_build>=0.13.9,<0.14.0"]

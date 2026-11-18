@@ -5,10 +5,10 @@ from __future__ import annotations
 import common
 import streamlit as st
 
-from finnet import viz
-from finnet.networks import TOPOLOGIES
+from pulso import viz
+from pulso.networks import TOPOLOGIES
 
-st.set_page_config(page_title="Construir red · finnet", layout="wide")
+st.set_page_config(page_title="Construir red · PULSO", layout="wide")
 st.title("Construir red")
 
 c = common.cfg()

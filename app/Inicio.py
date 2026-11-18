@@ -1,4 +1,4 @@
-"""Página de inicio de la app finnet."""
+"""Página de inicio de la app PULSO."""
 
 from __future__ import annotations
 
@@ -6,12 +6,13 @@ import common
 import streamlit as st
 
 st.set_page_config(
-    page_title="finnet · riesgo en redes de pagos digitales",
+    page_title="PULSO · riesgo en redes de pagos digitales",
     page_icon="🕸️",
     layout="wide",
 )
 
-st.title("finnet · redes complejas, sincronización y riesgo en pagos digitales")
+st.title("PULSO · redes complejas, sincronización y riesgo en pagos digitales")
+st.caption("Pagos, Umbrales, Liquidez y Sincronización Operativa")
 st.markdown(
     """
 Herramienta para explorar cómo un problema de liquidez se propaga por una red de

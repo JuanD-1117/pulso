@@ -3,7 +3,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from finnet.networks import NetworkConfig, generate
+from pulso.networks import NetworkConfig, generate
 
 
 def _cfg(
@@ -41,7 +41,7 @@ def W_strong() -> np.ndarray:
     """Red ER densa: fuertemente conexa con probabilidad ~1 para esta semilla."""
     import networkx as nx
 
-    from finnet.networks import to_networkx
+    from pulso.networks import to_networkx
 
     W = generate(_cfg("erdos_renyi", n=30, mean_degree=8.0, seed=7))
     assert nx.is_strongly_connected(to_networkx(W))

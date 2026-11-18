@@ -6,9 +6,9 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from finnet.config import load_config
-from finnet.schema import assert_no_truth
-from finnet.world import (
+from pulso.config import load_config
+from pulso.schema import assert_no_truth
+from pulso.world import (
     BANK,
     FIRM,
     LAYER_C,
@@ -23,7 +23,7 @@ from finnet.world import (
     generate_world,
     scaled_config,
 )
-from finnet.world.entities import calibrate_intercept
+from pulso.world.entities import calibrate_intercept
 
 
 @pytest.fixture(scope="module")

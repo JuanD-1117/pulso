@@ -6,9 +6,9 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from finnet.config import load_config
-from finnet.credit import CreditParams
-from finnet.credit.estimate import (
+from pulso.config import load_config
+from pulso.credit import CreditParams
+from pulso.credit.estimate import (
     cycle_stats,
     edges_matrix,
     estimate_edges,
@@ -18,16 +18,16 @@ from finnet.credit.estimate import (
     payment_cycles,
     phase_matrix,
 )
-from finnet.credit.evaluate import (
+from pulso.credit.evaluate import (
     cross_validate,
     expected_calibration_error,
     ks_statistic,
     paired_deltas,
 )
-from finnet.credit.features import DYNAMIC, LEVELS, STATIC, client_features
-from finnet.credit.pipeline import modeling_rows, process_world, world_seed
-from finnet.model import Dynamics, Params
-from finnet.world import (
+from pulso.credit.features import DYNAMIC, LEVELS, STATIC, client_features
+from pulso.credit.pipeline import modeling_rows, process_world, world_seed
+from pulso.model import Dynamics, Params
+from pulso.world import (
     emit_transactions,
     free_phases,
     generate_world,
@@ -127,7 +127,7 @@ def test_client_features_reject_future_transactions(world, processed):
 
 
 def test_income_lost_detects_defaulted_employer(world, credit_cfg):
-    from finnet.integrate import Shock
+    from pulso.integrate import Shock
 
     e = world.entities
     emp = int(e.loc[e["kind"] == 0, "n_employees"].idxmax())
@@ -192,7 +192,7 @@ def test_dynamic_features_help_only_when_network_drives_defaults(credit_cfg):
 
 
 def test_default_by_coherence_excludes_clients_without_network_income():
-    from finnet.credit.evaluate import default_by_coherence
+    from pulso.credit.evaluate import default_by_coherence
 
     t = pd.DataFrame(
         {

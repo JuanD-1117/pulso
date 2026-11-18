@@ -9,7 +9,7 @@ data/tmp/
 *.egg-info/
 
 # Tabla de clientes del experimento de crédito: se regenera en segundos
-# con `uv run finnet credit configs/credit.yaml`.
+# con `uv run pulso credit configs/credit.yaml`.
 data/credit/clientes.parquet
 
 # Auxiliares de LaTeX (los PDF finales viven en docs/)

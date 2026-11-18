@@ -1,7 +1,7 @@
 % ===================================================================== PARTE II
-\chapter{Matemática mínima}
-Este capítulo reúne las cinco herramientas que usa todo el proyecto. Si ya las
-conoce, puede saltarlo.
+\chapter{Fundamentos matemáticos}
+Este capítulo reúne las cinco herramientas matemáticas que emplea el proyecto. El
+lector familiarizado con ellas puede omitirlo.
 
 \section{Vectores y matrices}
 Un \term{vector} es una lista de números: $x = (x_1, x_2, \dots, x_N)$, uno por
@@ -19,14 +19,14 @@ Una \term{ecuación diferencial} dice cómo \emph{cambia} una cantidad. La más 
 Si hoy me falta $x(0)$, cada día corrijo una fracción $\alpha$ de lo que me falta y el
 déficit decae exponencialmente. El tiempo típico de recuperación es $1/\alpha$.
 
-\section{Integrar en el computador: Euler y RK4}
+\section{Integración numérica: Euler y RK4}
 Casi nunca hay fórmula cerrada; se avanza en pasos pequeños $\Delta t$. El método de
 \term{Euler} usa $x(t+\Delta t)\approx x(t) + \Delta t\, f(x(t))$. El proyecto usa
 \term{Runge–Kutta de orden 4} (RK4): evalúa la pendiente cuatro veces dentro del paso
 y las promedia; el error baja como $\Delta t^4$, así que con $\Delta t=0.01$ es
 despreciable.
 
-\begin{codigo}[label=src/finnet/integrate.py]
+\begin{codigo}[label=src/pulso/integrate.py]
 def rk4_step(dyn: Dynamics, x, theta, source, dt):
     k1x, k1t = dyn.rhs(x, theta, source)
     k2x, k2t = dyn.rhs(x + 0.5 * dt * k1x, theta + 0.5 * dt * k1t, source)
@@ -81,7 +81,7 @@ medio sea 1: la unidad de dinero es ``un pago medio por ciclo''.
 \end{figure}
 
 \section{Formas de red}
-\archivo{src/finnet/networks.py} genera tres familias clásicas:
+\archivo{src/pulso/networks.py} genera tres familias clásicas:
 \begin{itemize}
 \item \term{Erdős–Rényi}: cada par se conecta al azar con la misma probabilidad. Es la
 referencia ``sin estructura''.
@@ -93,7 +93,7 @@ de pagos reales.
 \end{itemize}
 Los montos son $W_{ij}=\sqrt{s_is_j}\,\varepsilon_{ij}$, con tamaños $s$ y ruido
 $\varepsilon$ lognormales (pocos montos muy grandes, muchos pequeños):
-\begin{codigo}[label=src/finnet/networks.py · generate]
+\begin{codigo}[label=src/pulso/networks.py · generate]
 sizes = rng.lognormal(0.0, cfg.amount_sigma, cfg.n)
 noise = rng.lognormal(0.0, cfg.amount_sigma, (cfg.n, cfg.n))
 W = np.where(A, np.sqrt(np.outer(sizes, sizes)) * noise, 0.0)
@@ -127,7 +127,7 @@ cuánto se corrige solo ($\alpha$). Es el análogo del ``número de reproducció
 epidemia: con $R<1$ cada problema genera menos de un problema nuevo y se apaga.
 \end{idea}
 
-\begin{codigo}[label=src/finnet/spectral.py]
+\begin{codigo}[label=src/pulso/spectral.py]
 def perron_root(W: np.ndarray) -> float:
     """Valor propio dominante ρ(W) (real y no negativo para W >= 0)."""
     ev = np.linalg.eigvals(np.asarray(W, dtype=float))
@@ -145,7 +145,7 @@ Además, los vectores propios dominantes ordenan a las entidades: el vector
 \emph{derecho} cuánto \emph{acumula} (vulnerabilidad).
 
 \section{Parámetros y el modelo como objeto}
-\archivo{src/finnet/model.py} define \texttt{Params}, un contenedor inmutable de los
+\archivo{src/pulso/model.py} define \texttt{Params}, un contenedor inmutable de los
 parámetros: $\alpha,\beta$ (tarea 1), $D_0$ (tarea 2), $K,\gamma,\omega$ (tarea 3),
 umbrales y pérdida $\lambda$ (tarea 4). Todos los términos nuevos valen cero por
 defecto: \textbf{con los términos apagados, el modelo vuelve exactamente al de la
@@ -155,7 +155,7 @@ cada capa por separado.
 % ---------------------------------------------------------------------------
 \chapter{Tarea 2 · Difusión y estabilidad}
 
-\section{El Laplaciano: mover sin crear ni destruir}
+\section{El Laplaciano y la conservación}
 La tarea 2 agrega la \term{redistribución}: la presión de liquidez se traslada por la
 red (por ejemplo, alguien presta a quien le falta), pero el total no cambia. Eso lo
 hace el \term{Laplaciano de flujo}
@@ -165,7 +165,7 @@ L = D_\text{out} - W,\qquad \frac{dx}{dt} = -D_0\,L\,x,
 con $D_\text{out}$ la matriz diagonal de pagos salientes. Las columnas de $L$ suman
 cero, por eso $\sum_i x_i$ se conserva: la difusión mueve déficit, no lo crea.
 
-\section{El modelo con las dos piezas}
+\section{Modelo con difusión}
 \[
 \dot x = M x,\qquad M = -\alpha I - D_0 L + \beta W.
 \]
@@ -185,7 +185,7 @@ grupos poco conectados entre sí; repitiendo la partición se obtienen
 normalizado de Shi y Malik, 2000), que da grupos balanceados en lugar de separar
 unos pocos nodos periféricos.
 
-\begin{codigo}[label=src/finnet/spectral.py]
+\begin{codigo}[label=src/pulso/spectral.py]
 def stability(W: np.ndarray, params: Params) -> float:
     """``σ = max Re λ(M)``; el sistema lineal es estable si σ < 0."""
     return float(spectrum(linear_operator(W, params))[0].real)
@@ -223,7 +223,7 @@ de Lorentz de ancho $\Delta$, en la red completa hay sincronía parcial a partir
 $K_c=2\Delta$, con $r=\sqrt{1-2\Delta/K}$. El proyecto lo reproduce numéricamente (ver
 capítulo de validación).
 
-\section{La desincronización cuesta}
+\section{Costo de la desincronización}
 El puente entre el ritmo y el déficit es un término nuevo en la ecuación de $x$:
 \[
 \gamma\,k_i\,(1-r_i) = \gamma\sum_j W_{ij}\big(1-\cos(\theta_j-\theta_i)\big).
@@ -250,7 +250,7 @@ consistente (dinero por ciclo).
 \]
 En el código, todo el lado derecho se evalúa con \emph{un solo} producto de matrices
 $W\,[x,\cos\theta,\sin\theta]$, lo que lo hace rápido:
-\begin{codigo}[label=src/finnet/model.py · Dynamics.rhs]
+\begin{codigo}[label=src/pulso/model.py · Dynamics.rhs]
 c, s = np.cos(theta), np.sin(theta)
 prod = self.W @ np.column_stack((x, c, s))
 Wx, zr, zi = prod[:, 0], prod[:, 1], prod[:, 2]
@@ -276,7 +276,7 @@ con algo de dispersión aleatoria. Si $x_i > x_i^{(c)}$, la entidad cae en impag
 repite hasta que no aparece ningún impago nuevo (cascada instantánea).
 \end{enumerate}
 
-\begin{codigo}[label=src/finnet/integrate.py · simulate (detección de impagos)]
+\begin{codigo}[label=src/pulso/integrate.py · simulate (detección de impagos)]
 def detect_defaults(t: float) -> bool:
     """Aplica impagos (y sus saltos) hasta agotar la cascada instantánea."""
     if thresholds is None:
@@ -299,7 +299,7 @@ falla tecnológica); si no cruza su umbral, se recupera.
 \end{itemize}
 
 \section{Modelos clásicos de comparación}
-\archivo{src/finnet/cascades.py} implementa tres modelos de la literatura para
+\archivo{src/pulso/cascades.py} implementa tres modelos de la literatura para
 contrastar con la dinámica:
 \begin{itemize}
 \item \term{Eisenberg y Noe (2001)}: qué fracción de sus deudas puede pagar cada
@@ -311,7 +311,7 @@ pagadores.
 \end{itemize}
 
 \section{Indicadores de riesgo}
-\archivo{src/finnet/metrics.py} resume cada corrida: fracción de entidades en impago,
+\archivo{src/pulso/metrics.py} resume cada corrida: fracción de entidades en impago,
 liquidez no pagada acumulada, tiempo hasta el primer contagio, colapso global (cae al
 menos el 30~\%) e \term{importancia sistémica} de cada entidad (fracción media de
 \emph{otras} que caen cuando se la choca).
@@ -319,13 +319,13 @@ menos el 30~\%) e \term{importancia sistémica} de cada entidad (fracción media
 % ---------------------------------------------------------------------------
 \chapter{Tarea 5 · Experimentos y aprendizaje automático}
 
-\section{Por qué aprender}
+\section{Motivación}
 Simular un escenario tarda del orden de 0.1~s. Responder ``¿qué tan riesgosa es cada
 entidad?'' exige simular un choque a cada una. Un modelo de aprendizaje automático
 entrenado con miles de simulaciones responde en milisegundos.
 
 \section{El dataset}
-\archivo{src/finnet/experiments.py} corre la dinámica completa a partir de
+\archivo{src/pulso/experiments.py} corre la dinámica completa a partir de
 \archivo{configs/sweep.yaml}:
 \begin{itemize}
 \item 300 redes (de 30 a 150 entidades, las tres topologías);
@@ -351,7 +351,7 @@ que recupera los parámetros $\alpha,\beta,\gamma,K$ a partir de trayectorias, o
 a que respete las ecuaciones del modelo.
 \end{itemize}
 
-\section{Evaluar sin hacer trampa}
+\section{Validación sin fuga de información}
 \begin{itemize}
 \item \term{GroupKFold por red}: se divide en 5 partes de modo que una misma red
 nunca esté a la vez en entrenamiento y en prueba. Si no, el modelo ``memoriza'' la red.
@@ -366,7 +366,7 @@ de las veces?
 % ---------------------------------------------------------------------------
 \chapter{Tarea 6 · Riesgo crediticio en una red multicapa}
 
-\section{De entidades a clientes}
+\section{De entidades a clientes bancarios}
 Las tareas 1–5 estudian una red de entidades abstractas. La tarea 6 baja al nivel de
 los \textbf{clientes de un banco}. Hay dos tipos de nodo y tres capas de relaciones:
 
@@ -390,7 +390,7 @@ empleo formal; ámbar: informales. Azul: nómina; rojo: proveedores; gris:
 transferencias.}
 \end{figure}
 
-\section{El mundo sintético: \texttt{finnet.world}}
+\section{El mundo sintético: \texttt{pulso.world}}
 No hay datos públicos con la red de pagos de los clientes de un banco, así que se
 \emph{genera} una cartera realista con un mecanismo conocido. Eso permite comprobar
 que el método recupera lo que debe.
@@ -425,7 +425,7 @@ parte, como el historial real). $b$ se ajusta para que la PD media sea 5~\% en p
 y 3~\% en firmas. Estas columnas se llaman \texttt{truth\_*} y una regla del código
 impide que lleguen a un modelo:
 
-\begin{codigo}[label=src/finnet/schema.py]
+\begin{codigo}[label=src/pulso/schema.py]
 def assert_no_truth(columns) -> None:
     """Falla si alguna columna es verdad del terreno (fuga de información)."""
     leaked = [c for c in columns if str(c).startswith(TRUTH_PREFIX)]
@@ -463,7 +463,7 @@ instante aleatorio con tasa $-\ln(1-\mathrm{PD}_i)/12$ por mes.
 
 En el código, estas matrices se empaquetan en un objeto \texttt{Coupling}. Si no se
 pasa, el motor es \emph{bit a bit} el de la versión 1 (lo verifica una prueba):
-\begin{codigo}[label=src/finnet/model.py · Dynamics.\_rhs\_coupled]
+\begin{codigo}[label=src/pulso/model.py · Dynamics.\_rhs\_coupled]
 cpl = self.coupling
 dx = -self.p.alpha * x + cpl.stress @ x + source
 if not self.need_phases:
@@ -481,14 +481,14 @@ Las matrices son \term{dispersas} (\texttt{scipy.sparse}): con 2100 clientes hay
 5\,000 relaciones y no 4.4 millones de casillas, y una cartera completa se simula en
 menos de un segundo.
 
-\section{Lo que ve el banco: el registro de transacciones}
+\section{Información observable: el registro de transacciones}
 El banco no ve fases ni ritmos naturales. Ve \emph{pagos con fecha}. El simulador los
 produce así: cada vez que la fase de un pagador cruza un múltiplo de $2\pi$, ejecuta
 su ciclo de pagos y paga a cada receptor (más un pequeño ruido en el día y el monto) y
 paga su cuota al banco. Quien cae en impago deja de pagar.
 
-\section{Estimar desde las transacciones}
-\archivo{src/finnet/credit/estimate.py} hace lo que haría un analista con los datos
+\section{Estimación a partir de las transacciones}
+\archivo{src/pulso/credit/estimate.py} hace lo que haría un analista con los datos
 reales:
 \begin{enumerate}
 \item $\hat W$: cuánto le paga cada pagador a cada receptor por mes (mientras pagó).
@@ -499,7 +499,7 @@ instantes de los ciclos de pago de un cliente,
 \]
 \item $\hat r_i(t)$: la coherencia local con las fases estimadas de sus pagadores.
 \end{enumerate}
-\begin{codigo}[label=src/finnet/credit/estimate.py · event\_phase]
+\begin{codigo}[label=src/pulso/credit/estimate.py · event\_phase]
 k = np.searchsorted(times, grid, side="right") - 1
 inside = (k >= 0) & (k < times.size - 1)
 ki = k[inside]
@@ -518,7 +518,7 @@ recibe en contrafase ($r\approx-1$): el dinero le llega justo cuando no le sirve
 \end{figure}
 
 \section{Tres niveles de variables}
-\archivo{src/finnet/credit/features.py} construye, para cada cliente y solo con los
+\archivo{src/pulso/credit/features.py} construye, para cada cliente y solo con los
 primeros 6 meses de datos:
 \begin{description}
 \item[1 · Clásico.] Ingreso, endeudamiento, edad, antigüedad, productos, moras, empleo
@@ -535,8 +535,8 @@ dejaron de pagar. \textbf{Este es el aporte.}
 La etiqueta es: ¿el cliente cae en impago en los 12 meses siguientes? Quien ya cayó
 durante la observación se excluye.
 
-\section{Evaluar con un control}
-\archivo{src/finnet/credit/evaluate.py} y \archivo{experiment.py}:
+\section{Diseño experimental con control nulo}
+\archivo{src/pulso/credit/evaluate.py} y \archivo{experiment.py}:
 \begin{itemize}
 \item \textbf{Dos mundos}. En el mundo \emph{con red} los acoples están encendidos. En
 el mundo \emph{nulo} ($\beta_\ell=\gamma=\lambda=0$) la red no crea déficit, pero los
@@ -549,7 +549,7 @@ evalúa con clientes del mismo mundo).
 cambian las variables. Se reporta la mejora media con su intervalo de confianza del
 95~\%.
 \end{itemize}
-\begin{codigo}[label=src/finnet/credit/evaluate.py · paired\_deltas]
+\begin{codigo}[label=src/pulso/credit/evaluate.py · paired\_deltas]
 ref = cv[(cv["model"] == model) & (cv["level"] == base)].set_index("fold")
 d = g.set_index("fold")[metric] - ref[metric]
 k = len(d)
@@ -557,7 +557,7 @@ half = stats.t.ppf(0.975, k - 1) * d.std(ddof=1) / np.sqrt(k) if k > 1 else 0
 \end{codigo}
 
 % ---------------------------------------------------------------------------
-\chapter{Cómo se une todo}
+\chapter{Integración de los componentes}
 
 \section{Arquitectura en capas}
 \begin{figure}[h]
@@ -568,7 +568,7 @@ half = stats.t.ppf(0.975, k - 1) * d.std(ddof=1) / np.sqrt(k) if k > 1 else 0
   flecha/.style={-{Stealth[length=3mm]},thick,gris}]
 \node[caja=azul] (app) {\textbf{Interfaz} · \texttt{app/} (Streamlit): \texttt{Inicio.py} y nueve páginas.\\
 Solo muestra; nunca calcula física.};
-\node[caja=verde,below=0.6cm of app] (srv) {\textbf{Servicio} · \texttt{finnet/service.py} (tareas 1–5) y \texttt{finnet/credit/service.py} (tarea 6).\\
+\node[caja=verde,below=0.6cm of app] (srv) {\textbf{Servicio} · \texttt{pulso/service.py} (tareas 1–5) y \texttt{pulso/credit/service.py} (tarea 6).\\
 Recibe diccionarios de configuración; devuelve tablas y arreglos listos para mostrar.};
 \node[caja=rojo,below=0.6cm of srv] (core) {\textbf{Núcleo} · \texttt{networks, model, integrate, spectral, cascades, metrics,}\\
 \texttt{experiments, ml/} (tareas 1–5) · \texttt{world/, credit/} (tarea 6).\\
@@ -601,10 +601,10 @@ sobre la capa de servicio sin tocar la física.}
 \end{tikzpicture}
 \caption{Un mundo entra por la izquierda; lo que sale a la derecha es lo que
 muestra la página \emph{Riesgo crediticio híbrido}. Todo el flujo corre con un
-comando: \texttt{uv run finnet credit configs/credit.yaml}.}
+comando: \texttt{uv run pulso credit configs/credit.yaml}.}
 \end{figure}
 
-\section{Reglas que mantienen todo coherente}
+\section{Criterios de diseño}
 \begin{enumerate}
 \item \textbf{Una sola convención}: $W_{ij}$ es lo que $j$ le paga a $i$, en todo el
 código.
@@ -635,7 +635,7 @@ revisan (columnas, tipos, rangos) y la verdad del terreno está vetada.
 \archivo{service.py} & Fachada de las tareas 1–5 para la app \\
 \archivo{schema.py} & Validación de tablas y veto de la verdad del terreno \\
 \archivo{config.py} & Lectura de los YAML y rutas de datos y modelos \\
-\archivo{cli.py} & Comandos \texttt{finnet sweep | train | world | credit} \\
+\archivo{cli.py} & Comandos \texttt{pulso sweep | train | world | credit} \\
 \archivo{viz.py} & Figuras Plotly de la app \\
 \archivo{world/} & Mundo multicapa: entidades, capas, transacciones \\
 \archivo{credit/engine.py} & Acoples por capa, colchones, impagos idiosincráticos \\

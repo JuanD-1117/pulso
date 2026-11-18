@@ -1,7 +1,7 @@
 % ===================================================================== PARTE I
-\chapter{El problema en palabras simples}
+\chapter{Planteamiento del problema}
 
-\section{Pagar es un acto colectivo}
+\section{Interdependencia de los pagos}
 Cada día una persona recibe su sueldo, paga el arriendo, le transfiere dinero a un
 familiar y abona la cuota de un crédito. Una empresa cobra a sus clientes, paga a sus
 proveedores y paga la nómina. Hoy casi todo eso ocurre en \term{sistemas de pagos
@@ -10,13 +10,13 @@ Colombia el ejemplo más reciente es \term{Bre-B}, el sistema de pagos inmediato
 interoperable promovido por el Banco de la República: cualquier persona puede pagarle
 a otra en cualquier entidad, a cualquier hora.
 
-Lo importante para este proyecto es una observación sencilla: \textbf{nadie paga solo}.
+Lo importante para este proyecto es una observación sencilla: \textbf{la capacidad de pago de cada agente depende de los pagos que recibe}.
 Lo que yo puedo pagar depende de lo que me pagaron a mí. Si mi empleador se retrasa,
 yo me retraso con el arriendo; si un cliente grande no le paga a una empresa, la
 empresa se retrasa con sus proveedores y con su nómina. Los pagos forman una
 \term{red}: una telaraña de quién le paga a quién.
 
-\section{Liquidez: tener dinero \emph{ahora}}
+\section{Liquidez y déficit}
 Dos palabras que suelen confundirse:
 \begin{itemize}
 \item \term{Solvencia}: tener más de lo que se debe, en total. Una tienda con mucho
@@ -30,7 +30,7 @@ los pagos del momento. Un déficit pequeño se resuelve (se pide prestado, se re
 gasto, se espera el siguiente ingreso). Un déficit demasiado grande termina en un
 \term{impago}: no se paga lo que se debía.
 
-\section{El efecto dominó}
+\section{Contagio y riesgo sistémico}
 Si una entidad deja de pagar, quienes esperaban ese dinero reciben menos. Algunos lo
 absorben con su colchón; otros no, y también dejan de pagar. Un problema local se
 vuelve una \term{cascada}. Al riesgo de que eso pase se le llama \term{riesgo
@@ -38,22 +38,22 @@ sistémico}: no es el riesgo de una entidad, es el riesgo del \emph{sistema}. La
 financiera de 2008 hizo famoso el concepto: entidades ``demasiado conectadas para
 caer'' cuya caída arrastraba a muchas otras.
 
-\section{El ritmo de los pagos}
+\section{Ciclos de pago y desincronización}
 Los pagos no llegan de forma continua; llegan en \term{ciclos}. La nómina se paga
 cada quince días o cada mes; las facturas, a 30 o 60 días; las cuotas de un crédito,
 en una fecha fija. Si una persona recibe su sueldo el día 30 pero sus gastos fuertes
-caen el día 15, vive dos semanas apretada: necesita un colchón mayor. Si dos
+caen el día 15, afronta dos semanas con liquidez reducida y necesita un colchón mayor. Si dos
 entidades que dependen una de la otra tienen ritmos \emph{desfasados}, el dinero
 llega justo cuando ya no sirve. A esto lo llamaremos \term{desincronización}.
 
-\begin{idea}[Una imagen]
+\begin{idea}[Analogía]
 Piense en un grupo de personas que se pasan baldes de agua en fila para apagar un
 incendio. Si todos se mueven al mismo ritmo, el agua fluye. Si uno se adelanta o se
 atrasa, los baldes se acumulan o se caen. La red de pagos es esa fila, pero con forma
 de telaraña; el ritmo de cada uno es su ciclo de pagos.
 \end{idea}
 
-\section{Riesgo crediticio: ¿me van a pagar?}
+\section{Riesgo crediticio}
 Un banco que presta dinero se pregunta, para cada cliente: ¿cuál es la probabilidad de
 que no pague su crédito en el próximo año? Esa probabilidad se llama \term{PD}
 (\emph{probability of default}, probabilidad de impago). Para estimarla, los bancos
@@ -65,7 +65,7 @@ Pero el score clásico mira a cada cliente \emph{aislado}. No ve que un cliente 
 historial depende por completo del sueldo de una empresa que está en problemas, ni
 que sus ingresos llegan desfasados de sus obligaciones.
 
-\section{La pregunta del proyecto}
+\section{Pregunta de investigación}
 El proyecto tiene dos niveles:
 \begin{enumerate}
 \item \textbf{Riesgo sistémico} (tareas 1 a 5 de la propuesta): construir un modelo
@@ -75,16 +75,16 @@ predecir esos colapsos con aprendizaje automático.
 \item \textbf{Riesgo crediticio} (tarea 6, la aplicación): llevar ese modelo a los
 clientes de un banco y responder una pregunta medible:
 \end{enumerate}
-\begin{clave}[La pregunta central]
+\begin{clave}[Pregunta central]
 ¿La \textbf{dinámica} de la red de pagos de los clientes (qué tan sincronizados están
 sus ciclos de pago con los de quienes les pagan) aporta información sobre el impago
 que ni el score clásico ni la \textbf{estructura estática} de la red capturan?
 \end{clave}
 
 % ---------------------------------------------------------------------------
-\chapter{La idea física}
+\chapter{Fundamento físico}
 
-\section{Por qué la física tiene algo que decir}
+\section{Aporte de la física estadística}
 La física estudia desde hace más de un siglo sistemas formados por muchas partes que
 interactúan: átomos en un imán, neuronas en el cerebro, luciérnagas que terminan
 destellando al unísono, generadores de una red eléctrica que deben girar a la misma
@@ -103,7 +103,7 @@ salta; un grano de arena más desata una avalancha. Los modelos de umbral descri
 cómo un evento pequeño puede propagarse por toda una red.
 \end{enumerate}
 
-\section{Los tres ingredientes del modelo}
+\section{Componentes del modelo}
 \begin{description}
 \item[1. La red.] Una tabla $W$ que dice cuánto le paga cada entidad a cada otra por
 ciclo. Es el ``mapa'' del sistema.
@@ -113,7 +113,7 @@ ciclo. Es el ``mapa'' del sistema.
   \item su \term{fase} $\theta_i$: en qué punto de su ciclo de pagos está (como la
   aguja de un reloj que da una vuelta por ciclo).
   \end{itemize}
-\item[3. Las reglas.] Cómo cambian esos números con el tiempo:
+\item[3. La dinámica.] Cómo cambian esos números con el tiempo:
   \begin{itemize}
   \item el déficit tiende a corregirse solo, pero crece si quienes me pagan están en
   déficit (contagio);
@@ -135,7 +135,7 @@ momentos de desfase total ($r=-1$).}
 \label{fig:concepto}
 \end{figure}
 
-\section{Del lenguaje físico al lenguaje financiero}
+\section{Correspondencia entre conceptos físicos y financieros}
 \begin{center}
 \begin{tabular}{p{0.42\textwidth}p{0.48\textwidth}}
 \toprule
@@ -157,9 +157,9 @@ Transición de fase & Paso de ``la red amortigua'' a ``la red amplifica'' \\
 \end{center}
 
 % ---------------------------------------------------------------------------
-\chapter{Impacto: para quién y para qué}
+\chapter{Aplicaciones e impacto}
 
-\section{Quién podría usarlo}
+\section{Usuarios potenciales}
 \begin{description}
 \item[Supervisores y banco central.] Identificar qué entidades son sistémicamente
 importantes (cuya caída arrastra más), simular choques (un retiro masivo de liquidez,
@@ -172,8 +172,8 @@ escenarios como ``¿qué pasa con mis deudores si quiebra su empleador?''.
 una hipótesis que se puede refutar.
 \end{description}
 
-\section{Qué es nuevo y qué no}
-Es importante ser honestos sobre la novedad:
+\section{Aporte respecto a la literatura}
+El alcance de la novedad debe precisarse:
 \begin{itemize}
 \item \textbf{No es nuevo} usar la red para medir riesgo crediticio. Hay trabajos que
 usan la red de pagos entre empresas para mejorar la calificación (Letizia y Lillo,
@@ -188,7 +188,7 @@ allá de lo estático. La búsqueda bibliográfica hecha fue corta: antes de afi
 un documento formal debe hacerse una revisión sistemática.
 \end{itemize}
 
-\section{Qué no promete}
+\section{Alcance}
 \begin{limite}
 Los parámetros del modelo son \textbf{ilustrativos}: no están calibrados con datos
 reales de ningún banco ni de Bre-B. El proyecto demuestra que el \emph{mecanismo} es
@@ -199,7 +199,7 @@ banco (en Colombia, bajo la Ley 1581 de 2012 de protección de datos).
 \end{limite}
 
 % ---------------------------------------------------------------------------
-\chapter{Cómo funciona, en seis pasos}
+\chapter{Funcionamiento general}
 
 \begin{figure}[h]
 \centering
@@ -207,35 +207,35 @@ banco (en Colombia, bajo la Ley 1581 de 2012 de protección de datos).
   paso/.style={draw=azul,fill=azul!6,rounded corners=3pt,align=center,
     minimum width=3.6cm,minimum height=1.25cm,font=\sffamily\small},
   flecha/.style={-{Stealth[length=3mm]},thick,gris}]
-\node[paso] (a) {1. Construir\\la red};
-\node[paso,right=0.9cm of a] (b) {2. Diagnosticar:\\¿amortigua o amplifica?};
-\node[paso,right=0.9cm of b] (c) {3. Ritmo de pagos:\\¿se sincronizan?};
-\node[paso,below=1.1cm of c] (d) {4. Choque y\\cascada de impagos};
-\node[paso,left=0.9cm of d] (e) {5. Miles de escenarios\\+ aprendizaje automático};
-\node[paso,left=0.9cm of e,draw=rojo,fill=rojo!6] (f) {6. Cartera de un banco:\\riesgo crediticio};
+\node[paso] (a) {1. Red y\\déficit};
+\node[paso,right=0.9cm of a] (b) {2. Difusión y\\estabilidad};
+\node[paso,right=0.9cm of b] (c) {3. Sincronización\\(Kuramoto)};
+\node[paso,below=1.1cm of c] (d) {4. Impagos y\\cascadas};
+\node[paso,left=0.9cm of d] (e) {5. Experimentos y\\predicción};
+\node[paso,left=0.9cm of e,draw=rojo,fill=rojo!6] (f) {6. Riesgo\\crediticio};
 \draw[flecha] (a)--(b); \draw[flecha] (b)--(c); \draw[flecha] (c)--(d);
 \draw[flecha] (d)--(e); \draw[flecha] (e)--(f);
 \end{tikzpicture}
 \caption{Las seis tareas, en el orden en que se construyen. Cada una agrega un
-ingrediente al mismo modelo; la última lo aplica al crédito.}
+componente al mismo modelo; la última lo aplica al riesgo crediticio.}
 \label{fig:seis}
 \end{figure}
 
 \begin{enumerate}
-\item \textbf{Construir la red.} Se genera una red de pagos sintética con una forma
+\item \textbf{Construcción de la red.} Se genera una red de pagos sintética con una forma
 realista: por ejemplo, \emph{núcleo-periferia}, con unas pocas entidades grandes muy
 conectadas y muchas pequeñas que dependen de ellas.
-\item \textbf{Diagnosticar.} Con matemática de matrices (valores propios) se calcula
+\item \textbf{Diagnóstico.} Con matemática de matrices (valores propios) se calcula
 un solo número, el \term{índice de amplificación} $R$. Si $R<1$ la red apaga los
 choques; si $R>1$ los amplifica. También se calcula cuánto tarda en recuperarse.
-\item \textbf{Ritmo de pagos.} Se simula cómo se sincronizan los ciclos de pago y
+\item \textbf{Ciclos de pago.} Se simula cómo se sincronizan los ciclos de pago y
 cuánto déficit genera la desincronización.
-\item \textbf{Choque y cascada.} Se golpea una entidad (le quitamos liquidez o la
-``apagamos'') y se observa quién cae después y cuánta plata queda sin pagar.
-\item \textbf{Aprender.} Se corren 20\,000 escenarios distintos y con ellos se
+\item \textbf{Choques y cascadas.} Se aplica un choque a una entidad (retiro de liquidez o
+interrupción operativa) y se observa quién cae después y cuánta plata queda sin pagar.
+\item \textbf{Predicción.} Se corren 20\,000 escenarios distintos y con ellos se
 entrenan modelos de aprendizaje automático que predicen el colapso en milisegundos,
 en lugar de los segundos que tarda simular.
-\item \textbf{Aplicar al crédito.} Se construye la cartera de un banco (personas y
+\item \textbf{Aplicación al riesgo crediticio.} Se construye la cartera de un banco (personas y
 empresas unidas por nómina, proveedores y transferencias), se simula, se genera el
 registro de transacciones que vería el banco y se compara un score clásico con uno
 que además mira la red y su sincronía.

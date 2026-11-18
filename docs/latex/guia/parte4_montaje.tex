@@ -1,5 +1,5 @@
 % ===================================================================== PARTE IV
-\chapter{Las herramientas, explicadas}
+\chapter{Herramientas de software}
 
 \begin{longtable}{p{0.2\textwidth}p{0.74\textwidth}}
 \toprule
@@ -16,7 +16,7 @@ uv & Gestor de entornos y dependencias (como \texttt{pip} + \texttt{venv}, más 
 \texttt{uv sync} instala exactamente las versiones de \texttt{uv.lock}; \texttt{uv run}
 ejecuta dentro de ese entorno. \\
 \texttt{pyproject.toml} & Ficha del proyecto: nombre, versión, dependencias, comando
-\texttt{finnet} y configuración de las herramientas. \\
+\texttt{pulso} y configuración de las herramientas. \\
 YAML & Formato de texto para configuración (como un diccionario de Python en un
 archivo). Cada experimento queda documentado con sus parámetros exactos. \\
 Parquet & Formato de tabla en archivo: como CSV, pero comprimido, rápido y con tipos
@@ -35,7 +35,7 @@ LaTeX & Con el que se escribió esta guía y la presentación. \\
 \end{longtable}
 
 % ---------------------------------------------------------------------------
-\chapter{Instalar y correr, paso a paso}
+\chapter{Instalación y ejecución}
 
 \section{Instalación}
 \begin{enumerate}
@@ -54,19 +54,19 @@ uv run streamlit run app/Inicio.py      # abre http://localhost:8501
 \end{codigo}
 Si el puerto 8501 está ocupado: \texttt{--server.port=8502}.
 
-\section{Los comandos del proyecto}
+\section{Comandos del proyecto}
 \begin{codigo}[label=terminal]
-uv run finnet sweep  configs/sweep.yaml    # dataset de la tarea 5 (~20 min, 8 núcleos)
-uv run finnet train  configs/train.yaml    # modelos de la tarea 5
-uv run finnet world  configs/world.yaml    # un mundo multicapa -> data/world/demo
-uv run finnet credit configs/credit.yaml   # experimento y modelos de la tarea 6 (~20 s)
-uv run finnet --help                       # ayuda
+uv run pulso sweep  configs/sweep.yaml    # dataset de la tarea 5 (~20 min, 8 núcleos)
+uv run pulso train  configs/train.yaml    # modelos de la tarea 5
+uv run pulso world  configs/world.yaml    # un mundo multicapa -> data/world/demo
+uv run pulso credit configs/credit.yaml   # experimento y modelos de la tarea 6 (~20 s)
+uv run pulso --help                       # ayuda
 \end{codigo}
 
 \section{Con Docker}
 \begin{codigo}[label=terminal]
-docker build -t finnet .
-docker run -p 8501:8501 finnet
+docker build -t pulso .
+docker run -p 8501:8501 pulso
 \end{codigo}
 La imagen incluye los datos y modelos ya entrenados: la app funciona sin correr
 ningún experimento.
@@ -78,8 +78,8 @@ cd docs/latex/guia         && latexmk -lualatex guia.tex
 cd docs/latex/presentacion && latexmk -lualatex presentacion.tex
 \end{codigo}
 
-\section{Cambiar un parámetro}
-Ejemplo: probar un acople de nómina más fuerte. Se edita
+\section{Modificación de parámetros}
+Ejemplo: evaluar un acoplamiento de nómina más intenso. Se edita
 \archivo{configs/credit.yaml}:
 \begin{codigo}[label=configs/credit.yaml]
 dynamics:
@@ -90,11 +90,11 @@ dynamics:
   loss: 1.0                        # perder un pagador del 100 % del ingreso
   noise: 0.3                       # choques idiosincráticos de liquidez
 \end{codigo}
-y se vuelve a correr \texttt{uv run finnet credit configs/credit.yaml}. No se toca el
+y se vuelve a correr \texttt{uv run pulso credit configs/credit.yaml}. No se toca el
 código.
 
 % ---------------------------------------------------------------------------
-\chapter{Recorrido por la aplicación}
+\chapter{La aplicación web}
 
 \begin{figure}[h]
 \centering
@@ -148,7 +148,7 @@ oculto'' y la explicación SHAP de cada predicción.
 \chapter{Organización del proyecto}
 
 \begin{codigo}[label=estructura de carpetas]
-finnet/
+pulso/
 ├── README.md, CHANGELOG.md        qué es, cómo usarlo, historial de versiones
 ├── pyproject.toml, uv.lock        dependencias exactas
 ├── Dockerfile, .dockerignore      imagen de la app
@@ -157,7 +157,7 @@ finnet/
 │   ├── default.yaml, breb_example.yaml       app, tareas 1–4
 │   ├── sweep.yaml, train.yaml, pinn.yaml     tarea 5
 │   └── world.yaml, credit.yaml               tarea 6
-├── src/finnet/                    el núcleo (paquete de Python)
+├── src/pulso/                    el núcleo (paquete de Python)
 │   ├── networks, model, integrate, spectral, cascades, metrics
 │   ├── experiments, ml/            tarea 5
 │   ├── world/, credit/             tarea 6
@@ -169,8 +169,8 @@ finnet/
 ├── models/                        modelos versionados; models/credit/v1
 ├── figures/                       figuras de las tareas 1–6
 └── docs/
-    ├── finnet_guia_completa.pdf   esta guía
-    ├── finnet_presentacion.pdf    la presentación
+    ├── pulso_guia_completa.pdf   esta guía
+    ├── pulso_presentacion.pdf    la presentación
     ├── bibliografia.md
     ├── diseno/                    especificación de diseño de la tarea 6
     └── latex/                     fuentes de los PDF y generador de figuras
@@ -182,11 +182,11 @@ Archivos que \emph{no} se guardan en git porque se regeneran: el entorno
 clientes de la tarea 6 (\texttt{data/credit/clientes.parquet}, se rehace en segundos).
 
 % ---------------------------------------------------------------------------
-\chapter{Problemas conocidos y siguientes pasos}
+\chapter{Problemas conocidos y trabajo futuro}
 
 \section{Problemas conocidos (macOS)}
 \begin{itemize}
-\item \texttt{ModuleNotFoundError: No module named 'finnet'} dentro de
+\item \texttt{ModuleNotFoundError: No module named 'pulso'} dentro de
 \texttt{\textasciitilde/Documents}: macOS oculta el archivo \texttt{.pth} de la
 instalación editable. Solución: \texttt{chflags -R nohidden .venv}, o anteponer
 \texttt{PYTHONPATH=src}.
@@ -194,7 +194,7 @@ instalación editable. Solución: \texttt{chflags -R nohidden .venv}, o antepone
 xgboost primero y deja torch en un hilo para evitar cierres inesperados.
 \end{itemize}
 
-\section{Siguientes pasos}
+\section{Trabajo futuro}
 \begin{enumerate}
 \item \textbf{Datos reales}: correr el pipeline de la tarea 6 sobre una cartera
 anonimizada. Es el paso que convierte el mecanismo en evidencia.

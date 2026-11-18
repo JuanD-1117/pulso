@@ -1,4 +1,4 @@
-# Barrido de escenarios (Fase 5). `uv run finnet sweep configs/sweep.yaml`
+# Barrido de escenarios (Fase 5). `uv run pulso sweep configs/sweep.yaml`
 seed: 20261117
 output_dir: data
 n_jobs: -1

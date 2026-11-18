@@ -6,9 +6,9 @@ import common
 import numpy as np
 import streamlit as st
 
-from finnet import service, viz
+from pulso import service, viz
 
-st.set_page_config(page_title="Simulador de choques · finnet", layout="wide")
+st.set_page_config(page_title="Simulador de choques · PULSO", layout="wide")
 st.title("Simulador de choques")
 common.sidebar_status()
 if not common.live_allowed():

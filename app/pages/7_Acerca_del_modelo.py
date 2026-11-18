@@ -5,7 +5,7 @@ from __future__ import annotations
 import common
 import streamlit as st
 
-st.set_page_config(page_title="Acerca del modelo · finnet", layout="wide")
+st.set_page_config(page_title="Acerca del modelo · PULSO", layout="wide")
 st.title("Acerca del modelo")
 common.sidebar_status()
 
