@@ -1,0 +1,45 @@
+# Barrido de escenarios (Fase 5). `uv run finnet sweep configs/sweep.yaml`
+seed: 20261117
+output_dir: data
+n_jobs: -1
+
+pool:                      # redes compartidas por escenarios y nodos
+  n_networks: 300
+  topologies: [erdos_renyi, barabasi_albert, core_periphery]
+  n: [30, 150]
+  mean_degree: [2.0, 12.0]
+  amount_sigma: [0.2, 1.5]
+  core_frac: [0.05, 0.2]
+  p_core: 0.8
+  periphery_share: 0.1
+
+scenarios:
+  n: 20000
+  # R se muestrea con más densidad cerca de 1 (σ ≈ 0): R = 1 + w · sign(u) · |u|^p,
+  # u uniforme en [-1, 1]. p > 1 concentra puntos cerca de la zona crítica.
+  R_center: 1.0
+  R_half_width: 0.6
+  R_power: 2.0
+  alpha: [0.5, 2.0]
+  D0: [0.0, 0.5]
+  K: [0.0, 6.0]
+  gamma: [0.0, 0.08]
+  omega_mean: 6.283185307
+  omega_width: [0.1, 1.0]
+  buffer: [0.2, 1.5]
+  buffer_dispersion: 0.3
+  loss: [0.3, 1.5]
+  operational_fraction: 0.3   # fracción de choques que son caídas operativas
+  shock_size: [0.5, 6.0]
+  duration: [1.0, 6.0]
+
+nodes:
+  shock_size: 3.0             # mismo choque para todas las entidades de una red
+
+simulation:
+  burn_in: 5.0                # ciclos de ritmo de pagos antes del choque
+  t0: 0.0
+  dt: 0.02
+  t_end: 15.0
+  collapse_fraction: 0.3
+  tau_cap: 1000.0             # τ_rec infinito se guarda como este tope

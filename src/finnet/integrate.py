@@ -189,7 +189,7 @@ def simulate(
     outage_end = np.inf
     unpaid_acc = 0.0
 
-    n_save = n_steps // save_every + 1
+    n_save = n_steps // save_every + 2
     ts = np.empty(n_save)
     xs = np.empty((n_save, n))
     ths = np.empty((n_save, n))
@@ -237,7 +237,8 @@ def simulate(
             dyn = build()
             source = outage_source()
 
-        if (step + 1) % save_every == 0:
+        # El estado final se guarda siempre, caiga o no en la rejilla de guardado.
+        if (step + 1) % save_every == 0 or step == n_steps - 1:
             ts[i_save], xs[i_save], ths[i_save], unpaid_s[i_save] = (
                 t_new,
                 x,

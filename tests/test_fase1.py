@@ -57,6 +57,15 @@ def test_rk4_agrees_with_solve_ivp(W_er):
     np.testing.assert_allclose(traj.x_final, ref, rtol=1e-6)
 
 
+def test_final_state_saved_when_off_save_grid(W_er):
+    p = Params(alpha=1.0, beta=0.05)
+    x0 = np.ones(W_er.shape[0])
+    sparse = simulate(W_er, p, t_end=1.0, dt=0.01, x0=x0, save_every=10**9)
+    dense = simulate(W_er, p, t_end=1.0, dt=0.01, x0=x0, save_every=1)
+    assert sparse.t[-1] == pytest.approx(1.0)
+    np.testing.assert_array_equal(sparse.x_final, dense.x_final)
+
+
 def test_empty_network_decays_exactly_exponential():
     n, alpha, t_end = 10, 0.7, 4.0
     W = np.zeros((n, n))
